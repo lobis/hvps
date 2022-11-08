@@ -17,16 +17,18 @@ class CaenHV:
             if len(ports) == 0:
                 raise Exception("No ports available")
             port = ports[0]
+
+        self._serial = serial.Serial()
+        self._serial.port = port
+        self._serial.baudrate = baudrate
+
         if connect:
-            self._serial = serial.Serial(port, baudrate)
-        else:
-            self._serial = serial.Serial()
-            self._serial.port = port
-            self._serial.baudrate = baudrate
+            self._serial.open()
         # TODO: automatic module detection (connect to all in range 0..31) and baudrate detection (by getting module name)
 
     def __del__(self):
-        self._serial.close()
+        if hasattr(self, "_serial"):
+            self._serial.close()
 
     def __getitem__(self, bd: int) -> Module:
         return self.module(bd)
@@ -40,6 +42,14 @@ class CaenHV:
 
     def __next__(self):
         return next(self._modules.values())
+
+    @property
+    def is_open(self) -> bool:
+        return self._serial.is_open
+
+    @property
+    def connected(self) -> bool:
+        return self.is_open
 
     @property
     def serial(self):
