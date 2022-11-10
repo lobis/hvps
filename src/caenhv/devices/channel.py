@@ -5,6 +5,8 @@ import serial
 from ..commands.channel import _get_set_channel_command, _get_mon_channel_command
 from ..commands import _parse_response
 
+from time import sleep
+
 
 class Channel:
     def __init__(self, _serial: serial.Serial, bd: int, channel: int):
@@ -19,6 +21,15 @@ class Channel:
     @property
     def channel(self) -> int:
         return self._channel
+
+    def wait_for_vset(self, timeout: float = 30.0, timedelta: float = 0.5, voltage_diff: float = 0.5) -> bool:
+        t = 0.0
+        while t < timeout:
+            t += timedelta
+            sleep(timedelta)
+            if abs(self.vset - self.vmon) < abs(voltage_diff):
+                return True
+        return False
 
     # Getters
     @property
