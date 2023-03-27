@@ -9,7 +9,7 @@ from .module import Module
 
 class CaenHV:
     def __init__(
-            self, baudrate: int = 115200, port: str | None = None, timeout: float = None, connect: bool = True
+            self, baudrate: int = 115200, port: str | None = None, timeout: float | None = None, connect: bool = True
     ):
         self._modules: Dict[int, Module] = {}
         if port is None:
@@ -18,7 +18,7 @@ class CaenHV:
                 raise Exception("No ports available")
             port = ports[0]
 
-        self._serial = serial.Serial()
+        self._serial: serial.Serial = serial.Serial()
         self._serial.port = port
         self._serial.baudrate = baudrate
         self._serial.timeout = timeout
@@ -30,6 +30,12 @@ class CaenHV:
 
     def __del__(self):
         if hasattr(self, "_serial"):
+            self._serial.close()
+
+    def disconnect(self):
+        if not hasattr(self, "_serial"):
+            return
+        if self._serial.is_open:
             self._serial.close()
 
     def __getitem__(self, bd: int) -> Module:
