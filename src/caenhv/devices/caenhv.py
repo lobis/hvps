@@ -3,13 +3,43 @@ from __future__ import annotations
 import serial
 from serial.tools import list_ports
 from typing import Dict
+import time
 
 from .module import Module
 
 
+def detect_baudrate(port: str) -> int:
+    baudrate_detection_message = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+
+    # Try different baud rates until one works
+    for baudrate in [9600, 19200, 38400, 57600, 115200]:
+        # Open the serial port with the current baud rate
+        with serial.Serial(port, baudrate, timeout=1.0) as ser:
+
+            # Send the baud rate detection message
+            start_time = time.time()
+            ser.write(baudrate_detection_message)
+            ser.read(len(baudrate_detection_message))
+            end_time = time.time()
+
+            # Calculate the time it took for the device to respond
+            elapsed_time = end_time - start_time
+
+            # Calculate the baud rate based on the length of the message and the elapsed time
+            expected_time = (len(baudrate_detection_message) + 2) / float(baudrate)
+            expected_time *= 1.5  # Add a margin of error
+            if abs(elapsed_time - expected_time) < 0.1:
+                break
+
+            return baudrate
+    else:
+        raise Exception("Unable to detect baudrate")
+
+
 class CaenHV:
     def __init__(
-            self, baudrate: int = 115200, port: str | None = None, timeout: float | None = None, connect: bool = True
+            self, baudrate: int | None = None, port: str | None = None, timeout: float | None = None,
+            connect: bool = True
     ):
         self._modules: Dict[int, Module] = {}
         if port is None:
@@ -20,7 +50,7 @@ class CaenHV:
 
         self._serial: serial.Serial = serial.Serial()
         self._serial.port = port
-        self._serial.baudrate = baudrate
+        self._serial.baudrate = baudrate or detect_baudrate(port)
         self._serial.timeout = timeout
 
         if connect:
