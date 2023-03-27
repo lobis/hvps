@@ -20,14 +20,14 @@ class Module:
 
     @cached_property
     def name(self) -> str:
-        self._serial.write(_get_mon_module_command(self._bd, "BDNAME"))
+        self.write(_get_mon_module_command(self._bd, "BDNAME"))
         code, response = _parse_response(self._serial.readline(), bd=self.bd)
         # TODO: handle error code
         return str(response)
 
     @cached_property
     def number_of_channels(self) -> int:
-        self._serial.write(_get_mon_module_command(self._bd, "BDNCH"))
+        self.write(_get_mon_module_command(self._bd, "BDNCH"))
         code, response = _parse_response(self._serial.readline(), bd=self.bd)
         # TODO: handle error code
         return int(response)

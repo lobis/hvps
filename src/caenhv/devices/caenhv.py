@@ -72,6 +72,11 @@ class CaenHV:
 
         # TODO: automatic module detection (connect to all in range 0..31) and baudrate detection (by getting module name)
 
+    def write(self, data: bytes):
+        logger = logging.getLogger(__name__)
+        logger.debug(f"Serial write: {data}")
+        self._serial.write(data)
+
     def __del__(self):
         if hasattr(self, "_serial"):
             self._serial.close()
