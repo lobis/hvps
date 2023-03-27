@@ -9,7 +9,7 @@ from .module import Module
 
 class CaenHV:
     def __init__(
-            self, baudrate: int = 9600, port: str | None = None, timeout: float = None, connect: bool = True
+            self, baudrate: int = 115200, port: str | None = None, timeout: float = None, connect: bool = True
     ):
         self._modules: Dict[int, Module] = {}
         if port is None:
