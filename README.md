@@ -2,7 +2,8 @@
 
 [![PyPI version](https://badge.fury.io/py/caenhv.svg)](https://badge.fury.io/py/caenhv)
 [![Build and Test](https://github.com/lobis/caen-hv/actions/workflows/build-test.yml/badge.svg)](https://github.com/lobis/caen-hv/actions/workflows/build-test.yml)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/caen-hv)
+[![PyPI downloads](https://img.shields.io/pypi/dm/caenhv.svg)](https://pypi.org/project/caenhv/)
+![Python Version](https://img.shields.io/badge/python-3.8-blue.svg)
 
 ## 🤔 What is this?
 
@@ -52,7 +53,7 @@ channel = module.channel(2)
 print(f"vset: {channel.vset}")
 print(f"vmon: {channel.vmon}")
 
-# switch channel off and off
+# switch channel off and on
 channel.off()
 channel.on()
 
