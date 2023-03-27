@@ -46,9 +46,12 @@ def detect_baudrate(port: str) -> int:
 class CaenHV:
     def __init__(
             self, baudrate: int | None = None, port: str | None = None, timeout: float | None = None,
-            connect: bool = True
+            connect: bool = True, verbosity: int = logging.WARNING
     ):
+        # set global logging level
+        logging.basicConfig(level=verbosity)
         logger = logging.getLogger(__name__)
+
         self._modules: Dict[int, Module] = {}
         if port is None:
             logger.info("No port specified, trying to detect one")
