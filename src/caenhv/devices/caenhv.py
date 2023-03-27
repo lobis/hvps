@@ -9,7 +9,7 @@ from .module import Module
 
 class CaenHV:
     def __init__(
-        self, baudrate: int = 9600, port: str | None = None, connect: bool = True
+            self, baudrate: int = 9600, port: str | None = None, timeout: float = None, connect: bool = True
     ):
         self._modules: Dict[int, Module] = {}
         if port is None:
@@ -21,9 +21,11 @@ class CaenHV:
         self._serial = serial.Serial()
         self._serial.port = port
         self._serial.baudrate = baudrate
+        self._serial.timeout = timeout
 
         if connect:
             self._serial.open()
+
         # TODO: automatic module detection (connect to all in range 0..31) and baudrate detection (by getting module name)
 
     def __del__(self):
