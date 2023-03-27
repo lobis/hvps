@@ -4,15 +4,20 @@ import serial
 from serial.tools import list_ports
 from typing import Dict
 import time
+import logging
 
 from .module import Module
 
 
 def detect_baudrate(port: str) -> int:
+    logger = logging.getLogger(__name__)
+    logger.info(f"Detecting baudrate for port {port}")
+
     baudrate_detection_message = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 
     # Try different baud rates until one works
     for baudrate in [9600, 19200, 38400, 57600, 115200]:
+        logger.debug(f"Trying baudrate {baudrate}")
         # Open the serial port with the current baud rate
         with serial.Serial(port, baudrate, timeout=1.0) as ser:
 
@@ -28,9 +33,11 @@ def detect_baudrate(port: str) -> int:
             # Calculate the baud rate based on the length of the message and the elapsed time
             expected_time = (len(baudrate_detection_message) + 2) / float(baudrate)
             expected_time *= 1.5  # Add a margin of error
+
             if abs(elapsed_time - expected_time) < 0.1:
                 break
 
+            logger.info(f"Baudrate detected: {baudrate}")
             return baudrate
     else:
         raise Exception("Unable to detect baudrate")
@@ -41,8 +48,10 @@ class CaenHV:
             self, baudrate: int | None = None, port: str | None = None, timeout: float | None = None,
             connect: bool = True
     ):
+        logger = logging.getLogger(__name__)
         self._modules: Dict[int, Module] = {}
         if port is None:
+            logger.info("No port specified, trying to detect one")
             ports = [port.device for port in serial.tools.list_ports.comports()]
             if len(ports) == 0:
                 raise Exception("No ports available")
@@ -50,11 +59,16 @@ class CaenHV:
 
         self._serial: serial.Serial = serial.Serial()
         self._serial.port = port
+        logger.debug(f"Using port {port}")
         self._serial.baudrate = baudrate or detect_baudrate(port)
+        logger.debug(f"Using baudrate {self._serial.baudrate}")
         self._serial.timeout = timeout
+        logger.debug(f"Using timeout {self._serial.timeout}")
 
         if connect:
+            logger.debug("Opening serial port")
             self._serial.open()
+            logger.debug("Serial port opened")
 
         # TODO: automatic module detection (connect to all in range 0..31) and baudrate detection (by getting module name)
 

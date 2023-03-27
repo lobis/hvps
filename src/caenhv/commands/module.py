@@ -1,5 +1,4 @@
 from __future__ import annotations
-import re
 
 _mon_module_parameters = {
     "BDNAME": "Read out module name ( N1471 )",
