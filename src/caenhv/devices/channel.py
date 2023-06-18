@@ -40,26 +40,28 @@ class Channel:
         """
         return self._channel
 
-    def wait_for_vset(
-        self, timeout: float = 30.0, timedelta: float = 0.5, voltage_diff: float = 0.5
-    ) -> bool:
+    def wait_for_vset(self, timeout: float = 60.0, allowed_difference: float = 1.0):
         """Wait for the vset value to stabilize within a specified voltage difference.
 
         Args:
-            timeout (float, optional): The maximum time to wait in seconds. Defaults to 30.0.
-            timedelta (float, optional): The time interval between checks in seconds. Defaults to 0.5.
-            voltage_diff (float, optional): The maximum voltage difference to consider as stabilized. Defaults to 0.5.
+            timeout (float, optional): The maximum time to wait in seconds. Defaults to 60.0 seconds.
+            allowed_difference (float, optional): The maximum voltage difference to consider as stabilized.
+                Defaults to 1.0 V.
 
-        Returns:
-            bool: True if the vset value stabilized within the specified voltage difference, False otherwise.
+        Raises:
+            TimeoutError: If the vset value does not stabilize within the specified timeout.
+
         """
+        timedelta = 0.5  # 0.5 seconds
         t = 0.0
         while t < timeout:
             t += timedelta
             sleep(timedelta)
-            if abs(self.vset - self.vmon) < abs(voltage_diff):
-                return True
-        return False
+            if abs(self.vset - self.vmon) < abs(allowed_difference):
+                return
+
+        # Could not stabilize within the specified timeout
+        raise TimeoutError(f"Could not stabilize vset within {timeout} seconds.")
 
     # Getters
     @property
