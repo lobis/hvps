@@ -25,7 +25,9 @@ def _parse_response(response: bytes, bd: int | None = None) -> tuple[bool, str]:
         return False, message
     bd_from_response = int(match.group(1))
     if bd is not None and bd != bd_from_response:
-        message = f"Invalid response: '{response}'. Mismatched bd: {bd_from_response} != {bd}"
+        message = (
+            f"Invalid response: '{response}'. Mismatched bd: {bd_from_response} != {bd}"
+        )
         logger.error(message)
         return (
             False,

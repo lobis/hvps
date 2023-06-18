@@ -45,8 +45,12 @@ def detect_baudrate(port: str) -> int:
 
 class CaenHV:
     def __init__(
-            self, baudrate: int | None = None, port: str | None = None, timeout: float | None = None,
-            connect: bool = True, verbosity: int = logging.WARNING
+        self,
+        baudrate: int | None = None,
+        port: str | None = None,
+        timeout: float | None = None,
+        connect: bool = True,
+        verbosity: int = logging.WARNING,
     ):
         # set global logging level
         logging.basicConfig(level=verbosity)

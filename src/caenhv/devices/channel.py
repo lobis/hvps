@@ -22,7 +22,9 @@ class Channel:
     def channel(self) -> int:
         return self._channel
 
-    def wait_for_vset(self, timeout: float = 30.0, timedelta: float = 0.5, voltage_diff: float = 0.5) -> bool:
+    def wait_for_vset(
+        self, timeout: float = 30.0, timedelta: float = 0.5, voltage_diff: float = 0.5
+    ) -> bool:
         t = 0.0
         while t < timeout:
             t += timedelta
@@ -262,68 +264,48 @@ class Channel:
     # Setters
     @vset.setter
     def vset(self, value: float) -> None:
-        self.write(
-            _get_set_channel_command(self._bd, self._channel, "VSET", value)
-        )
+        self.write(_get_set_channel_command(self._bd, self._channel, "VSET", value))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
 
     @iset.setter
     def iset(self, value: float) -> None:
-        self.write(
-            _get_set_channel_command(self._bd, self._channel, "ISET", value)
-        )
+        self.write(_get_set_channel_command(self._bd, self._channel, "ISET", value))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
 
     @maxv.setter
     def maxv(self, value: float) -> None:
-        self.write(
-            _get_set_channel_command(self._bd, self._channel, "MAXV", value)
-        )
+        self.write(_get_set_channel_command(self._bd, self._channel, "MAXV", value))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
 
     @rup.setter
     def rup(self, value: float) -> None:
-        self.write(
-            _get_set_channel_command(self._bd, self._channel, "RUP", value)
-        )
+        self.write(_get_set_channel_command(self._bd, self._channel, "RUP", value))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
 
     @rdw.setter
     def rdw(self, value: float) -> None:
-        self.write(
-            _get_set_channel_command(self._bd, self._channel, "RDW", value)
-        )
+        self.write(_get_set_channel_command(self._bd, self._channel, "RDW", value))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
 
     @trip.setter
     def trip(self, value: float) -> None:
-        self.write(
-            _get_set_channel_command(self._bd, self._channel, "TRIP", value)
-        )
+        self.write(_get_set_channel_command(self._bd, self._channel, "TRIP", value))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
 
     @pdwn.setter
     def pdwn(self, value: float) -> None:
-        self.write(
-            _get_set_channel_command(self._bd, self._channel, "PDWN", value)
-        )
+        self.write(_get_set_channel_command(self._bd, self._channel, "PDWN", value))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
 
     @imrange.setter
     def imrange(self, value: float) -> None:
-        self.write(
-            _get_set_channel_command(self._bd, self._channel, "IMRANGE", value)
-        )
+        self.write(_get_set_channel_command(self._bd, self._channel, "IMRANGE", value))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
 
     def on(self) -> None:
-        self.write(
-            _get_set_channel_command(self._bd, self._channel, "ON", None)
-        )
+        self.write(_get_set_channel_command(self._bd, self._channel, "ON", None))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
 
     def off(self) -> None:
-        self.write(
-            _get_set_channel_command(self._bd, self._channel, "OFF", None)
-        )
+        self.write(_get_set_channel_command(self._bd, self._channel, "OFF", None))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
