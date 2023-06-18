@@ -42,13 +42,6 @@ class Channel:
         return float(response)
 
     @property
-    def vset(self) -> float:
-        self.write(_get_mon_channel_command(self._bd, self._channel, "VSET"))
-        code, response = _parse_response(self._serial.readline(), bd=self._bd)
-        # TODO: handle error code
-        return float(response)
-
-    @property
     def vmin(self) -> float:
         self.write(_get_mon_channel_command(self._bd, self._channel, "VMIN"))
         code, response = _parse_response(self._serial.readline(), bd=self._bd)
