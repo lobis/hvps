@@ -9,6 +9,14 @@ from time import sleep
 
 
 class Channel:
+    """Represents a channel of a device.
+
+    Args:
+        _serial (serial.Serial): The serial connection to the device.
+        bd (int): The bd value.
+        channel (int): The channel number.
+    """
+
     def __init__(self, _serial: serial.Serial, bd: int, channel: int):
         self._serial = _serial
         self._bd = bd
@@ -16,15 +24,35 @@ class Channel:
 
     @property
     def db(self) -> int:
+        """The bd value of the channel.
+
+        Returns:
+            int: The bd value.
+        """
         return self._bd
 
     @property
     def channel(self) -> int:
+        """The channel number.
+
+        Returns:
+            int: The channel number.
+        """
         return self._channel
 
     def wait_for_vset(
         self, timeout: float = 30.0, timedelta: float = 0.5, voltage_diff: float = 0.5
     ) -> bool:
+        """Wait for the vset value to stabilize within a specified voltage difference.
+
+        Args:
+            timeout (float, optional): The maximum time to wait in seconds. Defaults to 30.0.
+            timedelta (float, optional): The time interval between checks in seconds. Defaults to 0.5.
+            voltage_diff (float, optional): The maximum voltage difference to consider as stabilized. Defaults to 0.5.
+
+        Returns:
+            bool: True if the vset value stabilized within the specified voltage difference, False otherwise.
+        """
         t = 0.0
         while t < timeout:
             t += timedelta
@@ -229,7 +257,6 @@ class Channel:
         self.write(_get_set_channel_command(self._bd, self._channel, "VSET", value))
         response = _parse_response(self._serial.readline(), bd=self._bd)
 
-
     @iset.setter
     def iset(self, value: float) -> None:
         self.write(_get_set_channel_command(self._bd, self._channel, "ISET", value))
@@ -266,9 +293,11 @@ class Channel:
         response = _parse_response(self._serial.readline(), bd=self._bd)
 
     def on(self) -> None:
+        """Turn on the channel."""
         self.write(_get_set_channel_command(self._bd, self._channel, "ON", None))
         response = _parse_response(self._serial.readline(), bd=self._bd)
 
     def off(self) -> None:
+        """Turn off the channel."""
         self.write(_get_set_channel_command(self._bd, self._channel, "OFF", None))
         response = _parse_response(self._serial.readline(), bd=self._bd)
