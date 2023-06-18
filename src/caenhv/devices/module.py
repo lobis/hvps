@@ -74,7 +74,7 @@ class Module:
 
         Returns:
             Channel: The Channel object.
-        
+
         Raises:
             KeyError: If the channel number is invalid.
         """
