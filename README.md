@@ -1,4 +1,4 @@
-# caenhv
+# HVPS
 
 [![PyPI version](https://badge.fury.io/py/caenhv.svg)](https://badge.fury.io/py/caenhv)
 [![Build and Test](https://github.com/lobis/caen-hv/actions/workflows/build-test.yml/badge.svg)](https://github.com/lobis/caen-hv/actions/workflows/build-test.yml)
@@ -7,7 +7,8 @@
 
 ## 🤔 What is this?
 
-This is an unofficial Python package to interface with CAEN high voltage power supplies over USB (RS232 protocol).
+The goal of this Python package is to interface with different brands of high voltage power supplies in a uniform way.
+Currently only CAEN and iseg brands are supported. Communication is performed via serial port (over USB).
 
 ## ⚠️ Disclaimer
 
@@ -26,7 +27,7 @@ Installation via `pip` is supported.
 To install the latest [published version](https://github.com/lobis/lecroy-scope/releases), run:
 
 ```bash
-pip install caenhv
+pip install hvps
 ```
 
 To install the package from source, including test dependencies, clone the repository and run:
@@ -38,7 +39,7 @@ pip install .[test]
 ## 👨‍💻 Usage
 
 ```python
-from caenhv import CaenHV
+from hvps import CaenHV
 
 # automatically detect serial port and baudrate (can be manually set)
 caen = CaenHV()

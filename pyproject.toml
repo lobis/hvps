@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 
 [project]
-name = "caenhv"
+name = "hvps"
 authors = [
     { name = "Luis Antonio Obis Aparicio", email = "luis.antonio.obis@gmail.com" },
 ]
@@ -30,9 +30,9 @@ test = [
 ]
 
 [project.urls]
-"Download" = "https://github.com/lobis/caen-hv/releases"
-"Homepage" = "https://github.com/lobis/caen-hv"
-"Bug Tracker" = "https://github.com/lobis/caen-hv/issues"
+"Download" = "https://github.com/lobis/hvps/releases"
+"Homepage" = "https://github.com/lobis/hvps"
+"Bug Tracker" = "https://github.com/lobis/hvps/issues"
 
 [tool.hatch.version]
-path = "src/caenhv/version.py"
+path = "src/hvps/version.py"
