@@ -15,7 +15,7 @@ def test_caen_module_get_commands():
     command = _get_mon_module_command(0, "BDNAME")
 
 
-def test_caen_module_set_commands:
+def test_caen_module_set_commands():
     pass
 
 
