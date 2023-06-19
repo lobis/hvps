@@ -1,12 +1,10 @@
-from src.hvps import HVPS
-from src.hvps.version import version
-
+from . import version, HVPS
 import argparse
 
 
 def main():
     parser = argparse.ArgumentParser(description="HVPS control")
-    parser.add_argument("--version", action="version", version=version)
+    parser.add_argument("--version", action="version", version=version.__version__)
 
     args = parser.parse_args()
 

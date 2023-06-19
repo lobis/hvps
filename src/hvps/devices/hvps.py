@@ -32,7 +32,6 @@ def detect_baudrate(port: str) -> int:
         logger.debug(f"Trying baud rate {baudrate}")
         # Open the serial port with the current baud rate
         with serial.Serial(port, baudrate, timeout=1.0) as ser:
-
             # Send the baud rate detection message
             start_time = time.time()
             ser.write(baudrate_detection_message)

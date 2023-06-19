@@ -1,7 +1,7 @@
 from __future__ import annotations
 import re
 
-from src.hvps.commands.iseg.channel import (
+from .channel import (
     _get_set_channel_command,
     _get_mon_channel_command,
 )
