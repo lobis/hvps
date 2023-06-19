@@ -49,4 +49,4 @@ jobs:
           npm --version
           node --version
           npm install
-          npm exec hvps
+          node cli.js
