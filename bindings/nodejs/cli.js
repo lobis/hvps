@@ -20,4 +20,6 @@ context.print();
 
 // Get the remaining arguments as a string
 const remainingArgs = cli._.join(' ');
-console.log('Remaining arguments:', remainingArgs);
+// these should be passed to the python code. TODO: not working!
+
+context.run(remainingArgs);
