@@ -1,0 +1,25 @@
+{
+  "name": "hvps",
+  "version": "0.0.1",
+  "description": "Bindings for the HVPS python package",
+  "main": "index.js",
+  "bin": {
+    "hvps": "cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lobis/hvps.git"
+  },
+  "author": "Luis Antonio Obis Aparicio (@lobis)",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/lobis/hvps/issues"
+  },
+  "homepage": "https://github.com/lobis/hvps#readme",
+  "dependencies": {
+    "yargs": "^17.7.2"
+  }
+}

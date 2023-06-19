@@ -1,6 +1,10 @@
 import pytest
 
-from hvps.commands.caen import _parse_response, _get_set_module_command, _get_mon_module_command
+from hvps.commands.caen import (
+    _parse_response,
+    _get_set_module_command,
+    _get_mon_module_command,
+)
 
 
 def test_caen_module_get_commands():
