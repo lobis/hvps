@@ -38,8 +38,15 @@ jobs:
       - name: "Run from cli"
         run: python -m hvps --version
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
       - name: "Install nodejs bindings"
         run: |
           cd bindings/nodejs
+          npm --version
+          node --version
           npm install
           npm exec hvps
