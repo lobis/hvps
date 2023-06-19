@@ -42,6 +42,7 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
+          cache-dependency-path: bindings/nodejs/package-lock.json
 
       - name: "Install nodejs bindings"
         run: |
