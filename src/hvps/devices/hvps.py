@@ -55,7 +55,7 @@ def detect_baudrate(port: str) -> int:
     raise Exception("Could not detect baud rate")
 
 
-class CaenHV:
+class HVPS:
     def __init__(
         self,
         baudrate: int | None = None,

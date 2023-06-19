@@ -3,9 +3,9 @@ from typing import List
 
 import serial
 
-from ..commands.module import _get_mon_module_command, _get_set_module_command
-from ..commands import _parse_response
-from .channel import Channel
+from src.hvps.commands.caen.module import _get_mon_module_command
+from src.hvps.commands.caen import _parse_response
+from src.hvps.devices.channel import Channel
 
 
 class Module:
