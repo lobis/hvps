@@ -1,6 +1,9 @@
 import serial
 
-from src.hvps.commands.caen.channel import _get_set_channel_command, _get_mon_channel_command
+from src.hvps.commands.caen.channel import (
+    _get_set_channel_command,
+    _get_mon_channel_command,
+)
 from src.hvps.commands.caen import _parse_response
 
 from time import sleep
