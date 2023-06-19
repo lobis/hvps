@@ -34,3 +34,12 @@ jobs:
 
       - name: "Run pytest"
         run: python -m pytest
+
+      - name: "Run from cli"
+        run: python -m hvps --version
+
+      - name: "Install nodejs bindings"
+        run: |
+          cd bindings/nodejs
+          npm install
+          npm exec hvps
