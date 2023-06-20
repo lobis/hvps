@@ -103,7 +103,7 @@ def _get_set_channel_command(
         raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
     if not 0 <= channel <= 7:
         raise ValueError(
-            f"Invalid channel number '{channel}'. Must be in the range 0..31."
+            f"Invalid channel number '{channel}'. Must be in the range 0..7."
         )
 
     parameter = parameter.upper()
