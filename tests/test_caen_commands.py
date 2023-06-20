@@ -5,8 +5,9 @@ from hvps.commands.caen import (
     _get_set_module_command,
     _get_mon_module_command,
     _get_set_channel_command,
-    _get_mon_channel_command
+    _get_mon_channel_command,
 )
+
 
 def test_caen_module_get_commands():
     with pytest.raises(ValueError):
@@ -50,7 +51,6 @@ def test_caen_channel_get_commands():
 
     command = _get_mon_channel_command(0, 1, "PAR1")
     assert command == b"$BD:00,CMD:MON,CH:1,PAR:PAR1\r\n"
-
 
 
 def test_caen_channel_set_commands():
