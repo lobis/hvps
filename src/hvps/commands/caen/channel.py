@@ -101,7 +101,7 @@ def _get_set_channel_command(
     """
     if not 0 <= bd <= 31:
         raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
-    if not 0 <= channel <= 8:
+    if not 0 <= channel <= 7:
         raise ValueError(
             f"Invalid channel number '{channel}'. Must be in the range 0..31."
         )
