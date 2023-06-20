@@ -6,6 +6,8 @@ def _get_mon_channel_command(channel: int, parameter: str) -> bytes:
     pass
 
 
-def _get_set_channel_command(channel: int, parameter: str, value: str | int | float | None) -> bytes:
+def _get_set_channel_command(
+    channel: int, parameter: str, value: str | int | float | None
+) -> bytes:
     # TODO: implement
     pass
