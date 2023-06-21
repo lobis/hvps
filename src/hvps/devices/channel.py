@@ -249,13 +249,12 @@ class Channel:
         return str(response)
 
     @property
-    def stat(self) -> str:
+    def stat(self) -> dict:
         self._serial.write(_get_mon_channel_command(self._bd, self._channel, "STAT"))
         response = _parse_response(self._serial.readline(), bd=self._bd)
+        bit_array = string_to_bit_array(response)
 
-        bit_array = string_to_bit_array("response")
-
-        mapping = {
+        return {
             "ON": bool(bit_array[0]),  # True: ON, False: OFF
             "RUP": bool(bit_array[1]),  # True: Channel Ramp UP
             "RDW": bool(bit_array[2]),  # True: Channel Ramp DOWN
@@ -274,11 +273,8 @@ class Channel:
             "KILL": bool(bit_array[11]),  # True: Ch in KILL via front panel
             "ILK": bool(bit_array[12]),  # True: Ch in INTERLOCK via front panel
             "NOCAL": bool(bit_array[13]),  # True: Calibration Error
-            # TODO: qué es NC (Not Connected es la propuesta de chatGPT)
             # "NC": bool(bit_array[14])  # True: Not Connected
         }
-
-        return str(mapping)
 
     # Setters
     @vset.setter

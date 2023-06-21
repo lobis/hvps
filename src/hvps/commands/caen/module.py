@@ -46,7 +46,9 @@ def _get_mon_module_command(bd: int, parameter: str) -> bytes:
     return f"$BD:{bd:02d},CMD:MON,PAR:{parameter}\r\n".encode("utf-8")
 
 
-def _get_set_module_command(bd: int, parameter: str, value: str | int | float) -> bytes:
+def _get_set_module_command(
+    bd: int, parameter: str, value: str | int | float | None
+) -> bytes:
     """
     Generate a command string to set a specific module parameter to a given value.
 
@@ -67,4 +69,8 @@ def _get_set_module_command(bd: int, parameter: str, value: str | int | float) -
         raise ValueError(
             f"Invalid parameter '{parameter}'. Valid parameters are: {valid_parameters}"
         )
+    if value is None:
+        if parameter != "BDCLR":
+            raise ValueError(f"Value must be provided for parameter '{parameter}'.")
+
     return f"$BD:{bd:02d},CMD:SET,PAR:{parameter},VAL:{value}\r\n".encode("utf-8")

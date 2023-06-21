@@ -1,4 +1,4 @@
-def string_to_bit_array(string):
+def string_to_bit_array(string) -> list:
     """
     Converts a string into a bit array.
 

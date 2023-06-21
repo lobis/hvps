@@ -54,7 +54,7 @@ class Module:
         return int(response)
 
     @property
-    def get_firmware_release(self) -> str:
+    def firmware_release(self) -> str:
         """
         Read out Firmware Release (XX.X)
 
@@ -66,7 +66,7 @@ class Module:
         return response
 
     @property
-    def get_serial_number(self) -> str:
+    def serial_number(self) -> str:
         """
         Read out value serial number (XXXXX)
 
@@ -75,10 +75,11 @@ class Module:
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDSNUM"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
-        return int(response)
+        # TODO: check if can be casted to int
+        return response
 
     @property
-    def get_interlock_status(self) -> str:
+    def interlock_status(self) -> bool:
         """
         Read out INTERLOCK status (YES/NO)
 
@@ -87,10 +88,16 @@ class Module:
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDILK"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
-        return response
+
+        if response == "YES":
+            return True
+        elif response == "NO":
+            return False
+        else:
+            raise ValueError(f"Invalid response for 'interlock_status': {response}")
 
     @property
-    def get_interlock_mode(self) -> str:
+    def interlock_mode(self) -> str:
         """
         Read out INTERLOCK mode (OPEN/CLOSED)
 
@@ -99,10 +106,16 @@ class Module:
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDILKM"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
+        if response not in ["OPEN", "CLOSED"]:
+            raise ValueError(f"Invalid response for 'interlock_mode': {response}")
         return response
 
     @property
-    def get_control_mode(self) -> str:
+    def interlock_open(self) -> bool:
+        return self.interlock_mode == "OPEN"
+
+    @property
+    def control_mode(self) -> str:
         """
         Read out Control Mode (LOCAL / REMOTE)
 
@@ -111,10 +124,39 @@ class Module:
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDCTR"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
+        if response not in ["LOCAL", "REMOTE"]:
+            raise ValueError(f"Invalid response for 'control_mode': {response}")
         return response
 
     @property
-    def get_local_bus_termination_status(self) -> str:
+    def control_mode_local(self) -> bool:
+        return self.control_mode == "LOCAL"
+
+    @property
+    def control_mode_remote(self) -> bool:
+        return self.control_mode == "REMOTE"
+
+    @control_mode.setter
+    def control_mode(self, value: str):
+        """
+        Set Control Mode (LOCAL / REMOTE)
+
+        Args:
+            value (str): The control mode.
+        """
+        value = value.upper()
+        if value not in ["LOCAL", "REMOTE"]:
+            raise ValueError(f"Invalid value for 'control_mode': {value}")
+        self._serial.write(_get_set_module_command(self._bd, "BDCTR", value))
+
+    def set_control_mode_local(self):
+        self.control_mode = "LOCAL"
+
+    def set_control_mode_remote(self):
+        self.control_mode = "REMOTE"
+
+    @property
+    def local_bus_termination_status(self) -> str:
         """
         Read out LOCAL BUS Termination status (ON/OFF)
 
@@ -123,10 +165,22 @@ class Module:
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDTERM"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
+        if response not in ["ON", "OFF"]:
+            raise ValueError(
+                f"Invalid response for 'local_bus_termination_status': {response}"
+            )
         return response
 
     @property
-    def get_board_alarm_status(self) -> str:
+    def local_bus_termination_status_on(self) -> bool:
+        return self.local_bus_termination_status == "ON"
+
+    @property
+    def local_bus_termination_status_off(self) -> bool:
+        return self.local_bus_termination_status == "OFF"
+
+    @property
+    def board_alarm_status(self) -> dict:
         """
         Read out Board Alarm status value (XXXXX)
 
@@ -138,7 +192,7 @@ class Module:
 
         bit_array = string_to_bit_array(response)
 
-        mapping = {
+        return {
             "CH0": bool(bit_array[0]),  # True: Ch0 in Alarm status
             "CH1": bool(bit_array[1]),  # True: Ch1 in Alarm status
             "CH2": bool(bit_array[2]),  # True: Ch2 in Alarm status
@@ -150,24 +204,38 @@ class Module:
             ),  # True: Internal HV Clock FAIL (≠ 200±10kHz)
         }
 
-        return mapping
-
-    @property
-    def set_interlock_mode(self, mode: str) -> None:
+    @interlock_mode.setter
+    def interlock_mode(self, mode: str) -> None:
         """
         VAL:OPEN/CLOSED Set Interlock Mode
 
         Args:
             mode (str): The interlock mode to set.
         """
+        mode = mode.upper()
+        if mode not in ["OPEN", "CLOSED"]:
+            raise ValueError(f"Invalid value for 'interlock_mode': {mode}")
         self._serial.write(_get_set_module_command(self._bd, "BDILKM", mode))
+        _ = _parse_response(self._serial.readline(), bd=self.bd)
 
-    @property
+    def close_interlock(self) -> None:
+        """
+        Close Interlock
+        """
+        self.interlock_mode = "CLOSED"
+
+    def open_interlock(self) -> None:
+        """
+        Open Interlock
+        """
+        self.interlock_mode = "OPEN"
+
     def clear_alarm_signal(self) -> None:
         """
         Clear alarm signal
         """
         self._serial.write(_get_set_module_command(self._bd, "BDCLR", None))
+        _ = _parse_response(self._serial.readline(), bd=self.bd)
 
     @property
     def channels(self):
