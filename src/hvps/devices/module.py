@@ -84,7 +84,7 @@ class Module:
         Read out INTERLOCK status (YES/NO)
 
         Returns:
-            str: The interlock status.
+            bool: Yes: True, No: False
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDILK"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
@@ -112,6 +112,10 @@ class Module:
 
     @property
     def interlock_open(self) -> bool:
+        """
+        Returns:
+            bool: True if interlock_mode == OPEN
+        """
         return self.interlock_mode == "OPEN"
 
     @property
@@ -130,10 +134,18 @@ class Module:
 
     @property
     def control_mode_local(self) -> bool:
+        """
+        Returns:
+            bool: True if control_mode == LOCAL
+        """
         return self.control_mode == "LOCAL"
 
     @property
     def control_mode_remote(self) -> bool:
+        """
+        Returns:
+            bool: True if control_mode == REMOTE
+        """
         return self.control_mode == "REMOTE"
 
     @control_mode.setter
@@ -150,9 +162,15 @@ class Module:
         self._serial.write(_get_set_module_command(self._bd, "BDCTR", value))
 
     def set_control_mode_local(self):
+        """
+            Set Control Mode to LOCAL
+        """
         self.control_mode = "LOCAL"
 
     def set_control_mode_remote(self):
+        """
+            Set Control Mode to REMOTE
+        """
         self.control_mode = "REMOTE"
 
     @property
@@ -173,10 +191,18 @@ class Module:
 
     @property
     def local_bus_termination_status_on(self) -> bool:
+        """
+        Returns:
+            bool: True if local_bus_termination_status == ON
+        """
         return self.local_bus_termination_status == "ON"
 
     @property
     def local_bus_termination_status_off(self) -> bool:
+        """
+        Returns:
+            bool: True if local_bus_termination_status == OFF
+        """
         return self.local_bus_termination_status == "OFF"
 
     @property
