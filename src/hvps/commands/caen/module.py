@@ -8,7 +8,7 @@ _mon_module_parameters = {
     "BDSNUM": "Read out value serial number (XXXXX)",
     "BDILK": "Read out INTERLOCK status (YES/NO)",
     "BDILKM": "Read out INTERLOCK mode (OPEN/CLOSED)",
-    "BDCTR": "Read out Control Mode (LOCAL / REMOTE)",
+    "BDCTR": "Read out Control Mode (LOCAL/REMOTE)",
     "BDTERM": "Read out LOCAL BUS Termination status (ON/OFF)",
     "BDALARM": "Read out Board Alarm status value (XXXXX)",
 }
