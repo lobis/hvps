@@ -42,13 +42,11 @@ class Channel:
         """
         return self._channel
 
-    def wait_for_vset(self, timeout: float = 60.0, allowed_difference: float = 1.0):
+    def wait_for_vset(self, timeout: float = 60.0):
         """Wait for the vset value to stabilize within a specified voltage difference.
 
         Args:
             timeout (float, optional): The maximum time to wait in seconds. Defaults to 60.0 seconds.
-            allowed_difference (float, optional): The maximum voltage difference to consider as stabilized.
-                Defaults to 1.0 V.
 
         Raises:
             TimeoutError: If the vset value does not stabilize within the specified timeout.
@@ -59,7 +57,7 @@ class Channel:
         while t < timeout:
             t += timedelta
             sleep(timedelta)
-            if abs(self.vset - self.vmon) < abs(allowed_difference):
+            if self.voltage_target_reached:
                 return
 
         # Could not stabilize within the specified timeout
@@ -275,6 +273,11 @@ class Channel:
             "NOCAL": bool(bit_array[13]),  # True: Calibration Error
             # "NC": bool(bit_array[14])  # True: Not Connected
         }
+
+    @property
+    def voltage_target_reached(self) -> bool:
+        stat = self.stat
+        return not stat["OVV"] and not stat["UNV"]
 
     # Setters
     @vset.setter
