@@ -5,7 +5,7 @@ from ..commands.caen.channel import (
     _get_mon_channel_command,
 )
 from ..commands.caen import _parse_response
-from ..utils.utils import string_to_bit_array
+from ..utils import string_to_bit_array
 
 from time import sleep
 
