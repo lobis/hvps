@@ -163,13 +163,13 @@ class Module:
 
     def set_control_mode_local(self):
         """
-            Set Control Mode to LOCAL
+        Set Control Mode to LOCAL
         """
         self.control_mode = "LOCAL"
 
     def set_control_mode_remote(self):
         """
-            Set Control Mode to REMOTE
+        Set Control Mode to REMOTE
         """
         self.control_mode = "REMOTE"
 
