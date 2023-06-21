@@ -56,10 +56,10 @@ class Module:
     @property
     def get_firmware_release(self) -> str:
         """
-           Read out Firmware Release (XX.X)
+        Read out Firmware Release (XX.X)
 
-           Returns:
-               str: The firmware release.
+        Returns:
+            str: The firmware release.
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDFREL"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
@@ -68,10 +68,10 @@ class Module:
     @property
     def get_serial_number(self) -> str:
         """
-            Read out value serial number (XXXXX)
+        Read out value serial number (XXXXX)
 
-            Returns:
-                str: The serial number.
+        Returns:
+            str: The serial number.
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDSNUM"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
@@ -80,10 +80,10 @@ class Module:
     @property
     def get_interlock_status(self) -> str:
         """
-            Read out INTERLOCK status (YES/NO)
+        Read out INTERLOCK status (YES/NO)
 
-            Returns:
-                str: The interlock status.
+        Returns:
+            str: The interlock status.
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDILK"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
@@ -92,10 +92,10 @@ class Module:
     @property
     def get_interlock_mode(self) -> str:
         """
-            Read out INTERLOCK mode (OPEN/CLOSED)
+        Read out INTERLOCK mode (OPEN/CLOSED)
 
-            Returns:
-                str: The interlock mode.
+        Returns:
+            str: The interlock mode.
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDILKM"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
@@ -104,10 +104,10 @@ class Module:
     @property
     def get_control_mode(self) -> str:
         """
-            Read out Control Mode (LOCAL / REMOTE)
+        Read out Control Mode (LOCAL / REMOTE)
 
-            Returns:
-                str: The control mode.
+        Returns:
+            str: The control mode.
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDCTR"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
@@ -116,10 +116,10 @@ class Module:
     @property
     def get_local_bus_termination_status(self) -> str:
         """
-            Read out LOCAL BUS Termination status (ON/OFF)
+        Read out LOCAL BUS Termination status (ON/OFF)
 
-            Returns:
-                str: The local bus termination status.
+        Returns:
+            str: The local bus termination status.
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDTERM"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
@@ -128,10 +128,10 @@ class Module:
     @property
     def get_board_alarm_status(self) -> str:
         """
-            Read out Board Alarm status value (XXXXX)
+        Read out Board Alarm status value (XXXXX)
 
-            Returns:
-                str: The board alarm status value.
+        Returns:
+            str: The board alarm status value.
         """
         self._serial.write(_get_mon_module_command(self._bd, "BDALARM"))
         response = _parse_response(self._serial.readline(), bd=self.bd)
@@ -145,7 +145,9 @@ class Module:
             "CH3": bool(bit_array[3]),  # True: Ch3 in Alarm status
             "PWFAIL": bool(bit_array[4]),  # True: Board in POWER FAIL
             "OVP": bool(bit_array[5]),  # True: Board in OVER POWER
-            "HVCKFAIL": bool(bit_array[6])  # True: Internal HV Clock FAIL (≠ 200±10kHz)
+            "HVCKFAIL": bool(
+                bit_array[6]
+            ),  # True: Internal HV Clock FAIL (≠ 200±10kHz)
         }
 
         return mapping
@@ -153,17 +155,17 @@ class Module:
     @property
     def set_interlock_mode(self, mode: str) -> None:
         """
-            VAL:OPEN/CLOSED Set Interlock Mode
+        VAL:OPEN/CLOSED Set Interlock Mode
 
-            Args:
-                mode (str): The interlock mode to set.
+        Args:
+            mode (str): The interlock mode to set.
         """
         self._serial.write(_get_set_module_command(self._bd, "BDILKM", mode))
 
     @property
     def clear_alarm_signal(self) -> None:
         """
-            Clear alarm signal
+        Clear alarm signal
         """
         self._serial.write(_get_set_module_command(self._bd, "BDCLR", None))
 

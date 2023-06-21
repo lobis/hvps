@@ -263,15 +263,19 @@ class Channel:
             "OVV": bool(bit_array[4]),  # True: VMON > VSET + 2.5 V
             "UNV": bool(bit_array[5]),  # True: VMON < VSET – 2.5 V
             "MAXV": bool(bit_array[6]),  # True: VOUT in MAXV protection
-            "TRIP": bool(bit_array[7]),  # True: Ch OFF via TRIP (Imon >= Iset during TRIP)
+            "TRIP": bool(
+                bit_array[7]
+            ),  # True: Ch OFF via TRIP (Imon >= Iset during TRIP)
             "OVP": bool(bit_array[8]),  # True: Output Power > Max
             "OVT": bool(bit_array[9]),  # True: TEMP > 105°C
-            "DIS": bool(bit_array[10]),  # True: Ch disabled (REMOTE Mode and Switch on OFF position)
+            "DIS": bool(
+                bit_array[10]
+            ),  # True: Ch disabled (REMOTE Mode and Switch on OFF position)
             "KILL": bool(bit_array[11]),  # True: Ch in KILL via front panel
             "ILK": bool(bit_array[12]),  # True: Ch in INTERLOCK via front panel
             "NOCAL": bool(bit_array[13]),  # True: Calibration Error
-            #TODO: qué es NC (Not Connected es la propuesta de chatGPT)
-            #"NC": bool(bit_array[14])  # True: Not Connected
+            # TODO: qué es NC (Not Connected es la propuesta de chatGPT)
+            # "NC": bool(bit_array[14])  # True: Not Connected
         }
 
         return str(mapping)
@@ -279,66 +283,86 @@ class Channel:
     # Setters
     @vset.setter
     def vset(self, value: float) -> None:
-        self._serial.write(_get_set_channel_command(self._bd, self._channel, "VSET", value))
+        self._serial.write(
+            _get_set_channel_command(self._bd, self._channel, "VSET", value)
+        )
         _ = _parse_response(self._serial.readline(), bd=self._bd)
         if self.vset != value:
             raise ValueError(f"Could not set VSET to {value}")
 
     @iset.setter
     def iset(self, value: float) -> None:
-        self._serial.write(_get_set_channel_command(self._bd, self._channel, "ISET", value))
+        self._serial.write(
+            _get_set_channel_command(self._bd, self._channel, "ISET", value)
+        )
         _ = _parse_response(self._serial.readline(), bd=self._bd)
         if self.iset != value:
             raise ValueError(f"Could not set ISET to {value}")
 
     @maxv.setter
     def maxv(self, value: float) -> None:
-        self._serial.write(_get_set_channel_command(self._bd, self._channel, "MAXV", value))
+        self._serial.write(
+            _get_set_channel_command(self._bd, self._channel, "MAXV", value)
+        )
         _ = _parse_response(self._serial.readline(), bd=self._bd)
         if self.maxv != value:
             raise ValueError(f"Could not set MAXV to {value}")
 
     @rup.setter
     def rup(self, value: float) -> None:
-        self._serial.write(_get_set_channel_command(self._bd, self._channel, "RUP", value))
+        self._serial.write(
+            _get_set_channel_command(self._bd, self._channel, "RUP", value)
+        )
         _ = _parse_response(self._serial.readline(), bd=self._bd)
         if self.rup != value:
             raise ValueError(f"Could not set RUP to {value}")
 
     @rdw.setter
     def rdw(self, value: float) -> None:
-        self._serial.write(_get_set_channel_command(self._bd, self._channel, "RDW", value))
+        self._serial.write(
+            _get_set_channel_command(self._bd, self._channel, "RDW", value)
+        )
         _ = _parse_response(self._serial.readline(), bd=self._bd)
         if self.rdw != value:
             raise ValueError(f"Could not set RDW to {value}")
 
     @trip.setter
     def trip(self, value: float) -> None:
-        self._serial.write(_get_set_channel_command(self._bd, self._channel, "TRIP", value))
+        self._serial.write(
+            _get_set_channel_command(self._bd, self._channel, "TRIP", value)
+        )
         _ = _parse_response(self._serial.readline(), bd=self._bd)
         if self.trip != value:
             raise ValueError(f"Could not set TRIP to {value}")
 
     @pdwn.setter
     def pdwn(self, value: float) -> None:
-        self._serial.write(_get_set_channel_command(self._bd, self._channel, "PDWN", value))
+        self._serial.write(
+            _get_set_channel_command(self._bd, self._channel, "PDWN", value)
+        )
         _ = _parse_response(self._serial.readline(), bd=self._bd)
         if self.pdwn != value:
             raise ValueError(f"Could not set PDWN to {value}")
 
     @imrange.setter
     def imrange(self, value: float) -> None:
-        self._serial.write(_get_set_channel_command(self._bd, self._channel, "IMRANGE", value))
+        self._serial.write(
+            _get_set_channel_command(self._bd, self._channel, "IMRANGE", value)
+        )
         _ = _parse_response(self._serial.readline(), bd=self._bd)
         if self.imrange != value:
             raise ValueError(f"Could not set IMRANGE to {value}")
 
     def on(self) -> None:
         """Turn on the channel."""
-        self._serial.write(_get_set_channel_command(self._bd, self._channel, "ON", None))
+        self._serial.write(
+            _get_set_channel_command(self._bd, self._channel, "ON", None)
+        )
         _ = _parse_response(self._serial.readline(), bd=self._bd)
 
     def off(self) -> None:
         """Turn off the channel."""
-        self._serial.write(_get_set_channel_command(self._bd, self._channel, "OFF", None))
+        self._serial.write(
+            _get_set_channel_command(self._bd, self._channel, "OFF", None)
+        )
         _ = _parse_response(self._serial.readline(), bd=self._bd)
