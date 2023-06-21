@@ -63,6 +63,9 @@ def _get_set_module_command(
     Raises:
         ValueError: If the provided parameter or value is not valid.
     """
+    if not 0 <= bd <= 31:
+        raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
+
     parameter = parameter.upper()
     if parameter not in _set_module_parameters:
         valid_parameters = ", ".join(_set_module_parameters.keys())

@@ -1,6 +1,7 @@
 from __future__ import annotations
 import re
 
+
 from .module import (
     _get_mon_module_command,
     _get_set_module_command,

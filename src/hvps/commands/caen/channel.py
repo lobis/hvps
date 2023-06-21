@@ -65,6 +65,13 @@ def _get_mon_channel_command(bd: int, channel: int, parameter: str) -> bytes:
     Raises:
         ValueError: If the provided parameter is not valid.
     """
+    if not 0 <= bd <= 31:
+        raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
+    if not 0 <= channel <= 7:
+        raise ValueError(
+            f"Invalid channel number '{channel}'. Must be in the range 0..31."
+        )
+
     parameter = parameter.upper()
     if parameter not in _mon_channel_parameters:
         valid_parameters = ", ".join(_mon_channel_parameters.keys())
@@ -92,6 +99,13 @@ def _get_set_channel_command(
     Raises:
         ValueError: If the provided parameter or value is not valid.
     """
+    if not 0 <= bd <= 31:
+        raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
+    if not 0 <= channel <= 7:
+        raise ValueError(
+            f"Invalid channel number '{channel}'. Must be in the range 0..7."
+        )
+
     parameter = parameter.upper()
     if parameter not in _set_channel_parameters:
         valid_parameters = ", ".join(_set_channel_parameters.keys())
