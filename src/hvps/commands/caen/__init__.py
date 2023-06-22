@@ -1,7 +1,6 @@
 from __future__ import annotations
 import re
 
-
 from .module import (
     _get_mon_module_command,
     _get_set_module_command,
@@ -12,17 +11,42 @@ from .channel import (
 )
 
 import logging
+import serial
 
 
-def _parse_response(response: bytes, bd: int | None = None) -> str:
+def _write_command(
+    ser: serial.Serial, bd: int, command: bytes, response: bool = True
+) -> str | None:
+    """Write a command to a device.
+
+    Args:
+        ser (Serial): The serial connection to the device.
+        command (bytes): The command to write utf-8 encoded.
+        response (bool, optional): Whether to wait for a response. Defaults to True.
+    """
+    logger = logging.getLogger(__name__)
+    logger.debug(f"_write_command command: {command}")
+    ser.write(command)
+    if not response:
+        return None
+
+    bd_from_response, response_value = _parse_response(ser.readline())
+    if bd_from_response != bd:
+        raise ValueError(
+            f"Invalid response: {response_value}. Expected board number {bd}, got {bd_from_response}"
+        )
+
+    return response_value
+
+
+def _parse_response(response: bytes) -> (int, str):
     """Parse the response from a device.
 
     Args:
-        response (bytes): The response received from the device.
-        bd (int | None, optional): The expected bd value. Defaults to None.
+        response (bytes): The response received from the device. (e.g. b"#BD:01,CMD:OK,VAL:42\r\n").
 
     Returns:
-        str: The parsed value extracted from the response.
+        (int, str): The board number and the value of the response.
 
     Raises:
         ValueError: If the response is invalid, cannot be decoded, or does not match the expected pattern.
@@ -39,13 +63,9 @@ def _parse_response(response: bytes, bd: int | None = None) -> str:
     match = regex.match(response)
     if match is None:
         raise ValueError(f"Invalid response: '{response}'. Could not match regex")
-    bd_from_response = int(match.group(1))
-    if bd is not None and bd != bd_from_response:
-        message = (
-            f"Invalid response: '{response}'. Mismatched bd: {bd_from_response} != {bd}"
-        )
-        raise ValueError(message)
-
+    bd = int(match.group(1))
     value: str = match.group(2)
-    logger.debug(f"Response result: {response} -> {value}")
-    return value
+
+    logger.debug(f"response parsing -> bd: {bd}, value: {value}")
+
+    return bd, value

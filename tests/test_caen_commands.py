@@ -1,6 +1,5 @@
 import pytest
 
-
 from hvps.commands.caen import (
     _parse_response,
     _get_set_module_command,
@@ -82,20 +81,17 @@ def test_caen_channel_set_commands():
 
 
 def test_caen_parse_response():
-    response = b"#BD:01,CMD:OK,VAL:42"
-    result = _parse_response(response, bd=1)
-    assert result == "42"
+    response = b"#BD:01,CMD:OK,VAL:42\r\n"
+    bd, value = _parse_response(response)
+    assert bd == 1
+    assert value == "42"
 
-    response = b"#BD:99,CMD:OK,VAL:Hello World"
-    result = _parse_response(response, bd=99)
-    assert result == "Hello World"
+    response = b"#BD:99,CMD:OK,VAL:Hello World\r\n"
+    bd, value = _parse_response(response)
+    assert bd == 99
+    assert value == "Hello World"
 
     with pytest.raises(ValueError):
         # Invalid response format
-        response = b"Invalid response"
+        response = b"Invalid response\r\n"
         _parse_response(response)
-
-    with pytest.raises(ValueError):
-        # Mismatched bd value
-        response = b"#BD:42,CMD:OK,VAL:Invalid"
-        _parse_response(response, bd=99)
