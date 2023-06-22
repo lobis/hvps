@@ -1,1 +1,1 @@
-from .devices import HVPS
+from .devices import CAEN
