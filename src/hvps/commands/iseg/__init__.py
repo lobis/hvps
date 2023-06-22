@@ -16,6 +16,7 @@ from .channel import (
 import logging
 import serial
 
+
 def _write_command(
     ser: serial.Serial, bd: int, command: bytes, response: bool = True
 ) -> list[str] | None:

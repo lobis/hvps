@@ -21,5 +21,3 @@ class Channel:
     def __init__(self, _serial: serial.Serial, channel: int):
         self._serial = _serial
         self._channel = channel
-
-
