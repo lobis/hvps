@@ -334,7 +334,15 @@ class Channel:
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "POL"),
         )
+        if response not in ["+", "-"]:
+            raise ValueError(f"Invalid polarity: {response}")
         return str(response)
+
+    def polarity_positive(self) -> bool:
+        return self.pol == "+"
+
+    def polarity_negative(self) -> bool:
+        return self.pol == "-"
 
     @property
     def stat(self) -> dict:
