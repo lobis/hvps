@@ -50,4 +50,4 @@ jobs:
           npm --version
           node --version
           npm install
-          node cli.js
+          node cli.js --version

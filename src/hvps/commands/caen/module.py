@@ -46,7 +46,9 @@ def _get_mon_module_command(bd: int, command: str) -> bytes:
     return f"$BD:{bd:02d},CMD:MON,PAR:{command}\r\n".encode("utf-8")
 
 
-def _get_set_module_command(bd: int, command: str, value: str | int | float) -> bytes:
+def _get_set_module_command(
+    bd: int, command: str, value: str | int | float | None
+) -> bytes:
     """
     Generate a command string to set a specific module command to a given value.
 

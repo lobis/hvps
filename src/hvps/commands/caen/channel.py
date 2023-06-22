@@ -59,6 +59,7 @@ def _get_mon_channel_command(bd: int, channel: int, command: str) -> bytes:
         channel (int): The channel number.
         command (str): The command to monitor.
 
+
     Returns:
         bytes: The command string encoded as bytes.
 

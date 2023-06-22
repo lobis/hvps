@@ -29,6 +29,11 @@ test = [
     "pytest",
 ]
 
+dev = [
+    "pytest",
+    "pre-commit",
+]
+
 [project.urls]
 "Download" = "https://github.com/lobis/hvps/releases"
 "Homepage" = "https://github.com/lobis/hvps"
