@@ -30,10 +30,10 @@ To install the latest [published version](https://github.com/lobis/lecroy-scope/
 pip install hvps
 ```
 
-To install the package from source, including test dependencies, clone the repository and run:
+To install the package from source, including development dependencies, clone the repository and run:
 
 ```bash
-pip install .[test]
+pip install .[dev]
 ```
 
 ## 👨‍💻 Usage
@@ -45,7 +45,7 @@ from hvps import CaenHV
 caen = CaenHV()
 # get the first module. CAEN supports multiple modules over the same connection
 # typically only one module should be present
-module = caen[0]
+module = caen.module(0)
 
 # get channel number 2
 channel = module.channel(2)
