@@ -44,4 +44,4 @@ def _get_set_channel_command(
         print(order_command)
         :VOLT 200,(@4)\r\n'
     """
-    return f"{command.strip()} {value} ,(@{channel})\r\n".encode("ascii")
+    return f"{command.strip()} {value},(@{channel});*OPC?\r\n".encode("ascii")

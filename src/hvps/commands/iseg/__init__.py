@@ -18,7 +18,7 @@ import serial
 
 
 def _write_command(
-    ser: serial.Serial, bd: int, command: bytes, response: bool = True
+    ser: serial.Serial, command: bytes, response: bool = True
 ) -> list[str] | None:
     """Write a command to a device.
 
@@ -66,17 +66,4 @@ def _parse_response(response: bytes) -> list[str]:
     except UnicodeDecodeError:
         raise ValueError(f"Invalid response: {response}")
 
-    regex = re.compile(r"^#BD:(\d\d),CMD:OK,VAL:(.+)$")
-    match = regex.match(response)
-    if match is None:
-        raise ValueError(f"Invalid response: '{response}'. Could not match regex")
-    bd_from_response = int(match.group(1))
-    if bd is not None and bd != bd_from_response:
-        message = (
-            f"Invalid response: '{response}'. Mismatched bd: {bd_from_response} != {bd}"
-        )
-        raise ValueError(message)
-
-    value: str = match.group(2)
-    logger.debug(f"Response result: {response} -> {value}")
-    return value
+    return response.split(',')
