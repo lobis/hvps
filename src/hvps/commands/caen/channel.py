@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-# Dictionary mapping monitor channel parameters to their descriptions
-_mon_channel_parameters = {
+# Dictionary mapping monitor channel commands to their descriptions
+_mon_channel_commands = {
     "VSET": "Read out VSET value (XXXX.X V)",
     "VMIN": "Read out VSET minimum value (0 V)",
     "VMAX": "Read out VSET maximum value (8000.0 V)",
@@ -35,8 +35,8 @@ _mon_channel_parameters = {
     "STAT": "Read out Channel status value (XXXXX)",
 }
 
-# Dictionary mapping set channel parameters to their descriptions
-_set_channel_parameters = {
+# Dictionary mapping set channel commands to their descriptions
+_set_channel_commands = {
     "VSET": "VAL:XXXX.X Set VSET value",
     "ISET": "VAL:XXXX.XX Set ISET value",
     "MAXV": "VAL:XXXX Set MAXVSET value",
@@ -50,20 +50,20 @@ _set_channel_parameters = {
 }
 
 
-def _get_mon_channel_command(bd: int, channel: int, parameter: str) -> bytes:
+def _get_mon_channel_command(bd: int, channel: int, command: str) -> bytes:
     """
-    Generate a command string to monitor a specific channel parameter.
+    Generate a command string to monitor a specific channel command.
 
     Args:
         bd (int): The board number.
         channel (int): The channel number.
-        parameter (str): The parameter to monitor.
+        command (str): The command to monitor.
 
     Returns:
         bytes: The command string encoded as bytes.
 
     Raises:
-        ValueError: If the provided parameter is not valid.
+        ValueError: If the provided command is not valid.
     """
     if not 0 <= bd <= 31:
         raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
@@ -72,32 +72,32 @@ def _get_mon_channel_command(bd: int, channel: int, parameter: str) -> bytes:
             f"Invalid channel number '{channel}'. Must be in the range 0..31."
         )
 
-    parameter = parameter.upper()
-    if parameter not in _mon_channel_parameters:
-        valid_parameters = ", ".join(_mon_channel_parameters.keys())
+    command = command.upper()
+    if command not in _mon_channel_commands:
+        valid_commands = ", ".join(_mon_channel_commands.keys())
         raise ValueError(
-            f"Invalid parameter '{parameter}'. Valid parameters are: {valid_parameters}"
+            f"Invalid command '{command}'. Valid command are: {valid_commands}"
         )
-    return f"$BD:{bd:02d},CMD:MON,CH:{channel:01d},PAR:{parameter}\r\n".encode("utf-8")
+    return f"$BD:{bd:02d},CMD:MON,CH:{channel:01d},PAR:{command}\r\n".encode("utf-8")
 
 
 def _get_set_channel_command(
-    bd: int, channel: int, parameter: str, value: str | int | float | None
+    bd: int, channel: int, command: str, value: str | int | float | None
 ) -> bytes:
     """
-    Generate a command string to set a specific channel parameter to a given value.
+    Generate a command string to set a specific channel command to a given value.
 
     Args:
         bd (int): The board number.
         channel (int): The channel number.
-        parameter (str): The parameter to set.
-        value (str | int | float | None): The value to set the parameter to.
+        command (str): The command to set.
+        value (str | int | float | None): The value to set the command to.
 
     Returns:
         bytes: The command string encoded as bytes.
 
     Raises:
-        ValueError: If the provided parameter or value is not valid.
+        ValueError: If the provided command or value is not valid.
     """
     if not 0 <= bd <= 31:
         raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
@@ -106,28 +106,28 @@ def _get_set_channel_command(
             f"Invalid channel number '{channel}'. Must be in the range 0..7."
         )
 
-    parameter = parameter.upper()
-    if parameter not in _set_channel_parameters:
-        valid_parameters = ", ".join(_set_channel_parameters.keys())
+    command = command.upper()
+    if command not in _set_channel_commands:
+        valid_commands = ", ".join(_set_channel_commands.keys())
         raise ValueError(
-            f"Invalid parameter '{parameter}'. Valid parameters are: {valid_parameters}"
+            f"Invalid command '{command}'. Valid commands are: {valid_commands}"
         )
 
-    if parameter in ["ON", "OFF"]:
+    if command in ["ON", "OFF"]:
         if value is not None:
-            raise ValueError(f"Parameter '{parameter}' does not accept a value")
-        return f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{parameter}\r\n".encode(
+            raise ValueError(f"command '{command}' does not accept a value")
+        return f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command}\r\n".encode(
             "utf-8"
         )
-    elif parameter == "IMRANGE":
+    elif command == "IMRANGE":
         if value not in ["HIGH", "LOW"]:
-            raise ValueError(f"Parameter '{parameter}' only accepts 'HIGH' or 'LOW'")
-    elif parameter == "PDWN":
+            raise ValueError(f"command '{command}' only accepts 'HIGH' or 'LOW'")
+    elif command == "PDWN":
         if value not in ["RAMP", "KILL"]:
-            raise ValueError(f"Parameter '{parameter}' only accepts 'RAMP' or 'KILL'")
+            raise ValueError(f"command '{command}' only accepts 'RAMP' or 'KILL'")
 
     return (
-        f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{parameter},VAL:{value}\r\n".encode(
+        f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command},VAL:{value}\r\n".encode(
             "utf-8"
         )
     )
