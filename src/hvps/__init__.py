@@ -1,1 +1,1 @@
-from .devices import CAEN
+from .devices import CAEN, ISEG

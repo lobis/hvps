@@ -1,6 +1,6 @@
-from hvps import version, HVPS
-from hvps.commands.caen.module import _set_module_parameters, _mon_module_parameters
-from hvps.commands.caen.channel import _set_channel_parameters, _mon_channel_parameters
+from hvps import version, CAEN
+from hvps.commands.caen.module import _set_module_commands, _mon_module_commands
+from hvps.commands.caen.channel import _set_channel_commands, _mon_channel_commands
 
 import argparse
 
@@ -57,28 +57,28 @@ def main():
         channel = args.channel
         if channel is None:
             # parameter is at module level
-            monitor_parameters = list(_mon_module_parameters.keys())
-            set_parameters = list(_set_module_parameters.keys())
-            monitor_mode = parameter in monitor_parameters
-            if not monitor_mode and parameter not in set_parameters:
+            monitor_commands = list(_mon_module_commands.keys())
+            set_commands = list(_set_module_commands.keys())
+            monitor_mode = parameter in monitor_commands
+            if not monitor_mode and parameter not in set_commands:
                 raise Exception(
-                    f"Parameter '{parameter}' not a valid monitor parameter: {monitor_parameters} or set parameter: {set_parameters}"
+                    f"Parameter '{parameter}' not a valid monitor parameter: {monitor_commands} or set parameter: {set_commands}"
                 )
 
         else:
             # parameter is at channel level
-            monitor_parameters = list(_mon_channel_parameters.keys())
-            set_parameters = list(_set_channel_parameters.keys())
+            monitor_commands = list(_mon_channel_commands.keys())
+            set_commands = list(_set_channel_commands.keys())
 
-            monitor_mode = parameter in monitor_parameters
-            if parameter in monitor_parameters and set_parameters:
+            monitor_mode = parameter in monitor_commands
+            if parameter in monitor_commands and set_commands:
                 if value is not None:
                     monitor_mode = False  # some parameters such as 'VSET' can be both monitor and set
 
-            if not monitor_mode and parameter not in set_parameters:
+            if not monitor_mode and parameter not in set_commands:
                 raise Exception(
-                    f"Channel parameter '{parameter}' not a valid monitor parameter: {monitor_parameters} or set "
-                    f"parameter: {set_parameters}"
+                    f"Channel parameter '{parameter}' not a valid monitor parameter: {monitor_commands} or set "
+                    f"parameter: {set_commands}"
                 )
 
             if monitor_mode and value is not None:

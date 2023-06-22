@@ -54,7 +54,7 @@ def detect_baudrate(port: str) -> int:
     raise Exception("Could not detect baud rate")
 
 
-class HVPS:
+class CAEN:
     def __init__(
         self,
         baudrate: int | None = None,
@@ -103,17 +103,6 @@ class HVPS:
             logger.debug("Serial port opened")
 
         # TODO: automatic module detection (connect to all in range 0..31) and baud rate detection (by getting module name)
-
-    def write(self, data: bytes):
-        """
-        Write data to the serial port.
-
-        Args:
-            data (bytes): The data to write.
-        """
-        logger = logging.getLogger(__name__)
-        logger.debug(f"Serial write: {data}")
-        self._serial.write(data)
 
     def __del__(self):
         if hasattr(self, "_serial"):
