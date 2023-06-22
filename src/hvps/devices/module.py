@@ -4,7 +4,7 @@ from typing import List
 import serial
 
 from ..commands.caen.module import _get_mon_module_command, _get_set_module_command
-from ..commands.caen import _parse_response
+from ..commands.caen import _write_command
 from ..utils.utils import string_to_bit_array
 from .channel import Channel
 
@@ -38,8 +38,11 @@ class Module:
         Returns:
             str: The name of the module.
         """
-        self._serial.write(_get_mon_module_command(self._bd, "BDNAME"))
-        response = _parse_response(self._serial.readline(), bd=self.bd)
+        response = _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_mon_module_command(self._bd, "BDNAME"),
+        )
         return str(response)
 
     @cached_property
@@ -49,8 +52,11 @@ class Module:
         Returns:
             int: The number of channels.
         """
-        self._serial.write(_get_mon_module_command(self._bd, "BDNCH"))
-        response = _parse_response(self._serial.readline(), bd=self.bd)
+        response = _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_mon_module_command(self._bd, "BDNCH"),
+        )
         return int(response)
 
     @property
@@ -61,8 +67,11 @@ class Module:
         Returns:
             str: The firmware release.
         """
-        self._serial.write(_get_mon_module_command(self._bd, "BDFREL"))
-        response = _parse_response(self._serial.readline(), bd=self.bd)
+        response = _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_mon_module_command(self._bd, "BDFREL"),
+        )
         return response
 
     @property
@@ -73,8 +82,11 @@ class Module:
         Returns:
             str: The serial number.
         """
-        self._serial.write(_get_mon_module_command(self._bd, "BDSNUM"))
-        response = _parse_response(self._serial.readline(), bd=self.bd)
+        response = _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_mon_module_command(self._bd, "BDSNUM"),
+        )
         # TODO: check if can be casted to int
         return response
 
@@ -86,9 +98,11 @@ class Module:
         Returns:
             bool: Yes: True, No: False
         """
-        self._serial.write(_get_mon_module_command(self._bd, "BDILK"))
-        response = _parse_response(self._serial.readline(), bd=self.bd)
-
+        response = _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_mon_module_command(self._bd, "BDILK"),
+        )
         if response == "YES":
             return True
         elif response == "NO":
@@ -104,8 +118,11 @@ class Module:
         Returns:
             str: The interlock mode.
         """
-        self._serial.write(_get_mon_module_command(self._bd, "BDILKM"))
-        response = _parse_response(self._serial.readline(), bd=self.bd)
+        response = _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_mon_module_command(self._bd, "BDILKM"),
+        )
         if response not in ["OPEN", "CLOSED"]:
             raise ValueError(f"Invalid response for 'interlock_mode': {response}")
         return response
@@ -126,8 +143,11 @@ class Module:
         Returns:
             str: The control mode.
         """
-        self._serial.write(_get_mon_module_command(self._bd, "BDCTR"))
-        response = _parse_response(self._serial.readline(), bd=self.bd)
+        response = _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_mon_module_command(self._bd, "BDCTR"),
+        )
         if response not in ["LOCAL", "REMOTE"]:
             raise ValueError(f"Invalid response for 'control_mode': {response}")
         return response
@@ -160,8 +180,11 @@ class Module:
         if value not in ["LOCAL", "REMOTE"]:
             raise ValueError(f"Invalid value for 'control_mode': {value}")
 
-        self._serial.write(_get_set_module_command(self._bd, "BDCTR", value))
-        _ = _parse_response(self._serial.readline(), bd=self.bd)
+        _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_set_module_command(self._bd, "BDCTR", value),
+        )
 
     def set_control_mode_local(self):
         """
@@ -183,8 +206,11 @@ class Module:
         Returns:
             str: The local bus termination status.
         """
-        self._serial.write(_get_mon_module_command(self._bd, "BDTERM"))
-        response = _parse_response(self._serial.readline(), bd=self.bd)
+        response = _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_mon_module_command(self._bd, "BDTERM"),
+        )
         if response not in ["ON", "OFF"]:
             raise ValueError(
                 f"Invalid response for 'local_bus_termination_status': {response}"
@@ -215,8 +241,11 @@ class Module:
         Returns:
             str: The board alarm status value.
         """
-        self._serial.write(_get_mon_module_command(self._bd, "BDALARM"))
-        response = _parse_response(self._serial.readline(), bd=self.bd)
+        response = _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_mon_module_command(self._bd, "BDALARM"),
+        )
 
         bit_array = string_to_bit_array(response)
 
@@ -243,8 +272,12 @@ class Module:
         mode = mode.upper()
         if mode not in ["OPEN", "CLOSED"]:
             raise ValueError(f"Invalid value for 'interlock_mode': {mode}")
-        self._serial.write(_get_set_module_command(self._bd, "BDILKM", mode))
-        _ = _parse_response(self._serial.readline(), bd=self.bd)
+
+        _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_set_module_command(self._bd, "BDILKM", mode),
+        )
 
     def close_interlock(self) -> None:
         """
@@ -262,8 +295,11 @@ class Module:
         """
         Clear alarm signal
         """
-        self._serial.write(_get_set_module_command(self._bd, "BDCLR", None))
-        _ = _parse_response(self._serial.readline(), bd=self.bd)
+        _write_command(
+            self._serial,
+            bd=self._bd,
+            command=_get_set_module_command(self._bd, "BDCLR", None),
+        )
 
     @property
     def channels(self):
