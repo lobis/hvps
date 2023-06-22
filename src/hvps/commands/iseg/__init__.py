@@ -66,4 +66,4 @@ def _parse_response(response: bytes) -> list[str]:
     except UnicodeDecodeError:
         raise ValueError(f"Invalid response: {response}")
 
-    return response.split(',')
+    return response.split(",")

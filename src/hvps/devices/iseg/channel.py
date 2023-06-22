@@ -151,7 +151,9 @@ class Channel:
                           - 4: Disable the Delayed Trip function
         """
         if not 0 <= action <= 4:
-            raise ValueError("Invalid action value. Expected values are 0, 1, 2, 3, or 4.")
+            raise ValueError(
+                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
+            )
         command = _get_set_channel_command(self._channel, ":CONF:TRIP:ACTION", action)
         response = _write_command(self._serial, command)
         if int(response[0]) != 1:
@@ -170,7 +172,9 @@ class Channel:
         if len(response) != 1:
             raise ValueError("Unexpected response. Multiple action values received.")
         if not 0 <= int(response[0]) <= 4:
-            raise ValueError("Invalid action value. Expected values are 0, 1, 2, 3, or 4.")
+            raise ValueError(
+                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
+            )
         return int(response[0])
 
     def set_external_inhibit_action(self, action):
@@ -186,7 +190,9 @@ class Channel:
                           - 4: Disable the External Inhibit function
         """
         if not 0 <= action <= 4:
-            raise ValueError("Invalid action value. Expected values are 0, 1, 2, 3, or 4.")
+            raise ValueError(
+                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
+            )
         command = _get_set_channel_command(self._channel, ":CONF:INHP:ACTION", action)
         response = _write_command(self._serial, command)
         if int(response[0]) != 1:
@@ -204,7 +210,9 @@ class Channel:
         if len(response) != 1:
             raise ValueError("Unexpected response. Multiple action values received.")
         if not 0 <= int(response[0]) <= 4:
-            raise ValueError("Invalid action value. Expected values are 0, 1, 2, 3, or 4.")
+            raise ValueError(
+                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
+            )
         return int(response[0])
 
     def set_output_mode(self, mode):
@@ -284,7 +292,9 @@ class Channel:
             channel.set_output_polarity("n")
         """
         if polarity not in ["p", "n"]:
-            raise ValueError("Invalid polarity value. Valid values are 'p' for positive and 'n' for negative.")
+            raise ValueError(
+                "Invalid polarity value. Valid values are 'p' for positive and 'n' for negative."
+            )
         command = _get_set_channel_command(self._channel, ":CONF:OUTPUT:POL", polarity)
         response = _write_command(self._serial, command)
         if int(response[0]) != 1:
@@ -332,7 +342,9 @@ class Channel:
 
         for polarity in response:
             if polarity not in ["p", "n"]:
-                raise ValueError("Invalid polarity value. Valid values are 'p' for positive and 'n' for negative.")
+                raise ValueError(
+                    "Invalid polarity value. Valid values are 'p' for positive and 'n' for negative."
+                )
 
         return response
 
@@ -497,7 +509,9 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])  # Remove the last character from the response (unit)
+        return float(
+            response[0][:-1]
+        )  # Remove the last character from the response (unit)
 
     @property
     def current_limit(self) -> float:
@@ -516,7 +530,9 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])  # Remove the last character from the response (unit)
+        return float(
+            response[0][:-1]
+        )  # Remove the last character from the response (unit)
 
     @property
     def current_nominal(self) -> float:
@@ -535,7 +551,9 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])  # Remove the last character from the response (unit)
+        return float(
+            response[0][:-1]
+        )  # Remove the last character from the response (unit)
 
     @property
     def current_mode(self) -> float:
@@ -554,7 +572,9 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])  # Remove the last character from the response (unit)
+        return float(
+            response[0][:-1]
+        )  # Remove the last character from the response (unit)
 
     @property
     def current_mode_list(self) -> list[float]:
@@ -573,7 +593,9 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
-        modes = [float(mode[:-1]) for mode in response]  # Remove the last character from each mode (unit)
+        modes = [
+            float(mode[:-1]) for mode in response
+        ]  # Remove the last character from each mode (unit)
         return modes
 
     @property
@@ -708,13 +730,3 @@ class Channel:
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-3])
-
-
-
-
-
-
-
-
-
-    
