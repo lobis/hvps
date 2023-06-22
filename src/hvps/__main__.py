@@ -70,15 +70,15 @@ def main():
             monitor_parameters = list(_mon_channel_parameters.keys())
             set_parameters = list(_set_channel_parameters.keys())
 
-            if parameter in monitor_parameters and set_parameters:
-                raise Exception(
-                    f"Parameter '{parameter}' is both a monitor and set parameter"
-                )
-
             monitor_mode = parameter in monitor_parameters
+            if parameter in monitor_parameters and set_parameters:
+                if value is not None:
+                    monitor_mode = False  # some parameters such as 'VSET' can be both monitor and set
+
             if not monitor_mode and parameter not in set_parameters:
                 raise Exception(
-                    f"Channel parameter '{parameter}' not a valid monitor parameter: {monitor_parameters} or set parameter: {set_parameters}"
+                    f"Channel parameter '{parameter}' not a valid monitor parameter: {monitor_parameters} or set "
+                    f"parameter: {set_parameters}"
                 )
 
             if monitor_mode and value is not None:

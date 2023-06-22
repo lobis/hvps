@@ -34,6 +34,7 @@ def test_cli_channel_set():
         "PDWN",
         "IMRANGE",
         "ON",
+        "OFF",
     ]:
         arguments = [
             "--port",
@@ -57,4 +58,8 @@ def test_cli_channel_set():
         print(f"stderr: {stderr}")
         print(f"exit_code: {exit_code}")
 
-        assert exit_code == 0, f"exit_code: {exit_code} for arguments: {arguments}"
+        # ON / OFF are special cases, they cannot be set to a value, so they should return exit code 1
+        exit_code_expected = 0 if parameter not in ["ON", "OFF"] else 1
+        assert (
+            exit_code == exit_code_expected
+        ), f"exit_code: {exit_code} for arguments: {arguments}"
