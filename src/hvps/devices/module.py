@@ -159,7 +159,9 @@ class Module:
         value = value.upper()
         if value not in ["LOCAL", "REMOTE"]:
             raise ValueError(f"Invalid value for 'control_mode': {value}")
+
         self._serial.write(_get_set_module_command(self._bd, "BDCTR", value))
+        _ = _parse_response(self._serial.readline(), bd=self.bd)
 
     def set_control_mode_local(self):
         """
