@@ -21,7 +21,7 @@ def string_number_to_bit_array(string) -> List[bool]:
     return list(reversed([bool(int(bit)) for bit in f"{string_as_int:016b}"]))
 
 
-def get_serial_ports() -> list[str]:
+def get_serial_ports() -> List[str]:
     """
     Get a list of available serial ports.
 
