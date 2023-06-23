@@ -53,7 +53,7 @@ def _parse_response(response: bytes) -> (int, str):
     """
     logger = logging.getLogger(__name__)
     logger.debug(f"Response: {response}")
-
+    print(f"Response: {response}")
     if response == b"":
         raise ValueError(
             "Empty response. There was no response from the device. Check that the device is connected and correctly configured (baudrate).")

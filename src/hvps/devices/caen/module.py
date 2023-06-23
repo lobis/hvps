@@ -5,7 +5,7 @@ import serial
 
 from ...commands.caen.module import _get_mon_module_command, _get_set_module_command
 from ...commands.caen import _write_command
-from ...utils.utils import string_to_bit_array
+from ...utils.utils import string_number_to_bit_array
 from .channel import Channel
 
 
@@ -247,7 +247,7 @@ class Module:
             command=_get_mon_module_command(self._bd, "BDALARM"),
         )
 
-        bit_array = string_to_bit_array(response)
+        bit_array = string_number_to_bit_array(response)
 
         return {
             "CH0": bool(bit_array[0]),  # True: Ch0 in Alarm status

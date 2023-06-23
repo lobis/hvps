@@ -5,7 +5,7 @@ from ...commands.caen.channel import (
     _get_mon_channel_command,
 )
 from ...commands.caen import _write_command
-from ...utils import string_to_bit_array
+from ...utils import string_number_to_bit_array
 
 from time import sleep
 
@@ -351,7 +351,7 @@ class Channel:
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "STAT"),
         )
-        bit_array = string_to_bit_array(response)
+        bit_array = string_number_to_bit_array(response)
 
         return {
             "ON": bool(bit_array[0]),  # True: ON, False: OFF
@@ -379,6 +379,18 @@ class Channel:
     def voltage_target_reached(self) -> bool:
         stat = self.stat
         return not stat["OVV"] and not stat["UNV"]
+
+    @property
+    def on(self) -> bool:
+        return self.stat["ON"]
+
+    @property
+    def off(self) -> bool:
+        return not self.on
+
+    @property
+    def kill(self) -> bool:
+        return self.stat["KILL"]
 
     # Setters
     @vset.setter
@@ -461,7 +473,7 @@ class Channel:
         if self.imrange != value:
             raise ValueError(f"Could not set IMRANGE to {value}")
 
-    def on(self) -> None:
+    def turn_on(self) -> None:
         """Turn on the channel."""
         _write_command(
             self._serial,
@@ -469,7 +481,7 @@ class Channel:
             command=_get_set_channel_command(self._bd, self._channel, "ON", None),
         )
 
-    def off(self) -> None:
+    def turn_off(self) -> None:
         """Turn off the channel."""
         _write_command(
             self._serial,

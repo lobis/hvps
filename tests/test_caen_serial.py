@@ -78,6 +78,7 @@ def test_caen_channel_serial():
     for channel in module.channels:
         print("")
         print(f"Channel: {channel.channel}")
+
         vmon = channel.vmon
         print(f"vmon: {vmon}")
 
