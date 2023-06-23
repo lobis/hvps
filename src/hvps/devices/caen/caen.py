@@ -3,7 +3,6 @@ from __future__ import annotations
 import serial
 from serial.tools import list_ports
 from typing import Dict
-import time
 import logging
 
 from .module import Module
@@ -11,12 +10,12 @@ from .module import Module
 
 class CAEN:
     def __init__(
-        self,
-        baudrate: int = 115200,
-        port: str | None = None,
-        timeout: float | None = None,
-        connect: bool = True,
-        verbosity: int = logging.WARNING,
+            self,
+            baudrate: int = 115200,
+            port: str | None = None,
+            timeout: float | None = None,
+            connect: bool = True,
+            verbosity: int = logging.WARNING,
     ):
         """
         Initialize the CaenHV object.

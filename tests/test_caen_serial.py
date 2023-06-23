@@ -3,8 +3,6 @@ import pytest
 from hvps import CAEN
 
 import logging
-import sys
-import time
 
 # find a way to only run these tests if a serial port connection exists
 
