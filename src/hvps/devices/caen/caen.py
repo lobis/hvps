@@ -10,12 +10,12 @@ from .module import Module
 
 class CAEN:
     def __init__(
-        self,
-        baudrate: int = 115200,
-        port: str | None = None,
-        timeout: float | None = None,
-        connect: bool = True,
-        verbosity: int = logging.WARNING,
+            self,
+            baudrate: int = 115200,
+            port: str | None = None,
+            timeout: float | None = None,
+            connect: bool = True,
+            verbosity: int = logging.WARNING,
     ):
         """
         Initialize the CaenHV object.
@@ -185,7 +185,6 @@ class CAEN:
         Returns:
             Module: The Module object.
         """
-        _module = Module(self._serial, bd)
         if bd not in self._modules:
-            self._modules[bd] = _module
+            self._modules[bd] = Module(self._serial, bd)
         return self._modules[bd]

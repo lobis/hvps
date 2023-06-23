@@ -61,39 +61,24 @@ class Module:
             raise ValueError("Wrong number of values were received, one value expected")
 
         bit_array = string_number_to_bit_array(response[0])
+        bit_array = list(reversed(bit_array))
+
+        # TODO: review this
         return {
-            "Bit31": bool(bit_array[31]),  # Reserved
-            "Bit30": bool(bit_array[30]),  # Reserved
-            "Bit29": bool(bit_array[29]),  # Reserved
-            "Bit28": bool(bit_array[28]),  # Reserved
-            "Bit27": bool(bit_array[27]),  # Reserved
-            "Bit26": bool(bit_array[26]),  # Reserved
-            "Bit25": bool(bit_array[25]),  # Reserved
-            "Bit24": bool(bit_array[24]),  # Reserved
-            "Bit23": bool(bit_array[23]),  # Reserved
-            "Bit22": bool(bit_array[22]),  # Reserved
-            "Bit21": bool(bit_array[21]),  # Is Voltage Ramp Speed Limited
-            "Bit20": bool(bit_array[20]),  # Reserved
-            "Bit19": bool(bit_array[19]),  # Reserved
-            "Bit18": bool(bit_array[18]),  # Reserved
-            "Bit17": bool(bit_array[17]),  # Reserved
-            "Bit16": bool(bit_array[16]),  # Is Fast Ramp Down
-            "Bit15": bool(bit_array[15]),  # Is Kill Enable
-            "Bit14": bool(bit_array[14]),  # Is Temperature Good
-            "Bit13": bool(bit_array[13]),  # Is Supply Good
-            "Bit12": bool(bit_array[12]),  # Is Module Good
-            "Bit11": bool(bit_array[11]),  # Is Event Active
-            "Bit10": bool(bit_array[10]),  # Is Safety Loop Good
-            "Bit09": bool(bit_array[9]),  # Is No Ramp
-            "Bit08": bool(bit_array[8]),  # Is No Sum
-            "Bit07": bool(bit_array[7]),  # Reserved
-            "Bit06": bool(bit_array[6]),  # Is Input Error
-            "Bit05": bool(bit_array[5]),  # Reserved
-            "Bit04": bool(bit_array[4]),  # Is Service Is High
-            "Bit03": bool(bit_array[3]),  # Voltage On
-            "Bit02": bool(bit_array[2]),  # Reserved
-            "Bit01": bool(bit_array[1]),  # Reserved
-            "Bit00": bool(bit_array[0]),  # Is Fine Adjustment
+            "Is Voltage Ramp Speed Limited": bit_array[21],
+            "Is Fast Ramp Down": bit_array[16],
+            "Is Kill Enable": bit_array[15],
+            "Is Temperature Good": bit_array[14],
+            "Is Supply Good": bit_array[13],
+            "Is Module Good": bit_array[12],
+            "Is Event Active": bit_array[11],
+            "Is Safety Loop Good": bit_array[10],
+            "Is No Ramp": bit_array[9],
+            "Is No Sum": bit_array[8],
+            "Is Input Error": bit_array[6],
+            "Is Service Is High": bit_array[4],
+            "Voltage On": bit_array[3],
+            "Is Fine Adjustment": bit_array[0]
         }
 
     @property
