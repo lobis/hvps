@@ -15,7 +15,7 @@ import serial
 
 
 def _write_command(
-        ser: serial.Serial, bd: int, command: bytes, response: bool = True
+    ser: serial.Serial, bd: int, command: bytes, response: bool = True
 ) -> str | None:
     """Write a command to a device.
 
