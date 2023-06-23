@@ -364,7 +364,9 @@ class Channel:
             "TRIP": bit_array[7],  # True: Ch OFF via TRIP (Imon >= Iset during TRIP)
             "OVP": bit_array[8],  # True: Output Power > Max
             "OVT": bit_array[9],  # True: TEMP > 105°C
-            "DIS": bit_array[10],  # True: Ch disabled (REMOTE Mode and Switch on OFF position)
+            "DIS": bit_array[
+                10
+            ],  # True: Ch disabled (REMOTE Mode and Switch on OFF position)
             "KILL": bit_array[11],  # True: Ch in KILL via front panel
             "ILK": bit_array[12],  # True: Ch in INTERLOCK via front panel
             "NOCAL": bit_array[13],  # True: Calibration Error

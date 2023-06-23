@@ -15,9 +15,16 @@ timeout = 5.0
 
 def test_caen_module_monitor():
     # no ports available
-    caen = CAEN(port=serial_port, baudrate=serial_baud, connect=True, timeout=timeout, verbosity=logging.DEBUG)
+    caen = CAEN(
+        port=serial_port,
+        baudrate=serial_baud,
+        connect=True,
+        timeout=timeout,
+        verbosity=logging.DEBUG,
+    )
     print(
-        f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}")
+        f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"
+    )
     module = caen.module(0)
 
     control_mode = module.control_mode
@@ -70,9 +77,16 @@ def test_caen_module_monitor():
 
 
 def test_caen_channel_serial():
-    caen = CAEN(port=serial_port, baudrate=serial_baud, connect=True, timeout=timeout, verbosity=logging.DEBUG)
+    caen = CAEN(
+        port=serial_port,
+        baudrate=serial_baud,
+        connect=True,
+        timeout=timeout,
+        verbosity=logging.DEBUG,
+    )
     print(
-        f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}")
+        f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"
+    )
     module = caen.module(0)
 
     for channel in module.channels:

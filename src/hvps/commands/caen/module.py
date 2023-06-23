@@ -47,7 +47,7 @@ def _get_mon_module_command(bd: int, command: str) -> bytes:
 
 
 def _get_set_module_command(
-        bd: int, command: str, value: str | int | float | None
+    bd: int, command: str, value: str | int | float | None
 ) -> bytes:
     """
     Generate a command string to set a specific module command to a given value.

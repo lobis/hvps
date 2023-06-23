@@ -24,7 +24,7 @@ def main():
         "--baud",
         default=None,
         help="Baud rate for serial communication. "
-             "If not specified it will attempt to automatically find",
+        "If not specified it will attempt to automatically find",
     )
     parser.add_argument(
         "--log",

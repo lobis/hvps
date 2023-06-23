@@ -15,7 +15,7 @@ import serial
 
 
 def _write_command(
-        ser: serial.Serial, bd: int, command: bytes, response: bool = True
+    ser: serial.Serial, bd: int, command: bytes, response: bool = True
 ) -> str | None:
     """Write a command to a device.
 
@@ -55,7 +55,8 @@ def _parse_response(response: bytes) -> (int, str):
     logger.debug(f"Response: {response}")
     if response == b"":
         raise ValueError(
-            "Empty response. There was no response from the device. Check that the device is connected and correctly configured (baudrate).")
+            "Empty response. There was no response from the device. Check that the device is connected and correctly configured (baudrate)."
+        )
 
     try:
         response: str = response.decode("utf-8").strip()
