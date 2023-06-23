@@ -279,7 +279,9 @@ class Channel:
         allowed_modes = [1, 2, 3]
         for mode in output_values:
             if mode not in allowed_modes:
-                raise ValueError(f"Invalid output mode. Allowed modes are: {allowed_modes}")
+                raise ValueError(
+                    f"Invalid output mode. Allowed modes are: {allowed_modes}"
+                )
 
         return output_values
 
@@ -979,17 +981,17 @@ class Channel:
     @property
     def channel_current_ramp_down_speed(self) -> float:
         """
-        Query the channel current ramp down speed in Ampere/second.
+                Query the channel current ramp down speed in Ampere/second.
 
-        Returns:
-            float: The channel current ramp down speed in Ampere/second.
+                Returns:
+                    float: The channel current ramp down speed in Ampere/second.
 
-        Example:
-=======
+                Example:
+        =======
 
-        Example:
-            status = channel.channel_status
-            print(status)  # Example output: 132
+                Example:
+                    status = channel.channel_status
+                    print(status)  # Example output: 132
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:CHAN:STATUS")

@@ -53,5 +53,3 @@ def test_iseg_channel_monitor():
 
     available_output_modes = module.channel(0).available_output_modes
     print(f"available_output_modes: {available_output_modes}")
-
-

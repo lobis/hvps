@@ -23,7 +23,7 @@ def _get_mon_channel_command(channel: int, command: str) -> bytes:
 
 
 def _get_set_channel_command(
-        channel: int, command: str, value: str | int | float | None
+    channel: int, command: str, value: str | int | float | None
 ) -> bytes:
     """
     Generates an order command as a bytes object to set a value for a specific channel.

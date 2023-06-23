@@ -78,7 +78,7 @@ class Module:
             "Is Input Error": bit_array[6],
             "Is Service Is High": bit_array[4],
             "Voltage On": bit_array[3],
-            "Is Fine Adjustment": bit_array[0]
+            "Is Fine Adjustment": bit_array[0],
         }
 
     @property
