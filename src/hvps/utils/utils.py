@@ -14,4 +14,4 @@ def string_number_to_bit_array(string) -> list:
     except ValueError:
         raise ValueError(f"Invalid string '{string}'. Must be an integer.")
 
-    return [bool(int(bit)) for bit in f"{string_as_int:016b}"]
+    return list(reversed([bool(int(bit)) for bit in f"{string_as_int:016b}"]))
