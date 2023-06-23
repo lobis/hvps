@@ -7,7 +7,7 @@ import logging
 
 # find a way to only run these tests if a serial port connection exists
 
-serial_port = "COM3"
+serial_port = "COM3"  # change this to the serial port you are using
 serial_baud = 115200
 timeout = 5.0
 
@@ -18,10 +18,9 @@ def serial_port_available():
 
 
 def serial_port_test(func):
-    if serial_port_available():
-        return func
-    else:
-        pytest.skip("Serial port not available")
+    if not serial_port_available():
+        func = pytest.mark.skip(reason="Serial port not available")(func)
+    return func
 
 
 @serial_port_test
