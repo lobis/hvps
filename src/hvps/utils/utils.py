@@ -1,7 +1,8 @@
 from serial.tools import list_ports
+from typing import List
 
 
-def string_number_to_bit_array(string) -> list[bool]:
+def string_number_to_bit_array(string) -> List[bool]:
     """
     Converts a string representing a 16-bit integer into a list of bits.
 
