@@ -5,6 +5,7 @@ from hvps.commands.caen.channel import _set_channel_commands, _mon_channel_comma
 from serial.tools import list_ports
 
 import argparse
+import logging
 
 
 def main():
@@ -23,7 +24,13 @@ def main():
         "--baud",
         default=None,
         help="Baud rate for serial communication. "
-        "If not specified it will attempt to automatically find",
+             "If not specified it will attempt to automatically find",
+    )
+    parser.add_argument(
+        "--log",
+        default="INFO",
+        help="Logging level. Default: INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
     )
     parser.add_argument(
         "--module", type=int, default=0, help="Module number. CAEN only?"
@@ -51,6 +58,7 @@ def main():
     iseg_parser = subparsers.add_parser("iseg", help="iseg HVPS")
 
     args = parser.parse_args()
+    logging.basicConfig(level=args.log.upper())
     if args.ports:
         ports = [port.device for port in list_ports.comports()]
         print(f"Number of ports available: {len(ports)}")
