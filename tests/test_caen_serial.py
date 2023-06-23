@@ -67,3 +67,106 @@ def test_caen_module_monitor():
 
     channels = module.channels
     print(f"Channels: {channels}")
+
+
+def test_caen_channel_serial():
+    caen = CAEN(port=serial_port, baudrate=serial_baud, connect=True, timeout=timeout, verbosity=logging.DEBUG)
+    print(
+        f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}")
+    module = caen.module(0)
+
+    for channel in module.channels:
+        print("")
+        print(f"Channel: {channel.channel}")
+        vmon = channel.vmon
+        print(f"vmon: {vmon}")
+
+        vset = channel.vset
+        print(f"vset: {vset}")
+
+        vmin = channel.vmin
+        print(f"vmin: {vmin}")
+
+        vmax = channel.vmax
+        print(f"vmax: {vmax}")
+
+        vdec = channel.vdec
+        print(f"vdec: {vdec}")
+
+        iset = channel.iset
+        print(f"iset: {iset}")
+
+        imin = channel.imin
+        print(f"imin: {imin}")
+
+        imax = channel.imax
+        print(f"imax: {imax}")
+
+        isdec = channel.isdec
+        print(f"isdec: {isdec}")
+
+        imon = channel.imon
+        print(f"imon: {imon}")
+
+        imrange = channel.imrange
+        print(f"imrange: {imrange}")
+
+        imdec = channel.imdec
+        print(f"imdec: {imdec}")
+
+        maxv = channel.maxv
+        print(f"maxv: {maxv}")
+
+        mvmin = channel.mvmin
+        print(f"mvmin: {mvmin}")
+
+        mvmax = channel.mvmax
+        print(f"mvmax: {mvmax}")
+
+        mvdec = channel.mvdec
+        print(f"mvdec: {mvdec}")
+
+        rup = channel.rup
+        print(f"rup: {rup}")
+
+        rupmin = channel.rupmin
+        print(f"rupmin: {rupmin}")
+
+        rupmax = channel.rupmax
+        print(f"rupmax: {rupmax}")
+
+        rupdec = channel.rupdec
+        print(f"rupdec: {rupdec}")
+
+        rdw = channel.rdw
+        print(f"rdw: {rdw}")
+
+        rdwmin = channel.rdwmin
+        print(f"rdwmin: {rdwmin}")
+
+        rdwmax = channel.rdwmax
+        print(f"rdwmax: {rdwmax}")
+
+        rdwdec = channel.rdwdec
+        print(f"rdwdec: {rdwdec}")
+
+        trip = channel.trip
+        print(f"trip: {trip}")
+
+        tripmin = channel.tripmin
+        print(f"tripmin: {tripmin}")
+
+        tripmax = channel.tripmax
+        print(f"tripmax: {tripmax}")
+
+        tripdec = channel.tripdec
+        print(f"tripdec: {tripdec}")
+
+        pdwn = channel.pdwn
+        print(f"pdwn: {pdwn}")
+
+        pol = channel.pol
+        print(f"pol: {pol}")
+
+        stat = channel.stat
+        print(f"stat: {stat}")
