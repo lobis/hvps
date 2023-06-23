@@ -24,7 +24,7 @@ def serial_port_test(func):
         pytest.skip("Serial port not available")
 
 
-@pytest.mark.usefixtures('serial_port_test')
+@serial_port_test
 def test_caen_module_monitor():
     # no ports available
     caen = CAEN(
@@ -88,7 +88,7 @@ def test_caen_module_monitor():
     print(f"Channels: {channels}")
 
 
-@pytest.mark.usefixtures('serial_port_test')
+@serial_port_test
 def test_caen_channel_serial():
     caen = CAEN(
         port=serial_port,
