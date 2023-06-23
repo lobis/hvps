@@ -1,4 +1,4 @@
-def string_number_to_bit_array(string) -> list:
+def string_number_to_bit_array(string) -> list[bool]:
     """
     Converts a string representing a 16-bit integer into a list of bits.
 
