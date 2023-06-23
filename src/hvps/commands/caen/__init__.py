@@ -63,12 +63,12 @@ def _parse_response(response: bytes) -> (int, str):
     except UnicodeDecodeError:
         raise ValueError(f"Invalid response: {response}")
 
-    regex = re.compile(r"^#BD:(\d\d),CMD:OK,VAL:(.+)$")
+    regex = re.compile(r"^#BD:(\d{2}),CMD:OK(?:,VAL:(.+))?$")
     match = regex.match(response)
     if match is None:
         raise ValueError(f"Invalid response: '{response}'. Could not match regex")
     bd = int(match.group(1))
-    value: str = match.group(2)
+    value: str | None = match.group(2) if match.group(2) else None
 
     logger.debug(f"response parsing -> bd: {bd}, value: {value}")
 

@@ -95,3 +95,18 @@ def test_caen_parse_response():
         # Invalid response format
         response = b"Invalid response\r\n"
         _parse_response(response)
+
+    response = b"#BD:09,CMD:OK\r\n"
+    bd, value = _parse_response(response)
+    assert bd == 9
+    assert value == None
+
+    with pytest.raises(ValueError):
+        # number needs to be two digits
+        response = b"#BD:9,CMD:OK\r\n"
+        _parse_response(response)
+
+    with pytest.raises(ValueError):
+        # add additional ','
+        response = b"#BD:9,CMD:OK,\r\n"
+        _parse_response(response)
