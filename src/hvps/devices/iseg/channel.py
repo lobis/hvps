@@ -264,19 +264,24 @@ class Channel:
         Returns:
             list: The list of available output mode values.
 
-        Output Mode allowed values: 1, 2, 3.
         """
         command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE:LIST")
         response = _write_command(self._serial, command)
 
-        if len(response) != 3:
-            raise ValueError("Wrong number of values were sent, three values expected")
+        if 0 >= len(response) > 3:
+            raise ValueError("Invalid number of output modes received.")
+
+        try:
+            output_values = [int(mode) for mode in response]
+        except ValueError:
+            raise ValueError("Invalid output mode value received.")
 
         allowed_modes = [1, 2, 3]
-        for mode in response[0].split(","):
+        for mode in output_values:
             if mode not in allowed_modes:
-                raise ValueError("Invalid output mode. Allowed modes are: 1, 2, 3.")
-        return [int(mode) for mode in response]
+                raise ValueError(f"Invalid output mode. Allowed modes are: {allowed_modes}")
+
+        return output_values
 
     def set_output_polarity(self, polarity: str):
         """

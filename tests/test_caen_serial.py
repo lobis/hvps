@@ -7,7 +7,7 @@ import logging
 
 # find a way to only run these tests if a serial port connection exists
 
-serial_port = "COM3"  # change this to the serial port you are using
+serial_port = "COM4"  # change this to the serial port you are using
 serial_baud = 115200
 timeout = 5.0
 
