@@ -14,6 +14,7 @@ available_output_modes: [1]
 
 # TODO: validate commands generation and response parsing
 
+
 def test_iseg_module_get_commands():
     pass
 

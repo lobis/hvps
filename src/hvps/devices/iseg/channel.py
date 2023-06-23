@@ -279,7 +279,9 @@ class Channel:
         allowed_modes = [1, 2, 3]
         for mode in output_values:
             if mode not in allowed_modes:
-                raise ValueError(f"Invalid output mode. Allowed modes are: {allowed_modes}")
+                raise ValueError(
+                    f"Invalid output mode. Allowed modes are: {allowed_modes}"
+                )
 
         return output_values
 
