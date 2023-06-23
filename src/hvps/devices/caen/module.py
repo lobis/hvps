@@ -3,9 +3,9 @@ from typing import List
 
 import serial
 
-from ..commands.caen.module import _get_mon_module_command, _get_set_module_command
-from ..commands.caen import _write_command
-from ..utils.utils import string_to_bit_array
+from ...commands.caen.module import _get_mon_module_command, _get_set_module_command
+from ...commands.caen import _write_command
+from ...utils.utils import string_to_bit_array
 from .channel import Channel
 
 

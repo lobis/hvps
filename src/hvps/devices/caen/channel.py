@@ -1,11 +1,11 @@
 import serial
 
-from ..commands.caen.channel import (
+from ...commands.caen.channel import (
     _get_set_channel_command,
     _get_mon_channel_command,
 )
-from ..commands.caen import _write_command
-from ..utils import string_to_bit_array
+from ...commands.caen import _write_command
+from ...utils import string_to_bit_array
 
 from time import sleep
 
