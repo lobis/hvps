@@ -1,3 +1,6 @@
+from serial.tools import list_ports
+
+
 def string_number_to_bit_array(string) -> list[bool]:
     """
     Converts a string representing a 16-bit integer into a list of bits.
@@ -15,3 +18,13 @@ def string_number_to_bit_array(string) -> list[bool]:
         raise ValueError(f"Invalid string '{string}'. Must be an integer.")
 
     return list(reversed([bool(int(bit)) for bit in f"{string_as_int:016b}"]))
+
+
+def get_serial_ports() -> list[str]:
+    """
+    Get a list of available serial ports.
+
+    Returns:
+        list: A list of available serial ports.
+    """
+    return [port.device for port in list_ports.comports()]

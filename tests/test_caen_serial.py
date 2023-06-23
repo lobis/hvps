@@ -1,6 +1,7 @@
 import pytest
 
 from hvps import CAEN
+from hvps.utils import get_serial_ports
 
 import logging
 
@@ -11,6 +12,19 @@ serial_baud = 115200
 timeout = 5.0
 
 
+def serial_port_available():
+    ports = get_serial_ports()
+    return ports != []
+
+
+def serial_port_test(func):
+    if serial_port_available():
+        return func
+    else:
+        pytest.skip("Serial port not available")
+
+
+@pytest.mark.usefixtures('serial_port_test')
 def test_caen_module_monitor():
     # no ports available
     caen = CAEN(
@@ -74,6 +88,7 @@ def test_caen_module_monitor():
     print(f"Channels: {channels}")
 
 
+@pytest.mark.usefixtures('serial_port_test')
 def test_caen_channel_serial():
     caen = CAEN(
         port=serial_port,
