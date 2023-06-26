@@ -1,3 +1,4 @@
+import sys
 import pytest
 
 from hvps import CAEN
@@ -17,8 +18,12 @@ def serial_port_available():
     return ports != []
 
 
+def is_macos():
+    return sys.platform == "Darwin"
+
+
 serial_skip_decorator = pytest.mark.skipif(
-    serial_port_available(), reason="No serial ports available"
+    serial_port_available() or not is_macos(), reason="No serial ports available"
 )
 
 
