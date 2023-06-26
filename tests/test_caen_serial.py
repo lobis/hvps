@@ -1,3 +1,4 @@
+import sys
 import pytest
 
 from hvps import CAEN
@@ -17,13 +18,16 @@ def serial_port_available():
     return ports != []
 
 
-def serial_port_test(func):
-    if not serial_port_available():
-        func = pytest.mark.skip(reason="Serial port not available")(func)
-    return func
+def is_macos():
+    return sys.platform == "Darwin"
 
 
-@serial_port_test
+serial_skip_decorator = pytest.mark.skipif(
+    serial_port_available() or not is_macos(), reason="No serial ports available"
+)
+
+
+@serial_skip_decorator
 def test_caen_module_monitor():
     # no ports available
     caen = CAEN(
@@ -87,7 +91,7 @@ def test_caen_module_monitor():
     print(f"Channels: {channels}")
 
 
-@serial_port_test
+@serial_skip_decorator
 def test_caen_channel_serial():
     caen = CAEN(
         port=serial_port,

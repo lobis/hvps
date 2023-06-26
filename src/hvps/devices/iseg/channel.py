@@ -1,4 +1,5 @@
 import serial
+from typing import List
 
 from ...commands.iseg.channel import (
     _get_set_channel_command,
@@ -584,7 +585,7 @@ class Channel:
         )  # Remove the last character from the response (unit)
 
     @property
-    def current_mode_list(self) -> list[float]:
+    def current_mode_list(self) -> List[float]:
         """
         Query the available channel current modes as a list.
 
