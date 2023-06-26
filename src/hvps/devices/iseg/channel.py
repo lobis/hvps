@@ -20,19 +20,7 @@ class Channel:
         self._serial = _serial
         self._channel = channel
 
-    def set_voltage(self, vset):
-        """
-        Set the channel voltage set.
-
-        Args:
-            vset (float): The voltage set value to set in Volt.
-        """
-        command = _get_set_channel_command(self._channel, ":VOLT", vset)
-        response = _write_command(self._serial, command)
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
-
-    def switch_on_high_voltage(self):
+    def switch_on_high_voltage(self) -> None:
         """
         Switch on the high voltage with the configured ramp speed.
         """
@@ -41,7 +29,7 @@ class Channel:
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
-    def switch_off_high_voltage(self):
+    def switch_off_high_voltage(self) -> None:
         """
         Switch off the high voltage with the configured ramp speed.
         """
@@ -50,56 +38,11 @@ class Channel:
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
-    def shutdown_channel_high_voltage(self):
+    def shutdown_channel_high_voltage(self) -> None:
         """
         Shut down the channel high voltage (without ramp). The channel stays in Emergency Off until the command EMCY CLR is given.
         """
         command = _get_set_channel_command(self._channel, ":VOLT EMCY", "OFF")
-        response = _write_command(self._serial, command)
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
-
-    def clear_channel_emergency_off(self):
-        """
-        Clear the channel from state emergency off. The channel goes to state off.
-        """
-        command = _get_set_channel_command(self._channel, ":VOLT EMCY", "CLR")
-        response = _write_command(self._serial, command)
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
-
-    def set_voltage_bounds(self, vbounds):
-        """
-        Set the channel voltage bounds.
-
-        Args:
-            vbounds (float): The voltage bounds value to set in Volt.
-        """
-        command = _get_set_channel_command(self._channel, ":VOLT:BOUNDS", vbounds)
-        response = _write_command(self._serial, command)
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
-
-    def set_current(self, iset):
-        """
-        Set the channel current set.
-
-        Args:
-            iset (float): The current set value to set in Ampere.
-        """
-        command = _get_set_channel_command(self._channel, ":CURR", iset)
-        response = _write_command(self._serial, command)
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
-
-    def set_current_bounds(self, ibounds):
-        """
-        Set the channel current bounds.
-
-        Args:
-            ibounds (float): The current bounds value to set in Ampere.
-        """
-        command = _get_set_channel_command(self._channel, ":CURR:BOUNDS", ibounds)
         response = _write_command(self._serial, command)
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
@@ -113,60 +56,25 @@ class Channel:
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
-    def clear_event_bits(self, bits):
+    def clear_event_bits(self, bits: int) -> None:
         """
         Clears single bits or bit combinations in the Channel Event Status register by writing a one to the corresponding bit position.
 
         Args:
-            bits (int | str): The bits or bit combinations to clear. Can be provided as an integer or a string representing the bit combination.
+            bits: The bits or bit combinations to clear. Should be provided as an integer.
         """
         command = _get_set_channel_command(self._channel, ":EVENT", bits)
         response = _write_command(self._serial, command)
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
-    def set_trip_timeout(self, timeout):
-        """
-        Set the trip timeout with one millisecond resolution.
-
-        Args:
-            timeout (int): The timeout value to set in milliseconds. Must be in the range 1 to 4095 ms.
-        """
-        if not 1 <= timeout <= 4095:
-            raise ValueError("Timeout value must be in the range 1 to 4095 ms.")
-        command = _get_set_channel_command(self._channel, ":CONF:TRIP:TIME", timeout)
-        response = _write_command(self._serial, command)
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
-
-    def set_trip_action(self, action):
-        """
-        Set the action to be taken when a current trip occurs for the channel.
-
-        Args:
-            action (int): The action value to set. Possible values are:
-                          - 0: No action (Trip status flag will be set after timeout)
-                          - 1: Turn off the channel with ramp
-                          - 2: Shut down the channel without ramp
-                          - 3: Shut down the whole module without ramp
-                          - 4: Disable the Delayed Trip function
-        """
-        if not 0 <= action <= 4:
-            raise ValueError(
-                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
-            )
-        command = _get_set_channel_command(self._channel, ":CONF:TRIP:ACTION", action)
-        response = _write_command(self._serial, command)
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
-
     @property
-    def trip_action(self):
+    def trip_action(self) -> int:
         """
         Query the current action to be taken when a current trip occurs for the channel.
 
         Returns:
-            int: The current action value.
+            The current action value.
         """
         command = _get_mon_channel_command(self._channel, ":CONF:TRIP:ACTION")
         response = _write_command(self._serial, command)
@@ -178,33 +86,64 @@ class Channel:
             )
         return int(response[0])
 
-    def set_external_inhibit_action(self, action):
+    @trip_action.setter
+    def trip_action(self, action: int) -> None:
         """
-        Set the action to be taken when an External Inhibit event occurs for the channel.
+        Set the action to be taken when a current trip occurs for the channel.
 
         Args:
-            action (int): The action value to set. Possible values are:
-                          - 0: No action (External Inhibit status flag will be set)
-                          - 1: Turn off the channel with ramp
-                          - 2: Shut down the channel without ramp
-                          - 3: Shut down the whole module without ramp
-                          - 4: Disable the External Inhibit function
+            action: The action value to set. Possible values are:
+                    - 0: No action (Trip status flag will be set after timeout)
+                    - 1: Turn off the channel with ramp
+                    - 2: Shut down the channel without ramp
+                    - 3: Shut down the whole module without ramp
+                    - 4: Disable the Delayed Trip function
         """
         if not 0 <= action <= 4:
             raise ValueError(
                 "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
             )
-        command = _get_set_channel_command(self._channel, ":CONF:INHP:ACTION", action)
+        command = _get_set_channel_command(self._channel, ":CONF:TRIP:ACTION", action)
         response = _write_command(self._serial, command)
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
-    def get_external_inhibit_action(self):
+    @property
+    def trip_timeout(self) -> int:
         """
-        Query the action to be taken when an External Inhibit event occurs for the channel.
+        Query the current action to be taken when a current trip occurs for the channel.
 
         Returns:
-            int: The current action value.
+            The current action value.
+        """
+        command = _get_mon_channel_command(self._channel, ":CONF:TRIP:TIME")
+        response = _write_command(self._serial, command)
+        if len(response) != 1:
+            raise ValueError("Unexpected response. Multiple action values received.")
+        return int(response[0])
+
+    @trip_timeout.setter
+    def trip_timeout(self, timeout: int) -> None:
+        """
+        Set the trip timeout with one millisecond resolution.
+
+        Args:
+            timeout: The timeout value to set in milliseconds. Must be in the range 1 to 4095 ms.
+        """
+        if not 1 <= timeout <= 4095:
+            raise ValueError("Timeout value must be in the range 1 to 4095 ms.")
+        command = _get_set_channel_command(self._channel, ":CONF:TRIP:TIME", timeout)
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command haven't been processed.")
+
+    @property
+    def external_inhibit_action(self) -> int:
+        """
+        Query the current action to be taken when a current trip occurs for the channel.
+
+        Returns:
+            The current action value.
         """
         command = _get_mon_channel_command(self._channel, ":CONF:INHP:ACTION")
         response = _write_command(self._serial, command)
@@ -216,12 +155,56 @@ class Channel:
             )
         return int(response[0])
 
-    def set_output_mode(self, mode):
+    @external_inhibit_action.setter
+    def external_inhibit_action(self, action: int) -> None:
+        """
+        Set the action to be taken when an External Inhibit event occurs for the channel.
+
+        Args:
+            action: The action value to set. Possible values are:
+                    - 0: No action (External Inhibit status flag will be set)
+                    - 1: Turn off the channel with ramp
+                    - 2: Shut down the channel without ramp
+                    - 3: Shut down the whole module without ramp
+                    - 4: Disable the External Inhibit function
+        """
+        if not 0 <= action <= 4:
+            raise ValueError(
+                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
+            )
+        command = _get_set_channel_command(self._channel, ":CONF:INHP:ACTION", action)
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command haven't been processed.")
+
+    @property
+    def output_mode(self) -> int:
+        """
+        Query the configured channel output mode.
+
+        Returns:
+            The current output mode value.
+
+        Output Mode allowed values: 1, 2, 3.
+        """
+        command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE")
+        response = _write_command(self._serial, command)
+
+        if len(response) != 1:
+            raise ValueError("Wrong number of values were sent, one value expected")
+
+        allowed_modes = [1, 2, 3]
+        if int(response[0]) not in allowed_modes:
+            raise ValueError("Invalid output mode. Allowed modes are: 1, 2, 3.")
+        return int(response[0])
+
+    @output_mode.setter
+    def output_mode(self, mode: int) -> None:
         """
         Set the channel output mode.
 
         Args:
-            mode (int): The output mode value to set.
+            mode: The output mode value to set.
 
         Raises:
             ValueError: If the specified mode value is not allowed.
@@ -237,33 +220,12 @@ class Channel:
             raise ValueError("Last command haven't been processed.")
 
     @property
-    def output_mode(self):
-        """
-        Query the configured channel output mode.
-
-        Returns:
-            int: The current output mode value.
-
-        Output Mode allowed values: 1, 2, 3.
-        """
-        command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE")
-        response = _write_command(self._serial, command)
-
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-
-        allowed_modes = [1, 2, 3]
-        if int(response[0]) not in allowed_modes:
-            raise ValueError("Invalid output mode. Allowed modes are: 1, 2, 3.")
-        return int(response[0])
-
-    @property
-    def available_output_modes(self):
+    def available_output_modes(self) -> List[int]:
         """
         Query the available channel output modes as a list.
 
         Returns:
-            list: The list of available output mode values.
+            The list of available output mode values.
 
         """
         command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE:LIST")
@@ -286,35 +248,13 @@ class Channel:
 
         return output_values
 
-    def set_output_polarity(self, polarity: str):
-        """
-        Set the output polarity of the channel.
-
-        Args:
-            polarity (str): The output polarity to set. Valid values are "p" for positive and "n" for negative.
-
-        Raises:
-            ValueError: If an invalid polarity value is provided.
-
-        Example:
-            channel.set_output_polarity("n")
-        """
-        if polarity not in ["p", "n"]:
-            raise ValueError(
-                "Invalid polarity value. Valid values are 'p' for positive and 'n' for negative."
-            )
-        command = _get_set_channel_command(self._channel, ":CONF:OUTPUT:POL", polarity)
-        response = _write_command(self._serial, command)
-        if int(response[0]) != 1:
-            raise ValueError("Not all commands before this query have been processed.")
-
     @property
-    def output_polarity(self):
+    def output_polarity(self) -> str:
         """
         Query the current output polarity of the channel.
 
         Returns:
-            str: The current output polarity. "p" for positive, "n" for negative.
+            The current output polarity. "p" for positive, "n" for negative.
 
         Example:
             polarity = channel.output_polarity
@@ -326,13 +266,36 @@ class Channel:
             raise ValueError("Not all commands before this query have been processed.")
         return response[0]
 
+    @output_polarity.setter
+    def output_polarity(self, polarity: str) -> None:
+        """
+        Set the output polarity of the channel.
+
+        Args:
+            polarity: The output polarity to set. Valid values are "p" for positive and "n" for negative.
+
+        Raises:
+            ValueError: If an invalid polarity value is provided.
+
+        Example:
+            channel.output_polarity("n")
+        """
+        if polarity not in ["p", "n"]:
+            raise ValueError(
+                "Invalid polarity value. Valid values are 'p' for positive and 'n' for negative."
+            )
+        command = _get_set_channel_command(self._channel, ":CONF:OUTPUT:POL", polarity)
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Not all commands before this query have been processed.")
+
     @property
     def available_output_polarities(self):
         """
         Query the available channel output polarities as a list.
 
         Returns:
-            list: The list of available output polarity values.
+            The list of available output polarity values.
 
         Output Polarity List:
             "p" - Positive
@@ -375,7 +338,38 @@ class Channel:
         return float(response[0][:-1])
 
     @property
-    def voltage_limit(self):
+    def voltage_set(self) -> float:
+        """
+        Query the voltage set Vset in Volt.
+
+        Returns:
+            float: The voltage set Vset in Volt.
+
+        Example:
+            voltage = channel.voltage_set
+            print(voltage)  # Example output: 1234.0
+        """
+        command = _get_mon_channel_command(self._channel, ":READ:VOLT")
+        response = _write_command(self._serial, command)
+        if len(response) != 1:
+            raise ValueError("Wrong number of values were sent, one value expected")
+        return float(response[0][:-1])
+
+    @voltage_set.setter
+    def voltage_set(self, vset: float) -> None:
+        """
+        Set the channel voltage set.
+
+        Args:
+            vset (float): The voltage set value to set in Volt.
+        """
+        command = _get_set_channel_command(self._channel, ":VOLT", vset)
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
+
+    @property
+    def voltage_limit(self) -> float:
         """
         Query the voltage limit Vlim in Volt.
 
@@ -393,7 +387,7 @@ class Channel:
         return float(response[0][:-1])
 
     @property
-    def voltage_nominal(self):
+    def voltage_nominal(self) -> float:
         """
         Query the channel voltage nominal Vnom in Volt.
 
@@ -411,7 +405,7 @@ class Channel:
         return float(response[0][:-1])
 
     @property
-    def voltage_mode(self):
+    def voltage_mode(self) -> str:
         """
         Query the configured channel voltage mode with polarity sign in Volt.
 
@@ -426,10 +420,10 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were sent, one value expected")
-        return float(response[0][:-1])
+        return response[0][:-1]
 
     @property
-    def voltage_mode_list(self):
+    def voltage_mode_list(self) -> List[str]:
         """
         Query the available channel voltage modes as a list.
 
@@ -444,10 +438,10 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 3:
             raise ValueError("Wrong number of values were sent, three values expected")
-        return [float(modes[:-1]) for modes in response]
+        return [mode[:-1] for mode in response]
 
     @property
-    def voltage_bounds(self):
+    def voltage_bounds(self) -> str:
         """
         Query the channel voltage bounds in Volt.
 
@@ -462,10 +456,23 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were sent, one value expected")
-        return float(response[0][:-1])
+        return response[0][:-1]
+
+    @voltage_bounds.setter
+    def voltage_bounds(self, vbounds: float) -> None:
+        """
+        Set the channel voltage bounds.
+
+        Args:
+            vbounds (float): The voltage bounds value to set in Volt.
+        """
+        command = _get_set_channel_command(self._channel, ":VOLT:BOUNDS", vbounds)
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
 
     @property
-    def is_set_on(self) -> bool:
+    def set_on(self) -> bool:
         """
         Query the channel control bit "Set On".
 
@@ -473,7 +480,7 @@ class Channel:
             bool: True if the channel control bit is set on, False otherwise.
 
         Example:
-            is_on = channel.is_set_on
+            is_on = channel.set_on
             print(is_on)  # Example output: True
         """
         command = _get_mon_channel_command(self._channel, ":READ:VOLT:ON")
@@ -483,7 +490,7 @@ class Channel:
         return int(response[0][:-1]) == 1
 
     @property
-    def is_set_emergency_off(self) -> bool:
+    def emergency_off(self) -> bool:
         """
         Query the channel control bit "Set Emergency Off".
 
@@ -491,7 +498,7 @@ class Channel:
             bool: True if the channel control bit is set to Emergency Off, False otherwise.
 
         Example:
-            is_emergency_off = channel.is_set_emergency_off
+            is_emergency_off = channel.emergency_off
             print(is_emergency_off)  # Example output: False
         """
         command = _get_mon_channel_command(self._channel, ":READ:VOLT:EMCY")
@@ -499,6 +506,15 @@ class Channel:
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0][:-1]) == 1
+
+    def clear_emergency_off(self) -> None:
+        """
+        Clear the channel from state emergency off. The channel goes to state off.
+        """
+        command = _get_set_channel_command(self._channel, ":VOLT EMCY", "CLR")
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
 
     @property
     def current_set(self) -> float:
@@ -517,9 +533,20 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-1]
-        )  # Remove the last character from the response (unit)
+        return float(response[0][:-1])
+
+    @current_set.setter
+    def current_set(self, iset: float) -> None:
+        """
+        Set the channel current set.
+
+        Args:
+            iset (float): The current set value to set in Ampere.
+        """
+        command = _get_set_channel_command(self._channel, ":CURR", iset)
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command haven't been processed.")
 
     @property
     def current_limit(self) -> float:
@@ -624,6 +651,19 @@ class Channel:
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-1])
+
+    @current_bounds.setter
+    def current_bounds(self, ibounds: float) -> None:
+        """
+        Set the channel current bounds.
+
+        Args:
+            ibounds (float): The current bounds value to set in Ampere.
+        """
+        command = _get_set_channel_command(self._channel, ":CURR:BOUNDS", ibounds)
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command haven't been processed.")
 
     @property
     def current_ramp_speed(self) -> float:
@@ -831,36 +871,6 @@ class Channel:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-1])
 
-    def set_channel_voltage_ramp_speed(self, speed: int):
-        """
-        Set the channel voltage ramp speed for up and down direction in Volt/second.
-
-        Args:
-            speed (int): The voltage ramp speed in Volt/second.
-
-        Example:
-            channel.set_channel_voltage_ramp_speed(250)
-        """
-        command = _get_set_channel_command(self._channel, "RAMP:VOLT", speed)
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
-    def set_channel_voltage_ramp_up_speed(self, speed: int):
-        """
-        Set the channel voltage ramp up speed in Volt/second.
-
-        Args:
-            speed (int): The voltage ramp up speed in Volt/second.
-
-        Example:
-            channel.set_channel_voltage_ramp_up_speed(250)
-        """
-        command = _get_set_channel_command(self._channel, "RAMP:VOLT:UP", speed)
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
     @property
     def channel_voltage_ramp_up_speed(self) -> float:
         """
@@ -878,21 +888,6 @@ class Channel:
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-3])  # Remove the last 3 characters (unit)
-
-    def set_channel_voltage_ramp_down_speed(self, speed: float) -> None:
-        """
-        Set the channel voltage ramp down speed in Volt/second.
-
-        Args:
-            speed (float): The channel voltage ramp down speed to set in Volt/second.
-
-        Example:
-            channel.set_channel_voltage_ramp_down_speed(125.0)
-        """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT:DOWN", speed)
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands before this query have been processed.")
 
     @property
     def channel_voltage_ramp_down_speed(self) -> float:
@@ -914,36 +909,6 @@ class Channel:
             response[0][:-3]
         )  # Remove the last 3 characters (unit) and cast to float
 
-    def set_channel_current_ramp_up_down_speed(self, speed: float) -> None:
-        """
-        Set the channel current ramp speed for up and down direction in Ampere/second.
-
-        Args:
-            speed (float): The channel current ramp down speed to set in Ampere/second.
-
-        Example:
-            channel.set_channel_current_ramp_up_down_speed(125.0)
-        """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR", speed)
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands before this query have been processed.")
-
-    def set_channel_current_ramp_up_speed(self, speed: float) -> None:
-        """
-        Set the channel current ramp up speed in Ampere/second.
-
-        Args:
-            speed (float): The channel current ramp up speed to set in Ampere/second.
-
-        Example:
-            channel.set_channel_current_ramp_up_speed(125.0)
-        """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR:UP", speed)
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands before this query have been processed.")
-
     @property
     def channel_current_ramp_up_speed(self) -> float:
         """
@@ -963,21 +928,6 @@ class Channel:
         return float(
             response[0][:-3]
         )  # Remove the last 3 characters (unit) and cast to float
-
-    def set_channel_current_ramp_down_speed(self, speed: float) -> None:
-        """
-        Set the channel current ramp down speed in Ampere/second.
-
-        Args:
-            speed (float): The channel current ramp down speed to set in Ampere/second.
-
-        Example:
-            channel.set_channel_current_ramp_down_speed(125.0)
-        """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR:DOWN", speed)
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands before this query have been processed.")
 
     @property
     def channel_current_ramp_down_speed(self) -> float:
@@ -1001,61 +951,7 @@ class Channel:
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0])
 
-    @property
-    def channel_event_mask(self) -> int:
-        """
-        Query the Channel Event Mask register.
-
-        Returns:
-            int: The Channel Event Mask register value.
-
-        Example:
-            mask = channel.channel_event_mask
-            print(mask)  # Example output: 0
-        """
-        command = _get_mon_channel_command(self._channel, ":CHAN:EVENT:MASK")
-        response = _write_command(self._serial, command)
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
-
-    @property
-    def measured_voltage(self) -> float:
-        """
-        Query the measured channel voltage in Volt.
-
-        Returns:
-            float: The measured channel voltage.
-
-        Example:
-            voltage = channel.measured_voltage
-            print(voltage)  # Example output: 1234.56
-        """
-        command = _get_mon_channel_command(self._channel, ":MEAS:VOLT")
-        response = _write_command(self._serial, command)
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])
-
-    @property
-    def measured_current(self) -> float:
-        """
-        Query the measured channel current in Ampere.
-
-        Returns:
-            float: The measured channel current.
-
-        Example:
-            current = channel.measured_current
-            print(current)  # Example output: 0.00123456
-        """
-        command = _get_mon_channel_command(self._channel, ":MEAS:CURR")
-        response = _write_command(self._serial, command)
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])
-
-    def set_channel_voltage_ramp_speed(self, speed: int):
+    def set_channel_voltage_ramp_up_down_speed(self, speed: int):
         """
         Set the channel voltage ramp speed for up and down direction in Volt/second.
 
@@ -1063,14 +959,15 @@ class Channel:
             speed (int): The voltage ramp speed in Volt/second.
 
         Example:
-            channel.set_channel_voltage_ramp_speed(250)
+            channel.set_channel_voltage_ramp_up_down_speed(250)
         """
         command = _get_set_channel_command(self._channel, "RAMP:VOLT", speed)
         response = _write_command(self._serial, command)
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Not all commands were processed successfully")
 
-    def set_channel_voltage_ramp_up_speed(self, speed: int):
+    @channel_voltage_ramp_up_speed.setter
+    def channel_voltage_ramp_up_speed(self, speed: int):
         """
         Set the channel voltage ramp up speed in Volt/second.
 
@@ -1085,25 +982,8 @@ class Channel:
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Not all commands were processed successfully")
 
-    @property
-    def channel_voltage_ramp_up_speed(self) -> float:
-        """
-        Query the channel voltage ramp up speed in Volt/second.
-
-        Returns:
-            float: The channel voltage ramp up speed in Volt/second.
-
-        Example:
-            speed = channel.channel_voltage_ramp_up_speed
-            print(speed)  # Example output: 0.250E3
-        """
-        command = _get_mon_channel_command(self._channel, "RAMP:VOLT:UP")
-        response = _write_command(self._serial, command)
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])  # Remove the last 3 characters (unit)
-
-    def set_channel_voltage_ramp_down_speed(self, speed: float) -> None:
+    @channel_voltage_ramp_down_speed.setter
+    def channel_voltage_ramp_down_speed(self, speed: float) -> None:
         """
         Set the channel voltage ramp down speed in Volt/second.
 
@@ -1117,26 +997,6 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Not all commands before this query have been processed.")
-
-    @property
-    def channel_voltage_ramp_down_speed(self) -> float:
-        """
-        Query the channel voltage ramp down speed in Volt/second.
-
-        Returns:
-            float: The channel voltage ramp down speed in Volt/second.
-
-        Example:
-            speed = channel.channel_voltage_ramp_down_speed
-            print(speed)  # Example output: 0.12500E3
-        """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:VOLT:DOWN")
-        response = _write_command(self._serial, command)
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-3]
-        )  # Remove the last 3 characters (unit) and cast to float
 
     def set_channel_current_ramp_up_down_speed(self, speed: float) -> None:
         """
@@ -1153,7 +1013,8 @@ class Channel:
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Not all commands before this query have been processed.")
 
-    def set_channel_current_ramp_up_speed(self, speed: float) -> None:
+    @channel_current_ramp_up_speed.setter
+    def channel_current_ramp_up_speed(self, speed: float) -> None:
         """
         Set the channel current ramp up speed in Ampere/second.
 
@@ -1168,27 +1029,8 @@ class Channel:
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Not all commands before this query have been processed.")
 
-    @property
-    def channel_current_ramp_up_speed(self) -> float:
-        """
-        Query the channel current ramp up speed in Ampere/second.
-
-        Returns:
-            float: The channel current ramp up speed in Ampere/second.
-
-        Example:
-            speed = channel.channel_voltage_ramp_down_speed
-            print(speed)  # Example output: 0.12500E3
-        """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:UP")
-        response = _write_command(self._serial, command)
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-3]
-        )  # Remove the last 3 characters (unit) and cast to float
-
-    def set_channel_current_ramp_down_speed(self, speed: float) -> None:
+    @channel_current_ramp_down_speed.setter
+    def channel_current_ramp_down_speed(self, speed: float) -> None:
         """
         Set the channel current ramp down speed in Ampere/second.
 
@@ -1202,23 +1044,3 @@ class Channel:
         response = _write_command(self._serial, command)
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Not all commands before this query have been processed.")
-
-    @property
-    def channel_current_ramp_down_speed(self) -> float:
-        """
-        Query the channel current ramp down speed in Ampere/second.
-
-        Returns:
-            float: The channel current ramp down speed in Ampere/second.
-
-        Example:
-            speed = channel.channel_current_ramp_down_speed
-            print(speed)  # Example output: 0.12500E3
-        """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:DOWN")
-        response = _write_command(self._serial, command)
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-3]
-        )  # Remove the last 3 characters (unit) and cast to float
