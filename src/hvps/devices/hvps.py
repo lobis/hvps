@@ -17,6 +17,16 @@ class Hvps:
         connect: bool = True,
         logging_level=logging.WARNING,
     ):
+        """Initialize the HVPS (High-Voltage Power Supply) object.
+
+        Args:
+            baudrate (int, optional): The baud rate for serial communication. Defaults to 115200.
+            port (str | None, optional): The serial port to use. If None, it will try to detect one automatically. Defaults to None.
+            timeout (float | None, optional): The timeout for serial communication. Defaults to None.
+            connect (bool, optional): Whether to connect to the serial port during initialization. Defaults to True.
+            logging_level (int, optional): The logging level. Defaults to logging.WARNING.
+
+        """
         # Set global logging level
         # TODO: rethink logging
         logging.basicConfig(level=logging_level)
@@ -45,6 +55,7 @@ class Hvps:
             logger.debug("Serial port opened")
 
     def __del__(self):
+        """Cleanup method to close the serial port when the HVPS object is deleted."""
         if hasattr(self, "_serial"):
             self._serial.close()
 
@@ -126,6 +137,17 @@ class Hvps:
         return self._modules
 
     def module(self, module: int = 0) -> Module:
+        """Get the specified module.
+
+        Args:
+            module (int, optional): The module number. Defaults to 0.
+
+        Returns:
+            Module: The Module object.
+
+        Raises:
+            KeyError: If the module number is invalid.
+        """
         if module not in self._modules:
             raise KeyError(f"Invalid module {module}")
         return self._modules[module]
