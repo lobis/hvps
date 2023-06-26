@@ -1,2 +1,2 @@
-from .caen import CAEN
-from .iseg import ISEG
+from .caen import Caen
+from .iseg import Iseg

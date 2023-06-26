@@ -1,28 +1,18 @@
-import serial
-
 from ...commands.caen.channel import (
     _get_set_channel_command,
     _get_mon_channel_command,
 )
 from ...commands.caen import _write_command
 from ...utils import string_number_to_bit_array
+from ..channel import Channel as BaseChannel
 
 from time import sleep
 
 
-class Channel:
-    """Represents a channel of a device.
-
-    Args:
-        _serial (serial.Serial): The serial connection to the device.
-        bd (int): The bd value.
-        channel (int): The channel number.
-    """
-
-    def __init__(self, _serial: serial.Serial, bd: int, channel: int):
-        self._serial = _serial
+class Channel(BaseChannel):
+    def __init__(self, *args, bd: int, **kwargs):
+        super().__init__(*args, **kwargs)
         self._bd = bd
-        self._channel = channel
 
     @property
     def bd(self) -> int:
@@ -32,15 +22,6 @@ class Channel:
             int: The bd value.
         """
         return self._bd
-
-    @property
-    def channel(self) -> int:
-        """The channel number.
-
-        Returns:
-            int: The channel number.
-        """
-        return self._channel
 
     def wait_for_vset(self, timeout: float = 60.0):
         """Wait for the vset value to stabilize within a specified voltage difference.

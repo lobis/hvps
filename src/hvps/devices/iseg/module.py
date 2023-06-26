@@ -7,14 +7,13 @@ from ...commands.iseg.module import _get_mon_module_command, _get_set_module_com
 from ...commands.iseg import _write_command
 from ...utils.utils import string_number_to_bit_array
 from .channel import Channel
+from ..module import Module as BaseModule
+from .channel import Channel
 
 
-class Module:
-    """Represents a module of a device.
-
-    Args:
-        _serial (serial.Serial): The serial connection to the device.
-    """
+class Module(BaseModule):
+    def channel(self, channel: int) -> Channel:
+        return super().channel(channel)
 
     def __init__(self, _serial: serial.Serial):
         self._serial = _serial
@@ -659,33 +658,3 @@ class Module:
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0]) == 1
-
-    @property
-    def channels(self):
-        """The channels in the module.
-
-        Returns:
-            List[Channel]: A list of Channel objects.
-        """
-        if len(self._channels) == 0:
-            for channel in range(self.number_of_channels):
-                self._channels.append(Channel(self._serial, channel))
-        return self._channels
-
-    def channel(self, channel: int) -> Channel:
-        """Get the specified channel in the module.
-
-        Args:
-            channel (int): The channel number.
-
-        Returns:
-            Channel: The Channel object.
-
-        Raises:
-            KeyError: If the channel number is invalid.
-        """
-        if channel not in range(self.number_of_channels):
-            raise KeyError(
-                f"Invalid channel {channel}. Valid channels are 0..{self.number_of_channels - 1}"
-            )
-        return self.channels[channel]

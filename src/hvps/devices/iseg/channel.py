@@ -7,20 +7,23 @@ from ...commands.iseg.channel import (
 )
 from ...commands.iseg import _write_command
 
+from ..channel import Channel as BaseChannel
 
-class Channel:
-    """Represents a channel of a device.
 
-    Args:
-        _serial (serial.Serial): The serial connection to the device.
-        channel (int): The channel number.
-    """
+class Channel(BaseChannel):
+    def set_voltage(self, vset: float):
+        """
+        Set the channel voltage set.
 
-    def __init__(self, _serial: serial.Serial, channel: int):
-        self._serial = _serial
-        self._channel = channel
+        Args:
+            vset (float): The voltage set value to set in Volt.
+        """
+        command = _get_set_channel_command(self._channel, ":VOLT", vset)
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command haven't been processed.")
 
-    def switch_on_high_voltage(self) -> None:
+    def switch_on_high_voltage(self):
         """
         Switch on the high voltage with the configured ramp speed.
         """
@@ -43,6 +46,51 @@ class Channel:
         Shut down the channel high voltage (without ramp). The channel stays in Emergency Off until the command EMCY CLR is given.
         """
         command = _get_set_channel_command(self._channel, ":VOLT EMCY", "OFF")
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command haven't been processed.")
+
+    def clear_channel_emergency_off(self):
+        """
+        Clear the channel from state emergency off. The channel goes to state off.
+        """
+        command = _get_set_channel_command(self._channel, ":VOLT EMCY", "CLR")
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command haven't been processed.")
+
+    def set_voltage_bounds(self, vbounds: float):
+        """
+        Set the channel voltage bounds.
+
+        Args:
+            vbounds (float): The voltage bounds value to set in Volt.
+        """
+        command = _get_set_channel_command(self._channel, ":VOLT:BOUNDS", vbounds)
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command haven't been processed.")
+
+    def set_current(self, iset: float):
+        """
+        Set the channel current set.
+
+        Args:
+            iset (float): The current set value to set in Ampere.
+        """
+        command = _get_set_channel_command(self._channel, ":CURR", iset)
+        response = _write_command(self._serial, command)
+        if int(response[0]) != 1:
+            raise ValueError("Last command haven't been processed.")
+
+    def set_current_bounds(self, ibounds: float):
+        """
+        Set the channel current bounds.
+
+        Args:
+            ibounds (float): The current bounds value to set in Ampere.
+        """
+        command = _get_set_channel_command(self._channel, ":CURR:BOUNDS", ibounds)
         response = _write_command(self._serial, command)
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")

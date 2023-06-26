@@ -1,27 +1,14 @@
 from functools import cached_property
 from typing import List
 
-import serial
-
 from ...commands.caen.module import _get_mon_module_command, _get_set_module_command
 from ...commands.caen import _write_command
 from ...utils.utils import string_number_to_bit_array
 from .channel import Channel
+from ..module import Module as BaseModule
 
 
-class Module:
-    """Represents a module of a device.
-
-    Args:
-        _serial (serial.Serial): The serial connection to the device.
-        bd (int): The bd value.
-    """
-
-    def __init__(self, _serial: serial.Serial, bd: int):
-        self._serial = _serial
-        self._bd = bd
-        self._channels: List[Channel] = []
-
+class Module(BaseModule):
     @property
     def bd(self) -> int:
         """The bd value of the module.
@@ -29,21 +16,10 @@ class Module:
         Returns:
             int: The bd value.
         """
-        return self._bd
+        return self.module
 
-    @cached_property
-    def name(self) -> str:
-        """The name of the module.
-
-        Returns:
-            str: The name of the module.
-        """
-        response = _write_command(
-            self._serial,
-            bd=self._bd,
-            command=_get_mon_module_command(self._bd, "BDNAME"),
-        )
-        return str(response)
+    def channel(self, channel: int) -> Channel:
+        return super().channel(channel)
 
     @cached_property
     def number_of_channels(self) -> int:
@@ -54,10 +30,36 @@ class Module:
         """
         response = _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_mon_module_command(self._bd, "BDNCH"),
+            bd=self.bd,
+            command=_get_mon_module_command(self.bd, "BDNCH"),
         )
         return int(response)
+
+    @property
+    def channels(self):
+        """The channels in the module.
+
+        Returns:
+            List[Channel]: A list of Channel objects.
+        """
+        if len(self._channels) == 0:
+            for channel in range(self.number_of_channels):
+                self._channels.append(Channel(self._serial, self.bd, channel))
+        return self._channels
+
+    @cached_property
+    def name(self) -> str:
+        """The name of the module.
+
+        Returns:
+            str: The name of the module.
+        """
+        response = _write_command(
+            self._serial,
+            bd=self.bd,
+            command=_get_mon_module_command(self.bd, "BDNAME"),
+        )
+        return str(response)
 
     @property
     def firmware_release(self) -> str:
@@ -69,8 +71,8 @@ class Module:
         """
         response = _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_mon_module_command(self._bd, "BDFREL"),
+            bd=self.bd,
+            command=_get_mon_module_command(self.bd, "BDFREL"),
         )
         return response
 
@@ -84,8 +86,8 @@ class Module:
         """
         response = _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_mon_module_command(self._bd, "BDSNUM"),
+            bd=self.bd,
+            command=_get_mon_module_command(self.bd, "BDSNUM"),
         )
         # TODO: check if can be casted to int
         return response
@@ -100,8 +102,8 @@ class Module:
         """
         response = _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_mon_module_command(self._bd, "BDILK"),
+            bd=self.bd,
+            command=_get_mon_module_command(self.bd, "BDILK"),
         )
         if response == "YES":
             return True
@@ -120,8 +122,8 @@ class Module:
         """
         response = _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_mon_module_command(self._bd, "BDILKM"),
+            bd=self.bd,
+            command=_get_mon_module_command(self.bd, "BDILKM"),
         )
         if response not in ["OPEN", "CLOSED"]:
             raise ValueError(f"Invalid response for 'interlock_mode': {response}")
@@ -145,8 +147,8 @@ class Module:
         """
         response = _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_mon_module_command(self._bd, "BDCTR"),
+            bd=self.bd,
+            command=_get_mon_module_command(self.bd, "BDCTR"),
         )
         if response not in ["LOCAL", "REMOTE"]:
             raise ValueError(f"Invalid response for 'control_mode': {response}")
@@ -182,8 +184,8 @@ class Module:
 
         _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_set_module_command(self._bd, "BDCTR", value),
+            bd=self.bd,
+            command=_get_set_module_command(self.bd, "BDCTR", value),
         )
 
     def set_control_mode_local(self):
@@ -208,8 +210,8 @@ class Module:
         """
         response = _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_mon_module_command(self._bd, "BDTERM"),
+            bd=self.bd,
+            command=_get_mon_module_command(self.bd, "BDTERM"),
         )
         if response not in ["ON", "OFF"]:
             raise ValueError(
@@ -243,8 +245,8 @@ class Module:
         """
         response = _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_mon_module_command(self._bd, "BDALARM"),
+            bd=self.bd,
+            command=_get_mon_module_command(self.bd, "BDALARM"),
         )
 
         bit_array = string_number_to_bit_array(response)
@@ -273,8 +275,8 @@ class Module:
 
         _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_set_module_command(self._bd, "BDILKM", mode),
+            bd=self.bd,
+            command=_get_set_module_command(self.bd, "BDILKM", mode),
         )
 
     def close_interlock(self) -> None:
@@ -295,36 +297,6 @@ class Module:
         """
         _write_command(
             self._serial,
-            bd=self._bd,
-            command=_get_set_module_command(self._bd, "BDCLR", None),
+            bd=self.bd,
+            command=_get_set_module_command(self.bd, "BDCLR", None),
         )
-
-    @property
-    def channels(self):
-        """The channels in the module.
-
-        Returns:
-            List[Channel]: A list of Channel objects.
-        """
-        if len(self._channels) == 0:
-            for channel in range(self.number_of_channels):
-                self._channels.append(Channel(self._serial, self.bd, channel))
-        return self._channels
-
-    def channel(self, channel: int) -> Channel:
-        """Get the specified channel in the module.
-
-        Args:
-            channel (int): The channel number.
-
-        Returns:
-            Channel: The Channel object.
-
-        Raises:
-            KeyError: If the channel number is invalid.
-        """
-        if channel not in range(self.number_of_channels):
-            raise KeyError(
-                f"Invalid channel {channel}. Valid channels are 0..{self.number_of_channels - 1}"
-            )
-        return self.channels[channel]
