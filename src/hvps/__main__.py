@@ -1,4 +1,4 @@
-from hvps import version, CAEN
+from hvps import version, Caen, Iseg
 from hvps.commands.caen.module import _set_module_commands, _mon_module_commands
 from hvps.commands.caen.channel import _set_channel_commands, _mon_channel_commands
 
@@ -125,7 +125,7 @@ def main():
         return
 
     if args.brand == "caen":
-        caen = CAEN(port=args.port, baudrate=args.baud)
+        caen = Caen(port=args.port, baudrate=args.baud)
         module = caen.module(args.module)
         channel = module.channel(args.channel) if args.channel is not None else None
         if monitor_mode:
@@ -148,10 +148,10 @@ def main():
                 # channel level
                 if parameter in ["ON", "OFF"]:
                     if parameter == "ON":
-                        channel.on()
+                        channel.turn_on()
                         print(f"Channel {channel} turned on")
                     else:
-                        channel.off()
+                        channel.turn_off()
                         print(f"Channel {channel} turned off")
                 else:
                     setattr(channel, parameter, value)

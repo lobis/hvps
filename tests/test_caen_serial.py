@@ -1,7 +1,7 @@
 import sys
 import pytest
 
-from hvps import CAEN
+from hvps import Caen
 from hvps.utils import get_serial_ports
 
 import logging
@@ -30,7 +30,7 @@ serial_skip_decorator = pytest.mark.skipif(
 @serial_skip_decorator
 def test_caen_module_monitor():
     # no ports available
-    caen = CAEN(
+    caen = Caen(
         port=serial_port,
         baudrate=serial_baud,
         connect=True,
@@ -93,7 +93,7 @@ def test_caen_module_monitor():
 
 @serial_skip_decorator
 def test_caen_channel_serial():
-    caen = CAEN(
+    caen = Caen(
         port=serial_port,
         baudrate=serial_baud,
         connect=True,
