@@ -1,11 +1,12 @@
 from typing import List
 
 import serial
+from abc import ABC, abstractmethod
 
 from .channel import Channel
 
 
-class Module:
+class Module(ABC):
     def __init__(self, _serial: serial.Serial, module: int):
         self._serial = _serial
         self._module = module
@@ -16,8 +17,9 @@ class Module:
         return self._module
 
     @property
+    @abstractmethod
     def number_of_channels(self) -> int:
-        raise NotImplementedError("This method must be implemented by the subclass.")
+        ...
 
     @property
     def channels(self) -> List[Channel]:
