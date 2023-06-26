@@ -1,5 +1,6 @@
 from __future__ import annotations
 import re
+from typing import List
 
 """
 from .module import (
@@ -19,7 +20,7 @@ import serial
 
 def _write_command(
     ser: serial.Serial, command: bytes, response: bool = True
-) -> list[str] | None:
+) -> List[str] | None:
     """Write a command to a device.
 
     Args:
@@ -45,12 +46,11 @@ def _write_command(
     return response_value
 
 
-def _parse_response(response: bytes) -> list[str]:
+def _parse_response(response: bytes) -> List[str]:
     """Parse the response from a device.
 
     Args:
         response (bytes): The response received from the device.
-        bd (int | None, optional): The expected bd value. Defaults to None.
 
     Returns:
         str: The parsed value extracted from the response.
