@@ -4,15 +4,19 @@ from hvps.commands.iseg import _get_set_channel_command, _get_mon_channel_comman
 from hvps.devices.iseg.channel import Channel
 import serial
 
+from .test_caen_serial import serial_skip_decorator
+
 serial_port = "COM4"  # change this to the serial port you are using
 serial_baud = 9600
 timeout = 5.0
 
 
+@serial_skip_decorator
 def test_iseg_module_monitor():
     ...
 
 
+@serial_skip_decorator
 def test_iseg_channel_monitor():
     ser = serial.Serial(serial_port, serial_baud, timeout=timeout)
 
