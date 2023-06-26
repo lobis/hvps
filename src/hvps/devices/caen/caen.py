@@ -3,61 +3,15 @@ from __future__ import annotations
 import serial
 from serial.tools import list_ports
 from typing import Dict
-import time
 import logging
 
 from .module import Module
 
 
-def detect_baudrate(port: str) -> int:
-    """
-    Detect the baud rate for a given serial port.
-
-    Args:
-        port (str): The serial port to detect the baud rate for.
-
-    Returns:
-        int: The detected baud rate.
-
-    Raises:
-        Exception: If the baud rate cannot be detected.
-    """
-    logger = logging.getLogger(__name__)
-    logger.info(f"Detecting baud rate for port {port}")
-
-    baudrate_detection_message = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-
-    # Try different baud rates until one works
-    for baudrate in [9600, 19200, 38400, 57600, 115200]:
-        logger.debug(f"Trying baud rate {baudrate}")
-        # Open the serial port with the current baud rate
-        with serial.Serial(port, baudrate, timeout=1.0) as ser:
-            # Send the baud rate detection message
-            start_time = time.time()
-            ser.write(baudrate_detection_message)
-            ser.read(len(baudrate_detection_message))
-            end_time = time.time()
-
-            # Calculate the time it took for the device to respond
-            elapsed_time = end_time - start_time
-
-            # Calculate the baud rate based on the length of the message and the elapsed time
-            expected_time = (len(baudrate_detection_message) + 2) / float(baudrate)
-            expected_time *= 1.5  # Add a margin of error
-
-            if abs(elapsed_time - expected_time) < 0.1:
-                break
-
-            logger.info(f"Baud rate detected: {baudrate}")
-            return baudrate
-
-    raise Exception("Could not detect baud rate")
-
-
 class CAEN:
     def __init__(
         self,
-        baudrate: int | None = None,
+        baudrate: int = 115200,
         port: str | None = None,
         timeout: float | None = None,
         connect: bool = True,
@@ -67,7 +21,7 @@ class CAEN:
         Initialize the CaenHV object.
 
         Args:
-            baudrate (int | None): The baud rate for the serial communication. If None, it will be detected automatically.
+            baudrate (int): The baud rate for the serial communication. Default: 115200.
             port (str | None): The serial port to use. If None, it will try to detect an available port.
             timeout (float | None): The serial communication timeout in seconds. If None, the default timeout will be used.
             connect (bool): Whether to automatically open the serial port on initialization.
@@ -91,9 +45,9 @@ class CAEN:
 
         self._serial: serial.Serial = serial.Serial()
         self._serial.port = port
-        logger.debug(f"Using port {port}")
-        self._serial.baudrate = baudrate or detect_baudrate(port)
-        logger.debug(f"Using baud rate {self._serial.baudrate}")
+        logger.info(f"Using port {port}")
+        self._serial.baudrate = baudrate
+        logger.info(f"Using baud rate {self._serial.baudrate}")
         self._serial.timeout = timeout
         logger.debug(f"Using timeout {self._serial.timeout}")
 
@@ -101,8 +55,6 @@ class CAEN:
             logger.debug("Opening serial port")
             self._serial.open()
             logger.debug("Serial port opened")
-
-        # TODO: automatic module detection (connect to all in range 0..31) and baud rate detection (by getting module name)
 
     def __del__(self):
         if hasattr(self, "_serial"):
@@ -158,16 +110,6 @@ class CAEN:
         return next(self._modules.values())
 
     @property
-    def is_open(self) -> bool:
-        """
-        Check if the serial port is open.
-
-        Returns:
-            bool: True if the serial port is open, False otherwise.
-        """
-        return self._serial.is_open
-
-    @property
     def connected(self) -> bool:
         """
         Check if connected to the serial port.
@@ -175,7 +117,37 @@ class CAEN:
         Returns:
             bool: True if connected, False otherwise.
         """
-        return self.is_open
+        return self._serial.is_open
+
+    @property
+    def port(self) -> str:
+        """
+        Get the serial port.
+
+        Returns:
+            str: The serial port.
+        """
+        return self._serial.port
+
+    @property
+    def baudrate(self) -> int:
+        """
+        Get the baud rate.
+
+        Returns:
+            int: The baud rate.
+        """
+        return self._serial.baudrate
+
+    @property
+    def timeout(self) -> float:
+        """
+        Get the timeout.
+
+        Returns:
+            float: The timeout.
+        """
+        return self._serial.timeout
 
     @property
     def serial(self):

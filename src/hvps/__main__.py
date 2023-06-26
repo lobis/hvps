@@ -2,7 +2,10 @@ from hvps import version, CAEN
 from hvps.commands.caen.module import _set_module_commands, _mon_module_commands
 from hvps.commands.caen.channel import _set_channel_commands, _mon_channel_commands
 
+from serial.tools import list_ports
+
 import argparse
+import logging
 
 
 def main():
@@ -15,10 +18,19 @@ def main():
         help="Serial port. If not specified it will attempt to automatically find",
     )
     parser.add_argument(
+        "--ports", action="store_true", help="list serial ports available"
+    )
+    parser.add_argument(
         "--baud",
         default=None,
         help="Baud rate for serial communication. "
         "If not specified it will attempt to automatically find",
+    )
+    parser.add_argument(
+        "--log",
+        default="INFO",
+        help="Logging level. Default: INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
     )
     parser.add_argument(
         "--module", type=int, default=0, help="Module number. CAEN only?"
@@ -46,7 +58,13 @@ def main():
     iseg_parser = subparsers.add_parser("iseg", help="iseg HVPS")
 
     args = parser.parse_args()
-
+    logging.basicConfig(level=args.log.upper())
+    if args.ports:
+        ports = [port.device for port in list_ports.comports()]
+        print(f"Number of ports available: {len(ports)}")
+        for port in ports:
+            print(f"  - {port}")
+        exit(0)
     # validate parameters
     parameter = None
     value = None
@@ -106,9 +124,9 @@ def main():
         print("Testing mode enabled, commands will not be run")
         return
 
-    hvps = HVPS(port=args.port, baudrate=args.baud)
     if args.brand == "caen":
-        module = hvps.module(args.module)
+        caen = CAEN(port=args.port, baudrate=args.baud)
+        module = caen.module(args.module)
         channel = module.channel(args.channel) if args.channel is not None else None
         if monitor_mode:
             # monitor parameter

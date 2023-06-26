@@ -1,23 +1,31 @@
-def string_to_bit_array(string) -> list:
+from serial.tools import list_ports
+from typing import List
+
+
+def string_number_to_bit_array(string) -> List[bool]:
     """
-    Converts a string into a bit array.
+    Converts a string representing a 16-bit integer into a list of bits.
 
     Args:
-        string (str): The input string to be converted.
+        string (str): The string to convert. It must be a string representing an integer (e.g. "01024").
 
     Returns:
-        list: A list of integers representing the individual bits of the input string.
-
-    Example:
-        input_string = "Hi"
-        bit_array = string_to_bit_array(input_string)
-        print(bit_array)
-
-        [0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1]
+        list: The list of 16 bits, from least significant to most significant.
     """
-    bit_array = []
-    for char in string:
-        ascii_value = ord(char)
-        binary_string = bin(ascii_value)[2:].zfill(8)  # Convert to 8-bit binary string
-        bit_array.extend([int(bit) for bit in binary_string])
-    return bit_array
+
+    try:
+        string_as_int = int(string)
+    except ValueError:
+        raise ValueError(f"Invalid string '{string}'. Must be an integer.")
+
+    return list(reversed([bool(int(bit)) for bit in f"{string_as_int:016b}"]))
+
+
+def get_serial_ports() -> List[str]:
+    """
+    Get a list of available serial ports.
+
+    Returns:
+        list: A list of available serial ports.
+    """
+    return [port.device for port in list_ports.comports()]

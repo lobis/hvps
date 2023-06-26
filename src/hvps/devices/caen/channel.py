@@ -5,7 +5,7 @@ from ...commands.caen.channel import (
     _get_mon_channel_command,
 )
 from ...commands.caen import _write_command
-from ...utils import string_to_bit_array
+from ...utils import string_number_to_bit_array
 
 from time import sleep
 
@@ -351,34 +351,44 @@ class Channel:
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "STAT"),
         )
-        bit_array = string_to_bit_array(response)
+        bit_array = string_number_to_bit_array(response)
 
         return {
-            "ON": bool(bit_array[0]),  # True: ON, False: OFF
-            "RUP": bool(bit_array[1]),  # True: Channel Ramp UP
-            "RDW": bool(bit_array[2]),  # True: Channel Ramp DOWN
-            "OVC": bool(bit_array[3]),  # True: IMON >= ISET
-            "OVV": bool(bit_array[4]),  # True: VMON > VSET + 2.5 V
-            "UNV": bool(bit_array[5]),  # True: VMON < VSET – 2.5 V
-            "MAXV": bool(bit_array[6]),  # True: VOUT in MAXV protection
-            "TRIP": bool(
-                bit_array[7]
-            ),  # True: Ch OFF via TRIP (Imon >= Iset during TRIP)
-            "OVP": bool(bit_array[8]),  # True: Output Power > Max
-            "OVT": bool(bit_array[9]),  # True: TEMP > 105°C
-            "DIS": bool(
-                bit_array[10]
-            ),  # True: Ch disabled (REMOTE Mode and Switch on OFF position)
-            "KILL": bool(bit_array[11]),  # True: Ch in KILL via front panel
-            "ILK": bool(bit_array[12]),  # True: Ch in INTERLOCK via front panel
-            "NOCAL": bool(bit_array[13]),  # True: Calibration Error
-            # "NC": bool(bit_array[14])  # True: Not Connected
+            "ON": bit_array[0],  # True: ON, False: OFF
+            "RUP": bit_array[1],  # True: Channel Ramp UP
+            "RDW": bit_array[2],  # True: Channel Ramp DOWN
+            "OVC": bit_array[3],  # True: IMON >= ISET
+            "OVV": bit_array[4],  # True: VMON > VSET + 2.5 V
+            "UNV": bit_array[5],  # True: VMON < VSET – 2.5 V
+            "MAXV": bit_array[6],  # True: VOUT in MAXV protection
+            "TRIP": bit_array[7],  # True: Ch OFF via TRIP (Imon >= Iset during TRIP)
+            "OVP": bit_array[8],  # True: Output Power > Max
+            "OVT": bit_array[9],  # True: TEMP > 105°C
+            "DIS": bit_array[
+                10
+            ],  # True: Ch disabled (REMOTE Mode and Switch on OFF position)
+            "KILL": bit_array[11],  # True: Ch in KILL via front panel
+            "ILK": bit_array[12],  # True: Ch in INTERLOCK via front panel
+            "NOCAL": bit_array[13],  # True: Calibration Error
+            # "NC": bit_array[14]  # True: Not Connected
         }
 
     @property
     def voltage_target_reached(self) -> bool:
         stat = self.stat
         return not stat["OVV"] and not stat["UNV"]
+
+    @property
+    def on(self) -> bool:
+        return self.stat["ON"]
+
+    @property
+    def off(self) -> bool:
+        return not self.on
+
+    @property
+    def kill(self) -> bool:
+        return self.stat["KILL"]
 
     # Setters
     @vset.setter
@@ -461,7 +471,7 @@ class Channel:
         if self.imrange != value:
             raise ValueError(f"Could not set IMRANGE to {value}")
 
-    def on(self) -> None:
+    def turn_on(self) -> None:
         """Turn on the channel."""
         _write_command(
             self._serial,
@@ -469,7 +479,7 @@ class Channel:
             command=_get_set_channel_command(self._bd, self._channel, "ON", None),
         )
 
-    def off(self) -> None:
+    def turn_off(self) -> None:
         """Turn off the channel."""
         _write_command(
             self._serial,

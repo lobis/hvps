@@ -5,7 +5,7 @@ import serial
 
 from ...commands.caen.module import _get_mon_module_command, _get_set_module_command
 from ...commands.caen import _write_command
-from ...utils.utils import string_to_bit_array
+from ...utils.utils import string_number_to_bit_array
 from .channel import Channel
 
 
@@ -247,18 +247,16 @@ class Module:
             command=_get_mon_module_command(self._bd, "BDALARM"),
         )
 
-        bit_array = string_to_bit_array(response)
+        bit_array = string_number_to_bit_array(response)
 
         return {
-            "CH0": bool(bit_array[0]),  # True: Ch0 in Alarm status
-            "CH1": bool(bit_array[1]),  # True: Ch1 in Alarm status
-            "CH2": bool(bit_array[2]),  # True: Ch2 in Alarm status
-            "CH3": bool(bit_array[3]),  # True: Ch3 in Alarm status
-            "PWFAIL": bool(bit_array[4]),  # True: Board in POWER FAIL
-            "OVP": bool(bit_array[5]),  # True: Board in OVER POWER
-            "HVCKFAIL": bool(
-                bit_array[6]
-            ),  # True: Internal HV Clock FAIL (≠ 200±10kHz)
+            "CH0": bit_array[0],  # True: Ch0 in Alarm status
+            "CH1": bit_array[1],  # True: Ch1 in Alarm status
+            "CH2": bit_array[2],  # True: Ch2 in Alarm status
+            "CH3": bit_array[3],  # True: Ch3 in Alarm status
+            "PWFAIL": bit_array[4],  # True: Board in POWER FAIL
+            "OVP": bit_array[5],  # True: Board in OVER POWER
+            "HVCKFAIL": bit_array[6],  # True: Internal HV Clock FAIL (≠ 200±10kHz)
         }
 
     @interlock_mode.setter
