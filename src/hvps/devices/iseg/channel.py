@@ -7,20 +7,11 @@ from ...commands.iseg.channel import (
 )
 from ...commands.iseg import _write_command
 
+from ..channel import Channel as BaseChannel
 
-class Channel:
-    """Represents a channel of a device.
 
-    Args:
-        _serial (serial.Serial): The serial connection to the device.
-        channel (int): The channel number.
-    """
-
-    def __init__(self, _serial: serial.Serial, channel: int):
-        self._serial = _serial
-        self._channel = channel
-
-    def set_voltage(self, vset):
+class Channel(BaseChannel):
+    def set_voltage(self, vset: float):
         """
         Set the channel voltage set.
 
@@ -68,7 +59,7 @@ class Channel:
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
-    def set_voltage_bounds(self, vbounds):
+    def set_voltage_bounds(self, vbounds: float):
         """
         Set the channel voltage bounds.
 
@@ -80,7 +71,7 @@ class Channel:
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
-    def set_current(self, iset):
+    def set_current(self, iset: float):
         """
         Set the channel current set.
 
@@ -92,7 +83,7 @@ class Channel:
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
-    def set_current_bounds(self, ibounds):
+    def set_current_bounds(self, ibounds: float):
         """
         Set the channel current bounds.
 

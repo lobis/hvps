@@ -1,1 +1,1 @@
-from .caen import CAEN
+from .caen import Caen

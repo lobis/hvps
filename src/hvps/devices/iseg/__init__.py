@@ -1,1 +1,1 @@
-from .iseg import ISEG
+from .iseg import Iseg
