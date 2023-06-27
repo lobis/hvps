@@ -5,7 +5,7 @@ on:
   release:
     types: [ published ]
   workflow_run:
-    workflows: [ "Build and Test" ]
+    workflows: [ "build-test" ]
     types:
       - completed
 
@@ -29,7 +29,6 @@ jobs:
         run: python -m build
 
   publish-to-pypi-test:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     needs: build
     runs-on: ubuntu-latest
     steps:
