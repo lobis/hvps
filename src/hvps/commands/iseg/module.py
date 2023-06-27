@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 def _get_mon_module_command(command: str) -> bytes:
     """
     Generates a query command string for monitoring a specific channel.
