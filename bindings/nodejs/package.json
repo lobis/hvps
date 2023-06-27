@@ -9,9 +9,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "node-red": {
+    "nodes": {
+      "hvps": "hvps-nodered.js"
+    }
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lobis/hvps.git"
+    "url": "git+https://github.com/lobi s/hvps.git"
   },
   "author": "Luis Antonio Obis Aparicio (@lobis)",
   "license": "BSD-3-Clause",
