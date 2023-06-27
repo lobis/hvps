@@ -4,13 +4,14 @@ on:
   workflow_dispatch:
   release:
     types: [ published ]
-
+  workflow_run:
+    workflows: [ "Build and Test" ]
+    types:
+      - completed
 
 jobs:
-  publish:
-
+  build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 
@@ -27,6 +28,23 @@ jobs:
       - name: Build package 📦
         run: python -m build
 
+  publish-to-pypi-test:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish package 📦 to TEST PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_TEST_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
+
+  publish-to-pypi:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'release' }}
+    needs: [ build, publish-to-pypi-test ]
+    runs-on: ubuntu-latest
+    steps:
       - name: Publish package 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
