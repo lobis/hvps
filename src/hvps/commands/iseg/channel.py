@@ -45,9 +45,6 @@ def _get_set_channel_command(
         :VOLT 200,(@4)\r\n'
     """
     if isinstance(value, float):
-        value_string = "{:E}".format(value)
-        return f"{command.strip()} {value_string},(@{channel});*OPC?\r\n".encode(
-            "ascii"
-        )
-    else:
-        return f"{command.strip()} {value},(@{channel});*OPC?\r\n".encode("ascii")
+        value = f"{value:E}"
+
+    return f"{command.strip()} {value},(@{channel});*OPC?\r\n".encode("ascii")
