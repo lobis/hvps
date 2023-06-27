@@ -1,4 +1,3 @@
-import serial
 from typing import List
 
 from ...commands.iseg.channel import (

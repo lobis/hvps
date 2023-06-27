@@ -19,8 +19,8 @@ repos:
     hooks:
       - id: black
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.4.1
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.275
     hooks:
-      - id: mypy
-        args: [ --ignore_missing_imports ]
+      - id: ruff
+        args: [ "--fix-only", "--exclude", "__init__.py" ]

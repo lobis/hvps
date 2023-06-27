@@ -1,5 +1,4 @@
 from functools import cached_property
-from typing import List
 
 from ...commands.caen.module import _get_mon_module_command, _get_set_module_command
 from ...commands.caen import _write_command

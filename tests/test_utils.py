@@ -1,4 +1,3 @@
-import pytest
 from hvps.utils import string_number_to_bit_array
 
 

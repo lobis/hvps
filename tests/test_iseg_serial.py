@@ -1,6 +1,3 @@
-from hvps import Iseg
-import pytest
-from hvps.commands.iseg import _get_set_channel_command, _get_mon_channel_command
 from hvps.devices.iseg.channel import Channel
 import serial
 

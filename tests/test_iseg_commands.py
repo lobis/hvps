@@ -1,5 +1,3 @@
-import pytest
-
 """
 trip_action: 4
 output_mode: 1

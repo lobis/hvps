@@ -1,11 +1,14 @@
 import pytest
 
-from hvps.commands.caen import (
-    _parse_response,
-    _get_set_module_command,
-    _get_mon_module_command,
+from hvps.commands.caen import _parse_response
+from hvps.commands.caen.channel import (
     _get_set_channel_command,
     _get_mon_channel_command,
+)
+
+from hvps.commands.caen.module import (
+    _get_set_module_command,
+    _get_mon_module_command,
 )
 
 
@@ -99,7 +102,7 @@ def test_caen_parse_response():
     response = b"#BD:09,CMD:OK\r\n"
     bd, value = _parse_response(response)
     assert bd == 9
-    assert value == None
+    assert value is None
 
     with pytest.raises(ValueError):
         # number needs to be two digits
