@@ -51,3 +51,8 @@ jobs:
           node --version
           npm install
           node cli.js --version
+
+      - name: "Check nodejs package version is in sync with python"
+        run: |
+          cd bindings/nodejs
+          node cli.js --version | grep $(python -m hvps --version)
