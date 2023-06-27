@@ -23,4 +23,4 @@ repos:
     rev: v0.0.275
     hooks:
       - id: ruff
-        args: [ "--fix-only", "--exclude", "__init__.py" ]
+        args: [ "--fix-only" ]

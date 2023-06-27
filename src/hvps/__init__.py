@@ -1,4 +1,4 @@
-# __all__ = ["Caen", "Iseg"]
-# TODO: is this in the right place?
+from hvps.devices.caen.caen import Caen
+from hvps.devices.iseg.iseg import Iseg
 
-from .devices import Caen, Iseg
+__all__ = ["Caen", "Iseg"]
