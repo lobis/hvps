@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lobi s/hvps.git"
+    "url": "git+https://github.com/lobis/hvps.git"
   },
   "author": "Luis Antonio Obis Aparicio (@lobis)",
   "license": "BSD-3-Clause",
