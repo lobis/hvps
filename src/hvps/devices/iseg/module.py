@@ -80,27 +80,8 @@ class Module(BaseModule):
             "Is Fine Adjustment": bit_array[0],
         }
 
-    def set_filter_averaging_steps(self, steps: int) -> None:
-        """Set the number of digital filter averaging steps.
-
-        Args:
-            steps (int): The number of steps for filtering. Accepts values 1, 16, 64, 256, 512, or 1024.
-
-        Raises:
-            ValueError: If an invalid number of steps is provided.
-        """
-        valid_steps = [1, 16, 64, 256, 512, 1024]
-        if steps not in valid_steps:
-            raise ValueError(
-                f"Invalid number of steps. Please choose from {valid_steps}."
-            )
-
-        command = _get_set_module_command(":CONF:AVER", str(steps))
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
-    def get_filter_averaging_steps(self) -> int:
+    @property
+    def filter_averaging_steps(self) -> int:
         """Query the digital filter averaging steps.
 
         Returns:
@@ -125,23 +106,6 @@ class Module(BaseModule):
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0])
 
-    @kill_enable.setter
-    def kill_enable(self, enable: int) -> None:
-        """Set function kill enable (1) or kill disable (0).
-
-        Args:
-            enable (int): The kill enable value to set. Accepts 1 for enable or 0 for disable.
-        """
-        if enable not in [0, 1]:
-            raise ValueError(
-                "Invalid kill enable value. Please choose 1 for enable or 0 for disable."
-            )
-
-        command = _get_set_module_command(":CONF:KILL", str(enable))
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
     @property
     def adjustment(self) -> int:
         """Get the fine adjustment state.
@@ -155,104 +119,8 @@ class Module(BaseModule):
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0])
 
-    @adjustment.setter
-    def adjustment(self, value: int) -> None:
-        """Set the fine adjustment function on (1) or off (0).
-
-        Args:
-            value (int): The adjustment value to set. Accepts 1 for on or 0 for off.
-        """
-        if value not in [0, 1]:
-            raise ValueError(
-                "Invalid adjustment value. Please choose 1 for on or 0 for off."
-            )
-
-        command = _get_set_module_command(":CONF:ADJUST", str(value))
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
-    def reset_module_event_status(self) -> None:
-        """Reset the Module Event Status register."""
-        command = _get_set_module_command(":CONF:EVENT CLEAR", "")
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
-    def clear_module_event_status_bits(self, bits: int) -> None:
-        """Clear single bits or bit combinations in the Module Event Status register.
-
-        Args:
-            bits (int): The bits to clear in the Module Event Status register.
-        """
-        command = _get_set_module_command(":CONF:EVENT", str(bits))
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
-    def set_module_event_mask(self, mask: int) -> None:
-        """Set the Module Event Mask register.
-
-        Args:
-            mask (int): The value to set in the Module Event Mask register.
-        """
-        command = _get_set_module_command(":CONF:EVENT:MASK", str(mask))
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
-    def get_module_event_mask(self) -> int:
-        """Query the Module Event Mask register.
-
-        Returns:
-            int: The current value of the Module Event Mask register.
-        """
-        command = _get_mon_module_command(":CONF:EVENT:MASK")
-        response = _write_command(self._serial, command)
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
-
-    def set_module_event_channel_mask(self, mask: int) -> None:
-        """Set the Module Event Channel Mask register.
-
-        Args:
-            mask (int): The value to set in the Module Event Channel Mask register.
-        """
-        command = _get_set_module_command(":CONF:EVENT:CHANMASK", str(mask))
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
-    def get_module_event_channel_mask(self) -> int:
-        """Query the Module Event Channel Mask register.
-
-        Returns:
-            int: The current value of the Module Event Channel Mask register.
-        """
-        command = _get_mon_module_command(":CONF:EVENT:CHANMASK")
-        response = _write_command(self._serial, command)
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
-
-    def set_module_can_address(self, address: int) -> None:
-        """Set the module's CAN bus address.
-
-        Args:
-            address (int): The CAN bus address to set (0-63).
-        """
-        if not (0 <= address <= 63):
-            raise ValueError(
-                "Invalid CAN bus address. Please choose an address between 0 and 63."
-            )
-
-        command = _get_set_module_command(":CONF:CAN:ADDR", str(address))
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
-    def get_module_can_address(self) -> int:
+    @property
+    def module_can_address(self) -> int:
         """Query the module's CAN bus address.
 
         Returns:
@@ -264,23 +132,8 @@ class Module(BaseModule):
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0])
 
-    def set_module_can_bitrate(self, bitrate: int) -> None:
-        """Set the module's CAN bus bit rate.
-
-        Args:
-            bitrate (int): The CAN bus bit rate to set. Accepts 125000 or 250000.
-        """
-        if bitrate not in [125000, 250000]:
-            raise ValueError(
-                "Invalid CAN bus bitrate. Please choose either 125000 or 250000."
-            )
-
-        command = _get_set_module_command(":CONF:CAN:BITRATE", str(bitrate))
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
-    def get_module_can_bitrate(self) -> int:
+    @property
+    def module_can_bitrate(self) -> int:
         """Query the module's CAN bus bit rate.
 
         Returns:
@@ -305,18 +158,6 @@ class Module(BaseModule):
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0])
 
-    @serial_baud_rate.setter
-    def serial_baud_rate(self, baud_rate: int) -> None:
-        """Set the device's serial baud rate.
-
-        Args:
-            baud_rate (int): The serial baud rate to set.
-        """
-        command = _get_set_module_command(":CONF:SERIAL:BAUD", baud_rate)
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != baud_rate:
-            raise ValueError("Not all commands were processed successfully")
-
     @property
     def serial_echo_enable(self) -> int:
         """Check if serial echo is enabled or disabled.
@@ -337,31 +178,6 @@ class Module(BaseModule):
     @property
     def serial_echo_disabled(self) -> bool:
         return self.serial_echo_enable == 0
-
-    @serial_echo_enable.setter
-    def serial_echo_enable(self, enabled: int) -> None:
-        """Enable or disable serial echo.
-
-        Args:
-            enabled (int): 1 to enable serial echo, 0 to disable.
-        """
-        if enabled not in [0, 1]:
-            raise ValueError(
-                "Invalid serial echo value. Please choose 1 for enabled or 0 for disabled."
-            )
-
-        command = _get_set_module_command(":CONF:SERIAL:ECHO", enabled)
-        response = _write_command(self._serial, command)
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Not all commands were processed successfully")
-
-    def set_serial_echo_enabled(self) -> None:
-        """Enable serial echo."""
-        self.serial_echo_enable = 1
-
-    def set_serial_echo_disabled(self) -> None:
-        """Disable serial echo."""
-        self.serial_echo_enable = 0
 
     @property
     def module_voltage_limit(self) -> float:
@@ -435,7 +251,7 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:STATUS?")
+        command = _get_mon_module_command(":READ:MODULE:STATUS")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -448,7 +264,7 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:STATUS?")
+        command = _get_mon_module_command(":READ:MODULE:EVENT:STATUS")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -461,7 +277,7 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Mask register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:MASK?")
+        command = _get_mon_module_command(":READ:MODULE:EVENT:MASK")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -474,7 +290,7 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:CHANSTAT?")
+        command = _get_mon_module_command(":READ:MODULE:EVENT:CHANSTAT")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -487,7 +303,7 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Mask register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:CHANMASK?")
+        command = _get_mon_module_command(":READ:MODULE:EVENT:CHANMASK")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -514,7 +330,7 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +24 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P24V?")
+        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P24V")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -528,7 +344,7 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage -24 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:N24V?")
+        command = _get_mon_module_command(":READ:MODULE:SUPPLY:N24V")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -542,7 +358,7 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +5 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P5V?")
+        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P5V")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -556,7 +372,7 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +3.3 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P3V?")
+        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P3V")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -570,7 +386,7 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +12 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P12V?")
+        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P12V")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -584,7 +400,7 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage -12 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:N12V?")
+        command = _get_mon_module_command(":READ:MODULE:SUPPLY:N12V")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -598,7 +414,7 @@ class Module(BaseModule):
         Returns:
             float: The module temperature in degree Celsius.
         """
-        command = _get_mon_module_command(":READ:MODULE:TEMPERATURE?")
+        command = _get_mon_module_command(":READ:MODULE:TEMPERATURE")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -612,7 +428,7 @@ class Module(BaseModule):
         Returns:
             int: The setvalue changes counter.
         """
-        command = _get_mon_module_command(":READ:MODULE:SETVALUE?")
+        command = _get_mon_module_command(":READ:MODULE:SETVALUE")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -625,11 +441,168 @@ class Module(BaseModule):
         Returns:
             str: The firmware name.
         """
-        command = _get_mon_module_command(":READ:FIRMWARE:NAME?")
+        command = _get_mon_module_command(":READ:FIRMWARE:NAME")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return response[0]
+
+    @property
+    def configuration_mode(self) -> bool:
+        """Check if the device is in configuration mode.
+
+        Returns:
+            bool: true if in configuration mode, otherwise false.
+        """
+        command = _get_mon_module_command(":SYSTEM:USER:CONFIG")
+        response = _write_command(self._serial, command)
+        if len(response) != 1:
+            raise ValueError("Wrong number of values were received, one value expected")
+        return int(response[0]) == 1
+
+    # Setters
+
+    @serial_baud_rate.setter
+    def serial_baud_rate(self, baud_rate: int) -> None:
+        """Set the device's serial baud rate.
+
+        Args:
+            baud_rate (int): The serial baud rate to set.
+        """
+        command = _get_set_module_command(":CONF:SERIAL:BAUD", baud_rate)
+        response = _write_command(self._serial, command)
+        if len(response) != 1 or int(response[0]) != baud_rate:
+            raise ValueError("Last command hasn't been processed.")
+
+    @serial_echo_enable.setter
+    def serial_echo_enable(self, enabled: int) -> None:
+        """Enable or disable serial echo.
+
+        Args:
+            enabled (int): 1 to enable serial echo, 0 to disable.
+        """
+        if enabled not in [0, 1]:
+            raise ValueError(
+                "Invalid serial echo value. Please choose 1 for enabled or 0 for disabled."
+            )
+
+        command = _get_set_module_command(":CONF:SERIAL:ECHO", enabled)
+        response = _write_command(self._serial, command)
+        if len(response) != 1 or int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
+
+    @filter_averaging_steps.setter
+    def filter_averaging_steps(self, steps: int) -> None:
+        """Set the number of digital filter averaging steps.
+
+        Args:
+            steps (int): The number of steps for filtering. Accepts values 1, 16, 64, 256, 512, or 1024.
+
+        Raises:
+            ValueError: If an invalid number of steps is provided.
+        """
+        valid_steps = [1, 16, 64, 256, 512, 1024]
+        if steps not in valid_steps:
+            raise ValueError(
+                f"Invalid number of steps. Please choose from {valid_steps}."
+            )
+
+        command = _get_set_module_command(":CONF:AVER", str(steps))
+        response = _write_command(self._serial, command)
+        if len(response) != 1 or int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
+
+    @kill_enable.setter
+    def kill_enable(self, enable: int) -> None:
+        """Set function kill enable (1) or kill disable (0).
+
+        Args:
+            enable (int): The kill enable value to set. Accepts 1 for enable or 0 for disable.
+        """
+        if enable not in [0, 1]:
+            raise ValueError(
+                "Invalid kill enable value. Please choose 1 for enable or 0 for disable."
+            )
+
+        command = _get_set_module_command(":CONF:KILL", str(enable))
+        response = _write_command(self._serial, command)
+        if len(response) != 1 or int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
+
+    @adjustment.setter
+    def adjustment(self, value: int) -> None:
+        """Set the fine adjustment function on (1) or off (0).
+
+        Args:
+            value (int): The adjustment value to set. Accepts 1 for on or 0 for off.
+        """
+        if value not in [0, 1]:
+            raise ValueError(
+                "Invalid adjustment value. Please choose 1 for on or 0 for off."
+            )
+
+        command = _get_set_module_command(":CONF:ADJUST", str(value))
+        response = _write_command(self._serial, command)
+        if len(response) != 1 or int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
+
+    @module_event_mask_register.setter
+    def module_event_mask_register(self, mask: int) -> None:
+        """Set the Module Event Mask register.
+
+        Args:
+            mask (int): The value to set in the Module Event Mask register.
+        """
+        command = _get_set_module_command(":CONF:EVENT:MASK", str(mask))
+        response = _write_command(self._serial, command)
+        if len(response) != 1 or int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
+
+    @module_event_channel_mask_register.setter
+    def module_event_channel_mask_register(self, mask: int) -> None:
+        """Set the Module Event Channel Mask register.
+
+        Args:
+            mask (int): The value to set in the Module Event Channel Mask register.
+        """
+        command = _get_set_module_command(":CONF:EVENT:CHANMASK", str(mask))
+        response = _write_command(self._serial, command)
+        if len(response) != 1 or int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
+
+    @module_can_address.setter
+    def module_can_address(self, address: int) -> None:
+        """Set the module's CAN bus address.
+
+        Args:
+            address (int): The CAN bus address to set (0-63).
+        """
+        if not (0 <= address <= 63):
+            raise ValueError(
+                "Invalid CAN bus address. Please choose an address between 0 and 63."
+            )
+
+        command = _get_set_module_command(":CONF:CAN:ADDR", str(address))
+        response = _write_command(self._serial, command)
+        if len(response) != 1 or int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
+
+    @module_can_bitrate.setter
+    def module_can_bitrate(self, bitrate: int) -> None:
+        """Set the module's CAN bus bit rate.
+
+        Args:
+            bitrate (int): The CAN bus bit rate to set. Accepts 125000 or 250000.
+        """
+        if bitrate not in [125000, 250000]:
+            raise ValueError(
+                "Invalid CAN bus bitrate. Please choose either 125000 or 250000."
+            )
+
+        command = _get_set_module_command(":CONF:CAN:BITRATE", str(bitrate))
+        response = _write_command(self._serial, command)
+        if len(response) != 1 or int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
 
     def enter_configuration_mode(self, serial_number: int):
         """Set the device to configuration mode to change the CAN bitrate or address.
@@ -646,15 +619,28 @@ class Module(BaseModule):
         command = _get_set_module_command(":SYSTEM:USER:CONFIG", "0")
         _write_command(self._serial, command)
 
-    @property
-    def configuration_mode(self) -> bool:
-        """Check if the device is in configuration mode.
+    def set_serial_echo_enabled(self) -> None:
+        """Enable serial echo."""
+        self.serial_echo_enable = 1
 
-        Returns:
-            bool: true if in configuration mode, otherwise false.
-        """
-        command = _get_mon_module_command(":SYSTEM:USER:CONFIG?")
+    def set_serial_echo_disabled(self) -> None:
+        """Disable serial echo."""
+        self.serial_echo_enable = 0
+
+    def reset_module_event_status(self) -> None:
+        """Reset the Module Event Status register."""
+        command = _get_set_module_command(":CONF:EVENT CLEAR", "")
         response = _write_command(self._serial, command)
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0]) == 1
+        if len(response) != 1 or int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
+
+    def clear_module_event_status_bits(self, bits: int) -> None:
+        """Clear single bits or bit combinations in the Module Event Status register.
+
+        Args:
+            bits (int): The bits to clear in the Module Event Status register.
+        """
+        command = _get_set_module_command(":CONF:EVENT", str(bits))
+        response = _write_command(self._serial, command)
+        if len(response) != 1 or int(response[0]) != 1:
+            raise ValueError("Last command hasn't been processed.")
