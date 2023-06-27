@@ -12,7 +12,9 @@ from ..channel import Channel as BaseChannel
 class Channel(BaseChannel):
     # Getters
     @property
-    def trip_action(self) -> int:
+    def trip_action(
+        self,
+    ) -> int:  # Instruction for NHR or SHR only. Instruction for NHS
         """
         Query the current action to be taken when a current trip occurs for the channel.
 
@@ -30,7 +32,9 @@ class Channel(BaseChannel):
         return int(response[0])
 
     @property
-    def trip_timeout(self) -> int:
+    def trip_timeout(
+        self,
+    ) -> int:  # Instruction for NHR or SHR only. Instruction for NHS
         """
         Query the current action to be taken when a current trip occurs for the channel.
 
@@ -44,7 +48,9 @@ class Channel(BaseChannel):
         return int(response[0])
 
     @property
-    def external_inhibit_action(self) -> int:
+    def external_inhibit_action(
+        self,
+    ) -> int:  # Instruction for NHR or SHR only. Instruction for NHS
         """
         Query the current action to be taken when a current trip occurs for the channel.
 
@@ -62,7 +68,7 @@ class Channel(BaseChannel):
         return int(response[0])
 
     @property
-    def output_mode(self) -> int:
+    def output_mode(self) -> int:  # Instruction for NHR or SHR only.
         """
         Query the configured channel output mode.
 
@@ -83,7 +89,7 @@ class Channel(BaseChannel):
         return int(response[0])
 
     @property
-    def available_output_modes(self) -> List[int]:
+    def available_output_modes(self) -> List[int]:  # Instruction for NHR or SHR only
         """
         Query the available channel output modes as a list.
 
@@ -112,7 +118,7 @@ class Channel(BaseChannel):
         return output_values
 
     @property
-    def output_polarity(self) -> str:
+    def output_polarity(self) -> str:  # Instruction for NHR or SHR only
         """
         Query the current output polarity of the channel.
 
@@ -130,7 +136,7 @@ class Channel(BaseChannel):
         return response[0]
 
     @property
-    def available_output_polarities(self):
+    def available_output_polarities(self):  # Instruction for NHR or SHR only
         """
         Query the available channel output polarities as a list.
 
@@ -178,7 +184,7 @@ class Channel(BaseChannel):
         return float(response[0][:-1])
 
     @property
-    def voltage_limit(self) -> float:
+    def voltage_limit(self) -> float:  # Instruction for SHR only
         """
         Query the voltage limit Vlim in Volt.
 
@@ -214,7 +220,7 @@ class Channel(BaseChannel):
         return float(response[0][:-1])
 
     @property
-    def voltage_mode(self) -> str:
+    def voltage_mode(self) -> str:  # Instruction for NHR or SHR only
         """
         Query the configured channel voltage mode with polarity sign in Volt.
 
@@ -232,7 +238,7 @@ class Channel(BaseChannel):
         return response[0][:-1]
 
     @property
-    def voltage_mode_list(self) -> List[str]:
+    def voltage_mode_list(self) -> List[str]:  # Instruction for NHR or SHR only
         """
         Query the available channel voltage modes as a list.
 
@@ -323,7 +329,7 @@ class Channel(BaseChannel):
         return float(response[0][:-1])
 
     @property
-    def current_limit(self) -> float:
+    def current_limit(self) -> float:  # Instruction for SHR only
         """
         Query the current limit (Ilim) in Ampere.
 
@@ -365,7 +371,7 @@ class Channel(BaseChannel):
         )  # Remove the last character from the response (unit)
 
     @property
-    def current_mode(self) -> float:
+    def current_mode(self) -> float:  # Instruction for NHR or SHR only
         """
         Query the configured channel current mode in Ampere.
 
@@ -386,7 +392,7 @@ class Channel(BaseChannel):
         )  # Remove the last character from the response (unit)
 
     @property
-    def current_mode_list(self) -> List[float]:
+    def current_mode_list(self) -> List[float]:  # Instruction for NHR or SHR only
         """
         Query the available channel current modes as a list.
 
@@ -427,7 +433,7 @@ class Channel(BaseChannel):
         return float(response[0][:-1])
 
     @property
-    def current_ramp_speed(self) -> float:
+    def current_ramp_speed(self) -> float:  # Instruction for EHS, NHR or SHR only
         """
         Query the channel current ramp speed in Ampere/second.
 
@@ -446,7 +452,7 @@ class Channel(BaseChannel):
         return float(response[0][:-3])
 
     @property
-    def voltage_ramp_speed(self) -> float:
+    def voltage_ramp_speed(self) -> float:  # Instruction for EHS, NHR or SHR only
         """
         Query the channel voltage ramp speed in Volt/second.
 
@@ -465,7 +471,9 @@ class Channel(BaseChannel):
         return float(response[0][:-3])
 
     @property
-    def voltage_ramp_speed_minimum(self) -> float:
+    def voltage_ramp_speed_minimum(
+        self,
+    ) -> float:  # Instruction for EHS, NHR or SHR only
         """
         Query the channel voltage ramp speed minimum in Volt/second.
 
@@ -484,7 +492,9 @@ class Channel(BaseChannel):
         return float(response[0][:-3])
 
     @property
-    def voltage_ramp_speed_maximum(self) -> float:
+    def voltage_ramp_speed_maximum(
+        self,
+    ) -> float:  # Instruction for EHS, NHR or SHR only
         """
         Query the channel voltage ramp speed maximum in Volt/second.
 
@@ -503,7 +513,9 @@ class Channel(BaseChannel):
         return float(response[0][:-3])
 
     @property
-    def current_ramp_speed_minimum(self) -> float:
+    def current_ramp_speed_minimum(
+        self,
+    ) -> float:  # Instruction for EHS, NHR or SHR only
         """
         Query the channel current ramp speed minimum in Ampere/second.
 
@@ -522,7 +534,9 @@ class Channel(BaseChannel):
         return float(response[0][:-3])
 
     @property
-    def current_ramp_speed_maximum(self) -> float:
+    def current_ramp_speed_maximum(
+        self,
+    ) -> float:  # Instruction for EHS, NHR or SHR only
         """
         Query the channel current ramp speed maximum in Ampere/second.
 
@@ -633,7 +647,9 @@ class Channel(BaseChannel):
         return float(response[0][:-1])
 
     @property
-    def channel_voltage_ramp_up_speed(self) -> float:
+    def channel_voltage_ramp_up_speed(
+        self,
+    ) -> float:  # Instruction for EHS, NHR or SHR only
         """
         Query the channel voltage ramp up speed in Volt/second.
 
@@ -644,14 +660,16 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_up_speed
             print(speed)  # Example output: 0.250E3
         """
-        command = _get_mon_channel_command(self._channel, "RAMP:VOLT:UP")
+        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:VOLT:UP")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-3])  # Remove the last 3 characters (unit)
 
     @property
-    def channel_voltage_ramp_down_speed(self) -> float:
+    def channel_voltage_ramp_down_speed(
+        self,
+    ) -> float:  # Instruction for EHS, NHR or SHR only
         """
         Query the channel voltage ramp down speed in Volt/second.
 
@@ -693,29 +711,26 @@ class Channel(BaseChannel):
     @property
     def channel_current_ramp_down_speed(self) -> float:
         """
-                Query the channel current ramp down speed in Ampere/second.
+        Query the channel current ramp down speed in Ampere/second.
 
-                Returns:
-                    float: The channel current ramp down speed in Ampere/second.
-
-                Example:
-        =======
-
-                Example:
-                    status = channel.channel_status
-                    print(status)  # Example output: 132
+        Returns:
+            float: The channel current ramp down speed in Ampere/second.
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CHAN:STATUS")
+        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:DOWN")
         response = _write_command(self._serial, command)
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return float(
+            response[0][:-3]
+        )  # Remove the last 3 characters (unit) and cast to float
 
     # Setters
 
     @trip_action.setter
-    def trip_action(self, action: int) -> None:
+    def trip_action(
+        self, action: int
+    ) -> None:  # Instruction for NHR or SHR only. Instruction for NHS
         """
         Set the action to be taken when a current trip occurs for the channel.
 
@@ -737,7 +752,9 @@ class Channel(BaseChannel):
             raise ValueError("Last command haven't been processed.")
 
     @trip_timeout.setter
-    def trip_timeout(self, timeout: int) -> None:
+    def trip_timeout(
+        self, timeout: int
+    ) -> None:  # Instruction for NHR or SHR only. Instruction for NHS
         """
         Set the trip timeout with one millisecond resolution.
 
@@ -752,7 +769,9 @@ class Channel(BaseChannel):
             raise ValueError("Last command haven't been processed.")
 
     @external_inhibit_action.setter
-    def external_inhibit_action(self, action: int) -> None:
+    def external_inhibit_action(
+        self, action: int
+    ) -> None:  # Instruction for NHR or SHR only. Instruction for NHS
         """
         Set the action to be taken when an External Inhibit event occurs for the channel.
 
@@ -774,7 +793,7 @@ class Channel(BaseChannel):
             raise ValueError("Last command haven't been processed.")
 
     @output_mode.setter
-    def output_mode(self, mode: int) -> None:
+    def output_mode(self, mode: int) -> None:  # Instruction for NHR or SHR only.
         """
         Set the channel output mode.
 
@@ -795,7 +814,9 @@ class Channel(BaseChannel):
             raise ValueError("Last command haven't been processed.")
 
     @output_polarity.setter
-    def output_polarity(self, polarity: str) -> None:
+    def output_polarity(
+        self, polarity: str
+    ) -> None:  # Instruction for NHR or SHR only.
         """
         Set the output polarity of the channel.
 
@@ -878,7 +899,9 @@ class Channel(BaseChannel):
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
-    def set_channel_voltage_ramp_up_down_speed(self, speed: int) -> None:
+    def set_channel_voltage_ramp_up_down_speed(
+        self, speed: int
+    ) -> None:  # Instruction for EHS, NHR or SHR only
         """
         Set the channel voltage ramp speed for up and down direction in Volt/second.
 
@@ -894,7 +917,9 @@ class Channel(BaseChannel):
             raise ValueError("Last command hasn't been processed.")
 
     @channel_voltage_ramp_up_speed.setter
-    def channel_voltage_ramp_up_speed(self, speed: int) -> None:
+    def channel_voltage_ramp_up_speed(
+        self, speed: int
+    ) -> None:  # Instruction for EHS, NHR or SHR only
         """
         Set the channel voltage ramp up speed in Volt/second.
 
@@ -904,13 +929,15 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_up_speed(250)
         """
-        command = _get_set_channel_command(self._channel, "RAMP:VOLT:UP", speed)
+        command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT:UP", speed)
         response = _write_command(self._serial, command)
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
     @channel_voltage_ramp_down_speed.setter
-    def channel_voltage_ramp_down_speed(self, speed: float) -> None:
+    def channel_voltage_ramp_down_speed(
+        self, speed: float
+    ) -> None:  # Instruction for EHS, NHR or SHR only
         """
         Set the channel voltage ramp down speed in Volt/second.
 
@@ -925,7 +952,9 @@ class Channel(BaseChannel):
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
-    def set_channel_current_ramp_up_down_speed(self, speed: float) -> None:
+    def set_channel_current_ramp_up_down_speed(
+        self, speed: float
+    ) -> None:  # Instruction for EHS, NHR or SHR only
         """
         Set the channel current ramp speed for up and down direction in Ampere/second.
 
@@ -941,7 +970,9 @@ class Channel(BaseChannel):
             raise ValueError("Last command hasn't been processed.")
 
     @channel_current_ramp_up_speed.setter
-    def channel_current_ramp_up_speed(self, speed: float) -> None:
+    def channel_current_ramp_up_speed(
+        self, speed: float
+    ) -> None:  # Instruction for EHS, NHR or SHR only
         """
         Set the channel current ramp up speed in Ampere/second.
 
@@ -957,7 +988,9 @@ class Channel(BaseChannel):
             raise ValueError("Last command hasn't been processed.")
 
     @channel_current_ramp_down_speed.setter
-    def channel_current_ramp_down_speed(self, speed: float) -> None:
+    def channel_current_ramp_down_speed(
+        self, speed: float
+    ) -> None:  # Instruction for EHS, NHR or SHR only
         """
         Set the channel current ramp down speed in Ampere/second.
 

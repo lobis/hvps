@@ -146,7 +146,11 @@ class Module(BaseModule):
         return int(response[0])
 
     @property
-    def serial_baud_rate(self) -> int:
+    def serial_baud_rate(
+        self,
+    ) -> (
+        int
+    ):  # Instruction is currently implemented for EHS devices with serial interface only
         """Query the device's serial baud rate.
 
         Returns:
