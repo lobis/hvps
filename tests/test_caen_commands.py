@@ -26,17 +26,20 @@ def test_caen_module_get_commands():
 
 
 def test_caen_module_set_commands():
-    def test_caen_module_set_commands():
-        with pytest.raises(ValueError):
-            # invalid parameter name
-            _get_set_module_command(0, "TEST", 10)
+    with pytest.raises(ValueError):
+        # invalid parameter name
+        _get_set_module_command(0, "TEST", 10)
 
-        with pytest.raises(ValueError):
-            # invalid board number
-            _get_set_module_command(-1, "BDNAME", 10)
+    with pytest.raises(ValueError):
+        # invalid board number
+        _get_set_module_command(-1, "BDNAME", 10)
 
-        command = _get_set_module_command(0, "BDNAME", 10)
-        assert command == b"$BD:00,CMD:SET,PAR:BDNAME,VAL:10\r\n"
+    with pytest.raises(ValueError):
+        # invalid parameter value
+        _get_set_module_command(0, 1, "BDILKM", "INVALID")
+
+    command = _get_set_module_command(0, "BDNAME", 10)
+    assert command == b"$BD:00,CMD:SET,PAR:BDNAME,VAL:10\r\n"
 
 
 def test_caen_channel_get_commands():
