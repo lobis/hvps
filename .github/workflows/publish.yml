@@ -32,7 +32,6 @@ jobs:
 
       - name: Verify npm package version matches tag
         run: |
-          cd bindings/nodejs
           python -c "import os,json;version=json.load(open('bindings/nodejs/package.json'))['version'];assert '${{ github.event.release.tag_name }}' == 'v' + version"
 
       - name: Cache dist directory
@@ -77,6 +76,9 @@ jobs:
   publish-to-npm:
     needs: [ publish-to-pypi ]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bindings/nodejs
 
     steps:
       - name: Checkout code
@@ -87,9 +89,6 @@ jobs:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: bindings/nodejs/package-lock.json
-
-      - name: Move to nodejs bindings
-        run: cd bindings/nodejs
 
       - name: Install dependencies
         run: npm ci
