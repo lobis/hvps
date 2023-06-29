@@ -1,5 +1,6 @@
-const { execSync } = require('child_process');
-
+const {execSync} = require('child_process');
+const packageJson = require('./package.json');
+const version = packageJson.version;
 
 class ExecutionContext {
     constructor(pythonPath) {
@@ -14,7 +15,7 @@ class ExecutionContext {
     getPythonVersion() {
         const command = `${this.python} -c "import sys; print(sys.version)"`;
         try {
-            return execSync(command, { encoding: 'utf-8' }).trim();
+            return execSync(command, {encoding: 'utf-8'}).trim();
         } catch (err) {
             console.error(`Error executing command (${command}): ${err}`);
             throw err;
@@ -24,7 +25,7 @@ class ExecutionContext {
     getPythonPath() {
         const command = `${this.python} -c "import sys; print(sys.executable)"`;
         try {
-            return execSync(command, { encoding: 'utf-8' }).trim();
+            return execSync(command, {encoding: 'utf-8'}).trim();
         } catch (err) {
             console.error(`Error executing command (${command}): ${err}`);
             throw err;
@@ -33,11 +34,18 @@ class ExecutionContext {
 
     getPackageVersion() {
         const command = `${this.python} -m hvps --version`;
+        let pythonPackageVersion;
         try {
-            return execSync(command, { encoding: 'utf-8' }).trim();
+            pythonPackageVersion = execSync(command, {encoding: 'utf-8'}).trim();
         } catch (err) {
-            throw new Error(`Error executing command (${command}). Please make sure the package is installed.`);
+            throw new Error(`Error executing command (${command}). Please make sure the HVPS python package is installed. To install a specific version, run: '${this.python} -m pip install hvps==${version}'`);
         }
+
+        if (pythonPackageVersion !== version) {
+            throw new Error("Mismatch between the version of the HVPS python package and the version of the HVPS nodejs package.");
+        }
+
+        return pythonPackageVersion;
     }
 
     print() {
@@ -50,7 +58,7 @@ class ExecutionContext {
     run(args) {
         const command = `${this.python} -m hvps ${args}`;
         try {
-            return execSync(command, { encoding: 'utf-8' }).trim();
+            return execSync(command, {encoding: 'utf-8'}).trim();
         } catch (err) {
             throw new Error(`Error executing command (${command}): ${err}`);
         }

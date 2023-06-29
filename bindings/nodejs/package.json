@@ -1,6 +1,6 @@
 {
   "name": "hvps",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Bindings for the HVPS python package",
   "main": "index.js",
   "bin": {

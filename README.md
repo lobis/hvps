@@ -1,9 +1,13 @@
 # HVPS
 
 [![PyPI version](https://badge.fury.io/py/hvps.svg)](https://badge.fury.io/py/hvps)
-[![Build and Test](https://github.com/lobis/hvps/actions/workflows/build-test.yml/badge.svg)](https://github.com/lobis/hvps/actions/workflows/build-test.yml)
+[![npm version](https://badge.fury.io/js/hvps.svg)](https://badge.fury.io/js/hvps)
+
 [![PyPI downloads](https://img.shields.io/pypi/dm/hvps.svg)](https://pypi.org/project/hvps/)
 ![Python Version](https://img.shields.io/badge/python-3.8-blue.svg)
+
+[![Build and Test](https://github.com/lobis/hvps/actions/workflows/build-test.yml/badge.svg)](https://github.com/lobis/hvps/actions/workflows/build-test.yml)
+[![Upload Python Package to PyPI and nodejs bindings to npm](https://github.com/lobis/hvps/actions/workflows/publish.yml/badge.svg)](https://github.com/lobis/hvps/actions/workflows/publish.yml)
 
 ## 🤔 What is this?
 
