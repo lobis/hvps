@@ -21,6 +21,9 @@ jobs:
           # Update the package.json file
           sed -i "s/\"version\": \".*\",/\"version\": \"$TAG\",/" bindings/nodejs/package.json
 
+          # Checkout to main branch
+          git checkout main
+
           # Commit and push changes
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
