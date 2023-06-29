@@ -21,12 +21,10 @@ jobs:
           # Update the package.json file
           sed -i "s/\"version\": \".*\",/\"version\": \"$TAG\",/" bindings/nodejs/package.json
 
-          # Checkout to main branch
-          git checkout main
-
           # Commit and push changes
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add src/hvps/version.py bindings/nodejs/package.json
           git commit -am "Update version to $TAG"
           git push
 
