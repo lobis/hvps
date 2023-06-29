@@ -30,6 +30,11 @@ jobs:
         run: |
           python -c "import hvps; assert '${{ github.event.release.tag_name }}' == 'v' + hvps.__version__"
 
+      - name: Check nodejs package version is in sync with python (`npm run version-sync` from the js bindings dir)
+        run: |
+          cd bindings/nodejs
+          node cli.js --version | grep $(python -m hvps --version)
+
       - name: Cache dist directory
         uses: actions/cache@v3
         with:
