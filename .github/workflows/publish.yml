@@ -33,7 +33,7 @@ jobs:
       - name: Verify npm package version matches tag
         run: |
           cd bindings/nodejs
-          node -c "assert('${{ github.event.release.tag_name }}' == 'v' + require('./package.json').version)"
+          python -c "import os,json;version=json.load(open('package.json'))['version'];assert '${{ github.event.release.tag_name }}' == 'v' + version"
 
       - name: Cache dist directory
         uses: actions/cache@v3
