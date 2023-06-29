@@ -5,6 +5,29 @@ on:
     types: [ published ]
 
 jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update Version to Release Tag
+        run: |
+          # Extract the release tag number
+          TAG=$(echo "${{ github.event.release.tag_name }}" | sed -E 's/v([0-9]+\.[0-9]+\.[0-9]+)/\1/')
+
+          # Update the version file (version.py)
+          sed -i "s/__version__ = \".*\"/__version__ = \"$TAG\"/" version.py
+          sed -i "s/version = __version__/version = \"$TAG\"/" version.py
+
+          # Update the package.json file
+          sed -i "s/\"version\": \".*\",/\"version\": \"$TAG\",/" bindings/nodejs/package.json
+
+          # Commit and push changes
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Update version to $TAG"
+          git push
+
   build:
     runs-on: ubuntu-latest
     steps:
