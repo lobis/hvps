@@ -26,7 +26,7 @@ jobs:
           git config user.email "luis.antonio.obis@gmail.com"
           git add src/hvps/version.py bindings/nodejs/package.json
           git commit -m "Update version to $TAG"
-          git push origin HEAD:main
+          git push --force origin HEAD:main
 
   build:
     runs-on: ubuntu-latest
