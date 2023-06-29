@@ -1,4 +1,4 @@
-from hvps import __version__ as hvps_version, Caen, Iseg
+from hvps import __version__ as hvps_version, Caen
 from hvps.commands.caen.module import _set_module_commands, _mon_module_commands
 from hvps.commands.caen.channel import _set_channel_commands, _mon_channel_commands
 
@@ -55,7 +55,7 @@ def main():
     )
 
     # iseg
-    iseg_parser = subparsers.add_parser("iseg", help="iseg HVPS")
+    subparsers.add_parser("iseg", help="iseg HVPS")
 
     args = parser.parse_args()
     logging.basicConfig(level=args.log.upper())

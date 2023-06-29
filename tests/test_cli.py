@@ -1,7 +1,6 @@
 import os
 import subprocess
 import sys
-import pytest
 
 
 def run_main_with_arguments(arguments: list) -> tuple:
