@@ -83,7 +83,7 @@ jobs:
           key: ${{ runner.os }}-dist-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
 
   publish-to-pypi:
-    needs: [ build, publish-to-pypi-test ]
+    needs: [ build ]
     runs-on: ubuntu-latest
     steps:
       - name: Restore dist from cache
