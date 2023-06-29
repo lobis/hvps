@@ -2,8 +2,12 @@ from __future__ import annotations
 
 from ..hvps import Hvps
 from .module import Module
+from ...commands.caen.channel import validate_board_number
 
 
 class Caen(Hvps):
     def module(self, module: int = 0) -> Module:
-        return super().module(module)
+        validate_board_number(module)
+        if module not in self._modules:
+            self._modules[module] = Module(self._serial, self._logger, module)
+        return self._modules[module]

@@ -2,12 +2,10 @@ from __future__ import annotations
 from functools import cached_property
 from typing import List
 
-import serial
 
 from ...commands.iseg.module import _get_mon_module_command, _get_set_module_command
 from ...commands.iseg import _write_command
 from ...utils.utils import string_number_to_bit_array
-from .channel import Channel
 from ..module import Module as BaseModule
 from .channel import Channel
 
@@ -15,10 +13,6 @@ from .channel import Channel
 class Module(BaseModule):
     def channel(self, channel: int) -> Channel:
         return super().channel(channel)
-
-    def __init__(self, _serial: serial.Serial):
-        self._serial = _serial
-        self._channels: List[Channel] = []
 
     @cached_property
     def number_of_channels(self) -> int:

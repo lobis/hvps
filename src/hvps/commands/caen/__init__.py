@@ -6,7 +6,11 @@ import serial
 
 
 def _write_command(
-    ser: serial.Serial, bd: int, command: bytes, response: bool = True
+    ser: serial.Serial,
+    logger: logging.Logger,
+    bd: int,
+    command: bytes,
+    response: bool = True,
 ) -> str | None:
     """Write a command to a device.
 
@@ -15,13 +19,14 @@ def _write_command(
         command (bytes): The command to write utf-8 encoded.
         response (bool, optional): Whether to wait for a response. Defaults to True.
     """
-    logger = logging.getLogger(__name__)
-    logger.debug(f"_write_command command: {command}")
+    logger.debug(f"Send command: {command}")
     ser.write(command)
     if not response:
         return None
 
-    bd_from_response, response_value = _parse_response(ser.readline())
+    response = ser.readline()
+    logger.debug(f"Received response: {response}")
+    bd_from_response, response_value = _parse_response(response)
     if bd_from_response != bd:
         raise ValueError(
             f"Invalid response: {response_value}. Expected board number {bd}, got {bd_from_response}"
@@ -42,8 +47,7 @@ def _parse_response(response: bytes) -> (int, str):
     Raises:
         ValueError: If the response is invalid, cannot be decoded, or does not match the expected pattern.
     """
-    logger = logging.getLogger(__name__)
-    logger.debug(f"Response: {response}")
+
     if response == b"":
         raise ValueError(
             "Empty response. There was no response from the device. Check that the device is connected and correctly "
@@ -61,7 +65,5 @@ def _parse_response(response: bytes) -> (int, str):
         raise ValueError(f"Invalid response: '{response}'. Could not match regex")
     bd = int(match.group(1))
     value: str | None = match.group(2) if match.group(2) else None
-
-    logger.debug(f"response parsing -> bd: {bd}, value: {value}")
 
     return bd, value

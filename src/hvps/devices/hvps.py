@@ -4,6 +4,7 @@ import serial
 from serial.tools import list_ports
 from typing import Dict
 import logging
+import uuid
 
 from .module import Module
 
@@ -24,18 +25,19 @@ class Hvps:
             port (str | None, optional): The serial port to use. If None, it will try to detect one automatically. Defaults to None.
             timeout (float | None, optional): The timeout for serial communication. Defaults to None.
             connect (bool, optional): Whether to connect to the serial port during initialization. Defaults to True.
-            logging_level (int, optional): The logging level. Defaults to logging.WARNING.
+            logging_level (int, optional): The logger level. Defaults to logger.WARNING.
 
         """
-        # Set global logging level
-        # TODO: rethink logging
-        logging.basicConfig(level=logging_level)
-        logger = logging.getLogger(__name__)
+
+        self._logger = logging.getLogger(
+            f"{__name__}.{self.__class__.__name__}.{uuid.uuid4()}"
+        )
+        self._logger.setLevel(logging_level)
 
         self._modules: Dict[int, Module] = {}
 
-        if port is None:
-            logger.info("No port specified, trying to detect one")
+        if port is None and connect:
+            self._logger.info("No port specified, trying to detect one")
             ports = [port.device for port in list_ports.comports()]
             if len(ports) == 0:
                 raise Exception("No ports available")
@@ -43,16 +45,16 @@ class Hvps:
 
         self._serial: serial.Serial = serial.Serial()
         self._serial.port = port
-        logger.info(f"Using port {port}")
+        self._logger.info(f"Using port {port}")
         self._serial.baudrate = baudrate
-        logger.info(f"Using baud rate {self._serial.baudrate}")
+        self._logger.info(f"Using baud rate {self._serial.baudrate}")
         self._serial.timeout = timeout
-        logger.debug(f"Using timeout {self._serial.timeout}")
+        self._logger.debug(f"Using timeout {self._serial.timeout}")
 
         if connect:
-            logger.debug("Opening serial port")
+            self._logger.debug("Opening serial port")
             self._serial.open()
-            logger.debug("Serial port opened")
+            self._logger.debug("Serial port opened")
 
     def __del__(self):
         """Cleanup method to close the serial port when the HVPS object is deleted."""

@@ -5,5 +5,6 @@ from .module import Module
 
 
 class Iseg(Hvps):
-    def module(self, module: int = 0) -> Module:
-        return super().module(module)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._modules = {0: Module(self._serial, self._logger, 0)}
