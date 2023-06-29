@@ -69,7 +69,9 @@ def _parse_response(response: bytes, expected_response_type: type | None) -> Lis
     elif expected_response_type is None:
         return response.split(",")
     else:
-        raise ValueError(f"expected value type of {response} is not float, int or str")
+        raise ValueError(
+            f"expected value type of {response}, {expected_response_type}, is not float, int or str"
+        )
 
     split_response = response.split(",")
 

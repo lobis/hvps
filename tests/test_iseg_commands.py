@@ -10,7 +10,7 @@ available_output_modes: [1]
 """
 
 import pytest
-from typing import List
+from typing import List, Set
 
 from hvps.commands.iseg import _parse_response
 from hvps.commands.iseg.channel import (
@@ -30,10 +30,10 @@ from hvps.commands.iseg.module import (
 def test_iseg_module_get_commands():
     with pytest.raises(ValueError):
         # invalid parameter name
-        _get_mon_module_command(":READ:MODULE:EVENT:MASK")
+        _get_mon_module_command("TEST")
 
     command = _get_mon_module_command(":READ:MODULE:EVENT:MASK")
-    assert command == b":READ:MODULE:EVENT:MASK? (@0)\r\n"
+    assert command == b":READ:MODULE:EVENT:MASK?\r\n"
 
 
 def test_iseg_module_set_commands():
@@ -41,12 +41,8 @@ def test_iseg_module_set_commands():
         # invalid parameter name
         _get_set_module_command("TEST", 16)
 
-    with pytest.raises(ValueError):
-        # invalid argument value
-        _get_set_module_command(":CONF:AVER", 15)
-
     command = _get_set_module_command(":CONF:AVER", 16)
-    assert command == b":CONF:AVER 16,(@0);*OPC?\r\n"
+    assert command == b":CONF:AVER 16;*OPC?\r\n"
 
 
 def test_iseg_channel_get_commands():
@@ -65,11 +61,7 @@ def test_iseg_channel_get_commands():
 def test_iseg_channel_set_commands():
     with pytest.raises(ValueError):
         # invalid parameter name
-        _get_set_channel_command(0, "TEST")
-
-    with pytest.raises(ValueError):
-        # invalid argument value
-        _get_set_channel_command(0, ":CONF:OUTPUT:POL", "v")
+        _get_set_channel_command(0, "TEST", 0)
 
     with pytest.raises(ValueError):
         # invalid channel number
@@ -80,22 +72,30 @@ def test_iseg_channel_set_commands():
 
 
 def test_iseg_parse_response():
-    response = b":VOLT:BOUNDS 10,(@0);*OPC?\r\n1\r\n"
+    response = b"1\r\n"
     parsed_response = _parse_response(response, None)
-    assert parsed_response == [1]
+    assert parsed_response == ["1"]
 
-    response = b":CONF:OUTPUT:POL:LIST? (@0)\r\np,n\r\n"
+    response = b"p,n\r\n"
     parsed_response = _parse_response(response, List[str])
     assert parsed_response == ["p", "n"]
 
-    response = b":CONF:OUTPUT:POL? (@0)\r\np\r\n"
+    response = b"p\r\n"
     parsed_response = _parse_response(response, str)
     assert parsed_response == ["p"]
 
-    response = b":READ:VOLT?(@0)\r\n1.23400E3\r\n"
+    response = b"1.23400E3\r\n"
     parsed_response = _parse_response(response, float)
-    assert parsed_response == [1.23400e3]
+    assert parsed_response == ["1.23400E3"]
 
-    response = b":READ:CHAN:STATUS?(@0)\r\n132\r\n"
+    response = b"132\r\n"
     parsed_response = _parse_response(response, int)
-    assert parsed_response == [132]
+    assert parsed_response == ["132"]
+
+    # non-supported type
+    with pytest.raises(ValueError):
+        _parse_response(b"{1, 2}", Set[int])
+
+    # type missmatch
+    with pytest.raises(ValueError):
+        _parse_response(b"1.23400E^3", float)

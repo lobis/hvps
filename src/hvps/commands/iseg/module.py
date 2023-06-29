@@ -52,26 +52,36 @@ _set_module_commands = {
 
 def _get_mon_module_command(command: str) -> bytes:
     """
-    Generates a query command string for monitoring a specific channel.
+    Generates a query command string for monitoring a specific module.
 
     Args:
         command (str): The base command without the query symbol.
 
     Returns:
-        str: The query command string.
+        bytes: The query command string as bytes.
+
+    Raises:
+        ValueError: If the provided command is not a valid command.
 
     Example:
         command = ":MEAS:CURR"
-        query_command = _get_mon_channel_command(command, channel)
+        query_command = _get_mon_module_command(command)
         print(query_command)
-        :MEAS:CURR? (@3)
+        b':MEAS:CURR?\r\n'
     """
+    command = command.upper()
+    if command not in _mon_module_commands:
+        valid_commands = ", ".join(_mon_module_commands.keys())
+        raise ValueError(
+            f"Invalid command '{command}'. Valid commands are: {valid_commands}."
+        )
+
     return f"{command.strip()}?\r\n".encode("ascii")
 
 
 def _get_set_module_command(command: str, value: str | int | float | None) -> bytes:
     """
-    Generates an order command as a bytes object to set a value for a specific channel.
+    Generates an order command as a bytes object to set a value for a specific module.
 
     Args:
         command (str): The base command without the value and channel suffix.
@@ -80,13 +90,22 @@ def _get_set_module_command(command: str, value: str | int | float | None) -> by
     Returns:
         bytes: The order command as a bytes object.
 
+    Raises:
+        ValueError: If the provided command is not a valid command.
+
     Example:
         command = ":VOLT"
         value = 200
-        order_command = _get_set_channel_command(channel, command, value)
+        order_command = _get_set_module_command(command, value)
         print(order_command)
-        :VOLT 200,(@4)\r\n'
+        b':VOLT 200;*OPC?\r\n'
     """
+    command = command.upper()
+    if command not in _set_module_commands:
+        valid_commands = ", ".join(_set_module_commands.keys())
+        raise ValueError(
+            f"Invalid command '{command}'. Valid commands are: {valid_commands}."
+        )
     if isinstance(value, float):
         value = f"{value:E}"
 

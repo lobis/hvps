@@ -35,7 +35,7 @@ def test_caen_module_monitor():
         baudrate=serial_baud,
         connect=True,
         timeout=timeout,
-        verbosity=logging.DEBUG,
+        logging_level=logging.DEBUG,
     )
     print(
         f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"
@@ -98,7 +98,7 @@ def test_caen_channel_serial():
         baudrate=serial_baud,
         connect=True,
         timeout=timeout,
-        verbosity=logging.DEBUG,
+        logging_level=logging.DEBUG,
     )
     print(
         f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"

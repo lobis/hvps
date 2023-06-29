@@ -63,6 +63,9 @@ _set_channel_commands = {
 }
 
 
+from __future__ import annotations
+
+
 def _get_mon_channel_command(channel: int, command: str) -> bytes:
     """
     Generates a query command string for monitoring a specific channel.
@@ -75,6 +78,7 @@ def _get_mon_channel_command(channel: int, command: str) -> bytes:
         bytes: The query command string as bytes.
 
     Raises:
+        ValueError: If the provided channel is not a valid positive integer.
         ValueError: If the provided command is not a valid command.
 
     Example:
@@ -86,13 +90,13 @@ def _get_mon_channel_command(channel: int, command: str) -> bytes:
     """
     if channel < 0:
         raise ValueError(
-            f"Invalid channel '{channel}'. Valid channels are positive integers"
+            f"Invalid channel '{channel}'. Valid channels are positive integers."
         )
     command = command.upper()
     if command not in _mon_channel_commands:
         valid_commands = ", ".join(_mon_channel_commands.keys())
         raise ValueError(
-            f"Invalid command '{command}'. Valid commands are: {valid_commands}"
+            f"Invalid command '{command}'. Valid commands are: {valid_commands}."
         )
 
     return f"{command.strip()}? (@{channel})\r\n".encode("ascii")
@@ -113,6 +117,7 @@ def _get_set_channel_command(
         bytes: The order command as a bytes object.
 
     Raises:
+        ValueError: If the provided channel is not a valid positive integer.
         ValueError: If the provided command is not a valid command.
 
     Example:
@@ -125,13 +130,13 @@ def _get_set_channel_command(
     """
     if channel < 0:
         raise ValueError(
-            f"Invalid channel '{channel}'. Valid channels are positive integers"
+            f"Invalid channel '{channel}'. Valid channels are positive integers."
         )
     command = command.upper()
     if command not in _set_channel_commands:
         valid_commands = ", ".join(_mon_channel_commands.keys())
         raise ValueError(
-            f"Invalid command '{command}'. Valid commands are: {valid_commands}"
+            f"Invalid command '{command}'. Valid commands are: {valid_commands}."
         )
 
     if isinstance(value, float):
