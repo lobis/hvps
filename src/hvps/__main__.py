@@ -1,8 +1,5 @@
-from hvps import version, Caen
-from hvps.commands.caen.module import (
-    _set_module_commands,
-    _mon_module_commands,
-)
+from hvps import __version__ as hvps_version, Caen
+from hvps.commands.caen.module import _set_module_commands, _mon_module_commands
 from hvps.commands.caen.channel import _set_channel_commands, _mon_channel_commands
 
 from serial.tools import list_ports
@@ -13,7 +10,7 @@ import logging
 
 def main():
     parser = argparse.ArgumentParser(description="HVPS control")
-    parser.add_argument("--version", action="version", version=version.__version__)
+    parser.add_argument("--version", action="version", version=hvps_version)
 
     parser.add_argument(
         "--port",
