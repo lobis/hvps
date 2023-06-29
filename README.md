@@ -1,8 +1,8 @@
 # HVPS
 
-[![PyPI version](https://badge.fury.io/py/caenhv.svg)](https://badge.fury.io/py/caenhv)
-[![Build and Test](https://github.com/lobis/caen-hv/actions/workflows/build-test.yml/badge.svg)](https://github.com/lobis/caen-hv/actions/workflows/build-test.yml)
-[![PyPI downloads](https://img.shields.io/pypi/dm/caenhv.svg)](https://pypi.org/project/caenhv/)
+[![PyPI version](https://badge.fury.io/py/hvps.svg)](https://badge.fury.io/py/hvps)
+[![Build and Test](https://github.com/lobis/hvps/actions/workflows/build-test.yml/badge.svg)](https://github.com/lobis/hvps/actions/workflows/build-test.yml)
+[![PyPI downloads](https://img.shields.io/pypi/dm/hvps.svg)](https://pypi.org/project/hvps/)
 ![Python Version](https://img.shields.io/badge/python-3.8-blue.svg)
 
 ## 🤔 What is this?
@@ -17,8 +17,8 @@ I have done very limited testing on a single model (DT1471ET) but it should also
 supporting RS232.
 
 If you use this package, it is very possible you find a bug or some oversight.
-You are encouraged to make a [pull request](https://github.com/lobis/caen-hv/pulls) or to create
-an [issue](https://github.com/lobis/caen-hv/issues) to report a bug, to request additional features or to suggest
+You are encouraged to make a [pull request](https://github.com/lobis/hvps/pulls) or to create
+an [issue](https://github.com/lobis/hvps/issues) to report a bug, to request additional features or to suggest
 improvements.
 
 ## ⚙️ Installation
@@ -38,13 +38,15 @@ pip install .[dev]
 
 ## 👨‍💻 Usage
 
+### CAEN
+
 ```python
-from hvps import CaenHV
+from hvps import Caen
 
 # automatically detect serial port and baudrate (can be manually set)
-caen = CaenHV()
+caen = Caen()
 # get the first module. CAEN supports multiple modules over the same connection
-# typically only one module should be present
+# typically only one module will be present
 module = caen.module(0)
 
 # get channel number 2
@@ -55,8 +57,8 @@ print(f"vset: {channel.vset}")
 print(f"vmon: {channel.vmon}")
 
 # switch channel off and on
-channel.off()
-channel.on()
+channel.turn_off()
+channel.turn_on()
 
 # set a new value of 'vset'
 channel.vset = 300.0  # 300 V
