@@ -36,7 +36,7 @@ def test_caen_module_set_commands():
 
     with pytest.raises(ValueError):
         # invalid parameter value
-        _get_set_module_command(0, 1, "BDILKM", "INVALID")
+        _get_set_module_command(0, "BDILKM", "INVALID")
 
     command = _get_set_module_command(0, "BDNAME", 10)
     assert command == b"$BD:00,CMD:SET,PAR:BDNAME,VAL:10\r\n"
