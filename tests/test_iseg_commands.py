@@ -8,7 +8,6 @@ voltage_limit: 1955.292
 voltage_nominal: 2000.0
 available_output_modes: [1]
 """
-
 import pytest
 from typing import List, Set
 

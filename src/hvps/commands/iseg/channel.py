@@ -63,9 +63,6 @@ _set_channel_commands = {
 }
 
 
-from __future__ import annotations
-
-
 def _get_mon_channel_command(channel: int, command: str) -> bytes:
     """
     Generates a query command string for monitoring a specific channel.
