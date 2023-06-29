@@ -1,27 +1,18 @@
 from __future__ import annotations
-import re
 from typing import List
-
-"""
-from .module import (
-    _get_mon_module_command,
-    _get_set_module_command,
-)
-"""
-
-from .channel import (
-    _get_mon_channel_command,
-    _get_set_channel_command,
-)
 
 import logging
 import serial
+import re
 
 
 def _write_command(
-    ser: serial.Serial, command: bytes, response: bool = True
+    ser: serial.Serial,
+    command: bytes,
+    expected_response_type: type | None,
+    response: bool = True,
 ) -> List[str] | None:
-    """Write a command to a device.
+    """Write a command to a device and parses the response.
 
     Args:
         ser (Serial): The serial connection to the device.
@@ -41,12 +32,12 @@ def _write_command(
             f"Invalid handshake echo response: {response_value}. expected {command}"
         )
     # response reading
-    response_value = _parse_response(ser.readline())
+    response_value = _parse_response(ser.readline(), expected_response_type)
 
     return response_value
 
 
-def _parse_response(response: bytes) -> List[str]:
+def _parse_response(response: bytes, expected_response_type: type | None) -> List[str]:
     """Parse the response from a device.
 
     Args:
@@ -66,4 +57,29 @@ def _parse_response(response: bytes) -> List[str]:
     except UnicodeDecodeError:
         raise ValueError(f"Invalid response: {response}")
 
-    return response.split(",")
+    if expected_response_type == float or expected_response_type == List[float]:
+        # pattern for a float in scientific notation followed or not by units
+        pattern = (
+            r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?(\s*[a-zA-Z]+(/+[a-zA-Z]+)?)?$"
+        )
+    elif expected_response_type == int or expected_response_type == List[int]:
+        pattern = r"^[-+]?\d+$"
+    elif expected_response_type == str or expected_response_type == List[str]:
+        pattern = r"^[\x00-\x7F]+$"
+    elif expected_response_type is None:
+        return response.split(",")
+    else:
+        raise ValueError(
+            f"expected value type of {response}, {expected_response_type}, is not float, int or str"
+        )
+
+    split_response = response.split(",")
+
+    for r in split_response:
+        match = re.match(pattern, r)
+        if not match:
+            raise ValueError(
+                f"Invalid response: {response}, can't be identified as a {expected_response_type}, missmatch in RE"
+            )
+
+    return split_response

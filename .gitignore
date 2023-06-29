@@ -132,3 +132,6 @@ dmypy.json
 .vscode/
 
 node_modules/
+
+# ruff
+.ruff_cache/
