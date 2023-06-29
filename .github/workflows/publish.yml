@@ -32,11 +32,25 @@ jobs:
           git commit -m "Update version to $TAG"
           git push origin HEAD:main
 
+      - name: cache source code after modification
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ runner.os }}-src-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
+
   build:
     runs-on: ubuntu-latest
     needs: [ update-version ]
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+
     steps:
-      - uses: actions/checkout@v3
+      - name: restore source code from cache (contains update to version)
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ runner.os }}-src-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -68,23 +82,6 @@ jobs:
           path: dist
           key: ${{ runner.os }}-dist-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
 
-  publish-to-pypi-test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Restore dist from cache
-        uses: actions/cache@v3
-        with:
-          path: dist
-          key: ${{ runner.os }}-dist-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
-
-      - name: Publish package 📦 to TEST PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_TEST_API_TOKEN }}
-          repository-url: https://test.pypi.org/legacy/
-
   publish-to-pypi:
     needs: [ build, publish-to-pypi-test ]
     runs-on: ubuntu-latest
@@ -109,8 +106,11 @@ jobs:
         working-directory: bindings/nodejs
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: restore source code from cache (contains update to version)
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ runner.os }}-src-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
 
       - uses: actions/setup-node@v3
         with:
