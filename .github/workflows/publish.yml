@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}
+          ref: main
           fetch-depth: 0
           token: ${{ secrets.PUSH_GITHUB_TOKEN }}
 
@@ -30,7 +30,7 @@ jobs:
           git config --local user.email github-actions@github.com
           git add src/hvps/version.py bindings/nodejs/package.json
           git commit -m "Update version to $TAG"
-          git push origin ${{ github.head_ref }}
+          git push origin HEAD:main
 
   build:
     runs-on: ubuntu-latest
