@@ -23,7 +23,12 @@ class Channel(BaseChannel):
             The current action value.
         """
         command = _get_mon_channel_command(self._channel, ":CONF:TRIP:ACTION")
-        response = _write_command(self._serial, command, int)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=int,
+        )
         if len(response) != 1:
             raise ValueError("Unexpected response. Multiple action values received.")
         if not 0 <= int(response[0]) <= 4:
@@ -43,7 +48,12 @@ class Channel(BaseChannel):
             The current action value.
         """
         command = _get_mon_channel_command(self._channel, ":CONF:TRIP:TIME")
-        response = _write_command(self._serial, command, int)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=int,
+        )
         if len(response) != 1:
             raise ValueError("Unexpected response. Multiple action values received.")
         return int(response[0])
@@ -59,7 +69,12 @@ class Channel(BaseChannel):
             The current action value.
         """
         command = _get_mon_channel_command(self._channel, ":CONF:INHP:ACTION")
-        response = _write_command(self._serial, command, int)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=int,
+        )
         if len(response) != 1:
             raise ValueError("Unexpected response. Multiple action values received.")
         if not 0 <= int(response[0]) <= 4:
@@ -79,7 +94,12 @@ class Channel(BaseChannel):
         Output Mode allowed values: 1, 2, 3.
         """
         command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE")
-        response = _write_command(self._serial, command, int)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=int,
+        )
 
         if len(response) != 1:
             raise ValueError("Wrong number of values were sent, one value expected")
@@ -99,7 +119,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE:LIST")
-        response = _write_command(self._serial, command, List[int])
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=List[int],
+        )
 
         if 0 >= len(response) > 3:
             raise ValueError("Invalid number of output modes received.")
@@ -131,7 +156,12 @@ class Channel(BaseChannel):
             print(polarity)  # Example output: "n"
         """
         command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:POL")
-        response = _write_command(self._serial, command, str)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=str,
+        )
         if len(response) != 1:
             raise ValueError("Last command hasn't been processed.")
         return response[0]
@@ -153,7 +183,12 @@ class Channel(BaseChannel):
             print(polarities)  # Example output: ["p", "n"]
         """
         command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:POL:LIST")
-        response = _write_command(self._serial, command, str)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=str,
+        )
 
         if len(response) != 2:
             raise ValueError("Wrong number of values were sent, two values expected")
@@ -179,7 +214,12 @@ class Channel(BaseChannel):
             print(voltage)  # Example output: 1234.0
         """
         command = _get_mon_channel_command(self._channel, ":READ:VOLT")
-        response = _write_command(self._serial, command, str)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=str,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were sent, one value expected")
         return float(response[0][:-1])
@@ -197,7 +237,12 @@ class Channel(BaseChannel):
             print(limit)  # Example output: 3000.0
         """
         command = _get_mon_channel_command(self._channel, ":READ:VOLT:LIM")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were sent, one value expected")
         return float(response[0][:-1])
@@ -215,7 +260,12 @@ class Channel(BaseChannel):
             print(nominal)  # Example output: 6000.0
         """
         command = _get_mon_channel_command(self._channel, ":READ:VOLT:NOM")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were sent, one value expected")
         return float(response[0][:-1])
@@ -233,7 +283,12 @@ class Channel(BaseChannel):
             print(mode)  # Example output: "6.0E3V"
         """
         command = _get_mon_channel_command(self._channel, ":READ:VOLT:MODE")
-        response = _write_command(self._serial, command, str)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=str,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were sent, one value expected")
         return response[0][:-1]
@@ -251,7 +306,12 @@ class Channel(BaseChannel):
             print(mode_list)  # Example output: ["2.0E3V", "4.0E3V", "6.0E3V"]
         """
         command = _get_mon_channel_command(self._channel, ":READ:VOLT:MODE:LIST")
-        response = _write_command(self._serial, command, List[str])
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=List[str],
+        )
         if len(response) != 3:
             raise ValueError("Wrong number of values were sent, three values expected")
         return [mode[:-1] for mode in response]
@@ -269,7 +329,12 @@ class Channel(BaseChannel):
             print(bounds)  # Example output: "0.00000E3V"
         """
         command = _get_mon_channel_command(self._channel, ":READ:VOLT:BOUNDS")
-        response = _write_command(self._serial, command, str)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=str,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were sent, one value expected")
         return response[0][:-1]
@@ -287,7 +352,12 @@ class Channel(BaseChannel):
             print(is_on)  # Example output: True
         """
         command = _get_mon_channel_command(self._channel, ":READ:VOLT:ON")
-        response = _write_command(self._serial, command, bool)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=bool,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0][:-1]) == 1
@@ -305,7 +375,12 @@ class Channel(BaseChannel):
             print(is_emergency_off)  # Example output: False
         """
         command = _get_mon_channel_command(self._channel, ":READ:VOLT:EMCY")
-        response = _write_command(self._serial, command, bool)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=bool,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0][:-1]) == 1
@@ -324,7 +399,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:CURR")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-1])
@@ -343,7 +423,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:CURR:LIM")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(
@@ -364,7 +449,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:CURR:NOM")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(
@@ -385,7 +475,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:CURR:MODE")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(
@@ -406,7 +501,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:CURR:MODE:LIST")
-        response = _write_command(self._serial, command, List[float])
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=List[float],
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         modes = [
@@ -428,7 +528,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:CURR:BOUNDS")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-1])
@@ -447,7 +552,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:RAMP:CURR")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-3])
@@ -466,7 +576,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:RAMP:VOLT")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-3])
@@ -487,7 +602,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:RAMP:VOLT:MIN")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-3])
@@ -508,7 +628,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:RAMP:VOLT:MAX")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-3])
@@ -529,7 +654,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:RAMP:CURR:MIN")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-3])
@@ -550,7 +680,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:RAMP:CURR:MAX")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-3])
@@ -569,7 +704,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:CHAN:CONTROL")
-        response = _write_command(self._serial, command, int)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=int,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0])
@@ -588,7 +728,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":READ:CHAN:STATUS")
-        response = _write_command(self._serial, command, int)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=int,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0])
@@ -606,7 +751,12 @@ class Channel(BaseChannel):
             print(mask)  # Example output: 0
         """
         command = _get_mon_channel_command(self._channel, "READ:CHAN:EVENT:MASK")
-        response = _write_command(self._serial, command, int)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=int,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0])
@@ -624,7 +774,12 @@ class Channel(BaseChannel):
             print(voltage)  # Example output: 1234.56
         """
         command = _get_mon_channel_command(self._channel, ":MEAS:VOLT")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-1])
@@ -642,7 +797,12 @@ class Channel(BaseChannel):
             print(current)  # Example output: 0.00123456
         """
         command = _get_mon_channel_command(self._channel, ":MEAS:CURR")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-1])
@@ -662,7 +822,12 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 0.250E3
         """
         command = _get_mon_channel_command(self._channel, ":CONF:RAMP:VOLT:UP")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(response[0][:-3])  # Remove the last 3 characters (unit)
@@ -682,7 +847,12 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 0.12500E3
         """
         command = _get_mon_channel_command(self._channel, ":CONF:RAMP:VOLT:DOWN")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(
@@ -702,7 +872,12 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 0.12500E3
         """
         command = _get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:UP")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(
@@ -719,7 +894,12 @@ class Channel(BaseChannel):
 
         """
         command = _get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:DOWN")
-        response = _write_command(self._serial, command, float)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=float,
+        )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return float(
@@ -748,7 +928,12 @@ class Channel(BaseChannel):
                 "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
             )
         command = _get_set_channel_command(self._channel, ":CONF:TRIP:ACTION", action)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -765,7 +950,12 @@ class Channel(BaseChannel):
         if not 1 <= timeout <= 4095:
             raise ValueError("Timeout value must be in the range 1 to 4095 ms.")
         command = _get_set_channel_command(self._channel, ":CONF:TRIP:TIME", timeout)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -789,7 +979,12 @@ class Channel(BaseChannel):
                 "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
             )
         command = _get_set_channel_command(self._channel, ":CONF:INHP:ACTION", action)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -810,7 +1005,12 @@ class Channel(BaseChannel):
         if mode not in allowed_modes:
             raise ValueError("Invalid output mode. Allowed modes are: 1, 2, 3.")
         command = _get_set_channel_command(self._channel, ":CONF:OUTPUT:MODE", mode)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -835,7 +1035,12 @@ class Channel(BaseChannel):
                 "Invalid polarity value. Valid values are 'p' for positive and 'n' for negative."
             )
         command = _get_set_channel_command(self._channel, ":CONF:OUTPUT:POL", polarity)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
@@ -848,7 +1053,12 @@ class Channel(BaseChannel):
             vset (float): The voltage set value to set in Volt.
         """
         command = _get_set_channel_command(self._channel, ":VOLT", vset)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
@@ -861,7 +1071,12 @@ class Channel(BaseChannel):
             vbounds (float): The voltage bounds value to set in Volt.
         """
         command = _get_set_channel_command(self._channel, ":VOLT:BOUNDS", vbounds)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
@@ -870,7 +1085,12 @@ class Channel(BaseChannel):
         Clear the channel from state emergency off. The channel goes to state off.
         """
         command = _get_set_channel_command(self._channel, ":VOLT EMCY", "CLR")
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
@@ -883,7 +1103,12 @@ class Channel(BaseChannel):
             iset (float): The current set value to set in Ampere.
         """
         command = _get_set_channel_command(self._channel, ":CURR", iset)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -896,7 +1121,12 @@ class Channel(BaseChannel):
             ibounds (float): The current bounds value to set in Ampere.
         """
         command = _get_set_channel_command(self._channel, ":CURR:BOUNDS", ibounds)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -913,7 +1143,12 @@ class Channel(BaseChannel):
             channel.set_channel_voltage_ramp_up_down_speed(250)
         """
         command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT", speed)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
@@ -931,7 +1166,12 @@ class Channel(BaseChannel):
             channel.set_channel_voltage_ramp_up_speed(250)
         """
         command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT:UP", speed)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
@@ -949,7 +1189,12 @@ class Channel(BaseChannel):
             channel.set_channel_voltage_ramp_down_speed(125.0)
         """
         command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT:DOWN", speed)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
@@ -966,7 +1211,12 @@ class Channel(BaseChannel):
             channel.set_channel_current_ramp_up_down_speed(125.0)
         """
         command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR", speed)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
@@ -984,7 +1234,12 @@ class Channel(BaseChannel):
             channel.set_channel_current_ramp_up_speed(125.0)
         """
         command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR:UP", speed)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
@@ -1002,7 +1257,12 @@ class Channel(BaseChannel):
             channel.set_channel_current_ramp_down_speed(125.0)
         """
         command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR:DOWN", speed)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
 
@@ -1011,7 +1271,12 @@ class Channel(BaseChannel):
         Switch on the high voltage with the configured ramp speed.
         """
         command = _get_set_channel_command(self._channel, ":VOLT ON", None)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -1020,7 +1285,12 @@ class Channel(BaseChannel):
         Switch off the high voltage with the configured ramp speed.
         """
         command = _get_set_channel_command(self._channel, ":VOLT OFF", None)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -1029,7 +1299,12 @@ class Channel(BaseChannel):
         Shut down the channel high voltage (without ramp). The channel stays in Emergency Off until the command EMCY CLR is given.
         """
         command = _get_set_channel_command(self._channel, ":VOLT EMCY OFF", None)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -1038,7 +1313,12 @@ class Channel(BaseChannel):
         Clear the channel from state emergency off. The channel goes to state off.
         """
         command = _get_set_channel_command(self._channel, ":VOLT EMCY CLR", None)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -1047,7 +1327,12 @@ class Channel(BaseChannel):
         Clear the Channel Event Status register.
         """
         command = _get_set_channel_command(self._channel, ":EVENT CLEAR", None)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -1060,7 +1345,12 @@ class Channel(BaseChannel):
             bits: The bits or bit combinations to clear. Should be provided as an integer.
         """
         command = _get_set_channel_command(self._channel, ":EVENT", bits)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")
 
@@ -1072,6 +1362,11 @@ class Channel(BaseChannel):
             mask: new mask value
         """
         command = _get_set_channel_command(self._channel, ":EVENT:MASK", mask)
-        response = _write_command(self._serial, command, None)
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
         if int(response[0]) != 1:
             raise ValueError("Last command haven't been processed.")

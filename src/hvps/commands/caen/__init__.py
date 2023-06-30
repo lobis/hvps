@@ -12,13 +12,6 @@ def _write_command(
     command: bytes,
     response: bool = True,
 ) -> str | None:
-    """Write a command to a device.
-
-    Args:
-        ser (Serial): The serial connection to the device.
-        command (bytes): The command to write utf-8 encoded.
-        response (bool, optional): Whether to wait for a response. Defaults to True.
-    """
     logger.debug(f"Send command: {command}")
     ser.write(command)
     if not response:

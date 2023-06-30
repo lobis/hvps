@@ -8,33 +8,29 @@ import re
 
 def _write_command(
     ser: serial.Serial,
+    logger: logging.Logger,
     command: bytes,
     expected_response_type: type | None,
     response: bool = True,
 ) -> List[str] | None:
-    """Write a command to a device and parses the response.
-
-    Args:
-        ser (Serial): The serial connection to the device.
-        command (bytes): The command to write utf-8 encoded.
-        response (bool, optional): Whether to wait for a response. Defaults to True.
-    """
-    logger = logging.getLogger(__name__)
-    logger.debug(f"_write_command command: {command}")
+    logger.debug(f"Send command: {command}")
     ser.write(command)
     if not response:
         return None
 
     # echo reading
-    response_value = ser.readline()
-    if response_value != command:
+    response = ser.readline()
+    logger.debug(f"Received response: {response}")
+    if response != command:
         raise ValueError(
-            f"Invalid handshake echo response: {response_value}. expected {command}"
+            f"Invalid handshake echo response: {response}. expected {command}"
         )
-    # response reading
-    response_value = _parse_response(ser.readline(), expected_response_type)
 
-    return response_value
+    # response reading
+    response = ser.readline()
+    response = _parse_response(response, expected_response_type)
+
+    return response
 
 
 def _parse_response(response: bytes, expected_response_type: type | None) -> List[str]:
@@ -49,8 +45,6 @@ def _parse_response(response: bytes, expected_response_type: type | None) -> Lis
     Raises:
         ValueError: If the response is invalid, cannot be decoded, or does not match the expected pattern.
     """
-    logger = logging.getLogger(__name__)
-    logger.debug(f"Response: {response}")
 
     try:
         response: str = response.decode("ascii").strip()
