@@ -1,4 +1,4 @@
-const { ExecutionContext } = require('./index');
+const {ExecutionContext} = require('./index');
 const yargs = require('yargs');
 
 const cli = yargs
