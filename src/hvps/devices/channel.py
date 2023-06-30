@@ -1,9 +1,10 @@
 import serial
 from abc import ABC, abstractmethod
+import logging
 
 
 class Channel(ABC):
-    def __init__(self, _serial: serial.Serial, channel: int):
+    def __init__(self, _serial: serial.Serial, _logger: logging.Logger, channel: int):
         """Initialize the Channel object.
 
         Args:
@@ -12,6 +13,7 @@ class Channel(ABC):
 
         """
         self._serial = _serial
+        self._logger = _logger
         self._channel = channel
 
     @property

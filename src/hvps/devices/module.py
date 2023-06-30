@@ -4,10 +4,11 @@ import serial
 from abc import ABC, abstractmethod
 
 from .channel import Channel
+import logging
 
 
 class Module(ABC):
-    def __init__(self, _serial: serial.Serial, module: int):
+    def __init__(self, _serial: serial.Serial, _logger: logging.Logger, module: int):
         """Initialize the Module object.
 
         Args:
@@ -16,6 +17,7 @@ class Module(ABC):
 
         """
         self._serial = _serial
+        self._logger = _logger
         self._module = module
         self._channels: List[Channel] = []
 

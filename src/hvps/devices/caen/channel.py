@@ -48,7 +48,8 @@ class Channel(BaseChannel):
     @property
     def vset(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "VSET"),
         )
@@ -57,7 +58,8 @@ class Channel(BaseChannel):
     @property
     def vmin(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "VMIN"),
         )
@@ -66,7 +68,8 @@ class Channel(BaseChannel):
     @property
     def vmax(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "VMAX"),
         )
@@ -75,7 +78,8 @@ class Channel(BaseChannel):
     @property
     def vdec(self) -> int:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "VDEC"),
         )
@@ -84,7 +88,8 @@ class Channel(BaseChannel):
     @property
     def vmon(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "VMON"),
         )
@@ -93,7 +98,8 @@ class Channel(BaseChannel):
     @property
     def iset(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "ISET"),
         )
@@ -102,7 +108,8 @@ class Channel(BaseChannel):
     @property
     def imin(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "IMIN"),
         )
@@ -111,7 +118,8 @@ class Channel(BaseChannel):
     @property
     def imax(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "IMAX"),
         )
@@ -120,7 +128,8 @@ class Channel(BaseChannel):
     @property
     def isdec(self) -> int:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "ISDEC"),
         )
@@ -129,7 +138,8 @@ class Channel(BaseChannel):
     @property
     def imon(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "IMON"),
         )
@@ -138,7 +148,8 @@ class Channel(BaseChannel):
     @property
     def imrange(self) -> bool:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "IMRANGE"),
         )
@@ -149,7 +160,8 @@ class Channel(BaseChannel):
     @property
     def imdec(self) -> int:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "IMDEC"),
         )
@@ -158,7 +170,8 @@ class Channel(BaseChannel):
     @property
     def maxv(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "MAXV"),
         )
@@ -167,7 +180,8 @@ class Channel(BaseChannel):
     @property
     def mvmin(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "MVMIN"),
         )
@@ -176,7 +190,8 @@ class Channel(BaseChannel):
     @property
     def mvmax(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "MVMAX"),
         )
@@ -185,7 +200,8 @@ class Channel(BaseChannel):
     @property
     def mvdec(self) -> int:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "MVDEC"),
         )
@@ -194,7 +210,8 @@ class Channel(BaseChannel):
     @property
     def rup(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "RUP"),
         )
@@ -203,7 +220,8 @@ class Channel(BaseChannel):
     @property
     def rupmin(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "RUPMIN"),
         )
@@ -212,7 +230,8 @@ class Channel(BaseChannel):
     @property
     def rupmax(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "RUPMAX"),
         )
@@ -221,7 +240,8 @@ class Channel(BaseChannel):
     @property
     def rupdec(self) -> int:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "RUPDEC"),
         )
@@ -230,7 +250,8 @@ class Channel(BaseChannel):
     @property
     def rdw(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "RDW"),
         )
@@ -239,7 +260,8 @@ class Channel(BaseChannel):
     @property
     def rdwmin(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "RDWMIN"),
         )
@@ -248,7 +270,8 @@ class Channel(BaseChannel):
     @property
     def rdwmax(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "RDWMAX"),
         )
@@ -257,7 +280,8 @@ class Channel(BaseChannel):
     @property
     def rdwdec(self) -> int:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "RDWDEC"),
         )
@@ -266,7 +290,8 @@ class Channel(BaseChannel):
     @property
     def trip(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "TRIP"),
         )
@@ -275,7 +300,8 @@ class Channel(BaseChannel):
     @property
     def tripmin(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "TRIPMIN"),
         )
@@ -284,7 +310,8 @@ class Channel(BaseChannel):
     @property
     def tripmax(self) -> float:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "TRIPMAX"),
         )
@@ -293,7 +320,8 @@ class Channel(BaseChannel):
     @property
     def tripdec(self) -> int:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "TRIPDEC"),
         )
@@ -302,7 +330,8 @@ class Channel(BaseChannel):
     @property
     def pdwn(self) -> str:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "PDWN"),
         )
@@ -311,7 +340,8 @@ class Channel(BaseChannel):
     @property
     def pol(self) -> str:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "POL"),
         )
@@ -328,7 +358,8 @@ class Channel(BaseChannel):
     @property
     def stat(self) -> dict:
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, "STAT"),
         )
@@ -375,7 +406,8 @@ class Channel(BaseChannel):
     @vset.setter
     def vset(self, value: float) -> None:
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_set_channel_command(self._bd, self._channel, "VSET", value),
         )
@@ -385,7 +417,8 @@ class Channel(BaseChannel):
     @iset.setter
     def iset(self, value: float) -> None:
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_set_channel_command(self._bd, self._channel, "ISET", value),
         )
@@ -395,7 +428,8 @@ class Channel(BaseChannel):
     @maxv.setter
     def maxv(self, value: float) -> None:
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_set_channel_command(self._bd, self._channel, "MAXV", value),
         )
@@ -405,7 +439,8 @@ class Channel(BaseChannel):
     @rup.setter
     def rup(self, value: float) -> None:
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_set_channel_command(self._bd, self._channel, "RUP", value),
         )
@@ -415,7 +450,8 @@ class Channel(BaseChannel):
     @rdw.setter
     def rdw(self, value: float) -> None:
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_set_channel_command(self._bd, self._channel, "RDW", value),
         )
@@ -425,7 +461,8 @@ class Channel(BaseChannel):
     @trip.setter
     def trip(self, value: float) -> None:
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_set_channel_command(self._bd, self._channel, "TRIP", value),
         )
@@ -435,7 +472,8 @@ class Channel(BaseChannel):
     @pdwn.setter
     def pdwn(self, value: float) -> None:
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_set_channel_command(self._bd, self._channel, "PDWN", value),
         )
@@ -445,7 +483,8 @@ class Channel(BaseChannel):
     @imrange.setter
     def imrange(self, value: float) -> None:
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_set_channel_command(self._bd, self._channel, "IMRANGE", value),
         )
@@ -455,7 +494,8 @@ class Channel(BaseChannel):
     def turn_on(self) -> None:
         """Turn on the channel."""
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_set_channel_command(self._bd, self._channel, "ON", None),
         )
@@ -463,7 +503,8 @@ class Channel(BaseChannel):
     def turn_off(self) -> None:
         """Turn off the channel."""
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self._bd,
             command=_get_set_channel_command(self._bd, self._channel, "OFF", None),
         )

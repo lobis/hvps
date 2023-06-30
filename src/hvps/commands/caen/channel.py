@@ -50,6 +50,26 @@ _set_channel_commands = {
 }
 
 
+def validate_channel_number(channel: int) -> None:
+    if not 0 <= channel <= 7:
+        raise ValueError(
+            f"Invalid channel number '{channel}'. Must be in the range 0..7."
+        )
+
+
+def validate_board_number(board: int) -> None:
+    if not 0 <= board <= 31:
+        raise ValueError(f"Invalid board number '{board}'. Must be in the range 0..31.")
+
+
+def validate_channel_command(command: str, valid_commands: dict) -> None:
+    if command.upper() not in valid_commands:
+        valid_commands = ", ".join(valid_commands.keys())
+        raise ValueError(
+            f"Invalid command '{command}'. Valid command are: {valid_commands}"
+        )
+
+
 def _get_mon_channel_command(bd: int, channel: int, command: str) -> bytes:
     """
     Generate a command string to monitor a specific channel command.
@@ -66,19 +86,14 @@ def _get_mon_channel_command(bd: int, channel: int, command: str) -> bytes:
     Raises:
         ValueError: If the provided command is not valid.
     """
-    if not 0 <= bd <= 31:
-        raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
-    if not 0 <= channel <= 7:
-        raise ValueError(
-            f"Invalid channel number '{channel}'. Must be in the range 0..31."
-        )
+
+    validate_board_number(bd)
+    validate_channel_number(channel)
 
     command = command.upper()
-    if command not in _mon_channel_commands:
-        valid_commands = ", ".join(_mon_channel_commands.keys())
-        raise ValueError(
-            f"Invalid command '{command}'. Valid command are: {valid_commands}"
-        )
+
+    validate_channel_command(command, _mon_channel_commands)
+
     return f"$BD:{bd:02d},CMD:MON,CH:{channel:01d},PAR:{command}\r\n".encode("utf-8")
 
 
@@ -100,19 +115,13 @@ def _get_set_channel_command(
     Raises:
         ValueError: If the provided command or value is not valid.
     """
-    if not 0 <= bd <= 31:
-        raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
-    if not 0 <= channel <= 7:
-        raise ValueError(
-            f"Invalid channel number '{channel}'. Must be in the range 0..7."
-        )
+
+    validate_board_number(bd)
+    validate_channel_number(channel)
 
     command = command.upper()
-    if command not in _set_channel_commands:
-        valid_commands = ", ".join(_set_channel_commands.keys())
-        raise ValueError(
-            f"Invalid command '{command}'. Valid commands are: {valid_commands}"
-        )
+
+    validate_channel_command(command, _set_channel_commands)
 
     if command in ["ON", "OFF"]:
         if value is not None:
