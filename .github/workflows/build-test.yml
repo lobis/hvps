@@ -54,5 +54,5 @@ jobs:
 
       - name: Check nodejs package version is in sync with python
         run: |
-          cd bindings/nodejs
+          cd bindings/nodejs/hvps/
           node cli.js --version | grep $(python -m hvps --version)
