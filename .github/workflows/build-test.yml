@@ -42,11 +42,11 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: bindings/nodejs/package-lock.json
+          cache-dependency-path: bindings/nodejs/hvps/package-lock.json
 
       - name: "Install nodejs bindings"
         run: |
-          cd bindings/nodejs
+          cd bindings/nodejs/hvps
           npm --version
           node --version
           npm install
