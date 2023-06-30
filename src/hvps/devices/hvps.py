@@ -120,6 +120,25 @@ class Hvps:
         """
         return self._serial
 
+    @property
+    def logger(self) -> logging.Logger:
+        """
+        Get the logger.
+
+        Returns:
+            logging.Logger: The logger.
+        """
+        return self._logger
+
+    def set_logging_level(self, level: int):
+        """
+        Set the logging level.
+
+        Args:
+            level (int): The logging level.
+        """
+        self._logger.setLevel(level)
+
     def connect(self):
         """
         Connect to the serial port.
