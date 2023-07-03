@@ -28,7 +28,8 @@ class Module(BaseModule):
             int: The number of channels.
         """
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, "BDNCH"),
         )
@@ -43,7 +44,7 @@ class Module(BaseModule):
         """
         if len(self._channels) == 0:
             for channel in range(self.number_of_channels):
-                self._channels.append(Channel(self._serial, self.bd, channel))
+                self._channels.append(Channel(self._serial, channel, bd=self.bd))
         return self._channels
 
     @cached_property
@@ -54,7 +55,8 @@ class Module(BaseModule):
             str: The name of the module.
         """
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, "BDNAME"),
         )
@@ -69,7 +71,8 @@ class Module(BaseModule):
             str: The firmware release.
         """
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, "BDFREL"),
         )
@@ -84,7 +87,8 @@ class Module(BaseModule):
             str: The serial number.
         """
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, "BDSNUM"),
         )
@@ -100,7 +104,8 @@ class Module(BaseModule):
             bool: Yes: True, No: False
         """
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, "BDILK"),
         )
@@ -120,7 +125,8 @@ class Module(BaseModule):
             str: The interlock mode.
         """
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, "BDILKM"),
         )
@@ -145,7 +151,8 @@ class Module(BaseModule):
             str: The control mode.
         """
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, "BDCTR"),
         )
@@ -182,7 +189,8 @@ class Module(BaseModule):
             raise ValueError(f"Invalid value for 'control_mode': {value}")
 
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_set_module_command(self.bd, "BDCTR", value),
         )
@@ -208,7 +216,8 @@ class Module(BaseModule):
             str: The local bus termination status.
         """
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, "BDTERM"),
         )
@@ -243,7 +252,8 @@ class Module(BaseModule):
             str: The board alarm status value.
         """
         response = _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, "BDALARM"),
         )
@@ -273,7 +283,8 @@ class Module(BaseModule):
             raise ValueError(f"Invalid value for 'interlock_mode': {mode}")
 
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_set_module_command(self.bd, "BDILKM", mode),
         )
@@ -295,7 +306,8 @@ class Module(BaseModule):
         Clear alarm signal
         """
         _write_command(
-            self._serial,
+            ser=self._serial,
+            logger=self._logger,
             bd=self.bd,
             command=_get_set_module_command(self.bd, "BDCLR", None),
         )
