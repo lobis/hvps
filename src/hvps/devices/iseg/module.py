@@ -20,6 +20,14 @@ class Module(BaseModule):
         Returns:
             int: The number of channels.
         """
+        self._logger.debug("Getting number of channels")
+        if not self._serial.is_open:
+            # TODO: we should not cache the property if the serial port is not open
+            self._logger.warning(
+                "Serial port is not open. Returning 1 as number of channels."
+            )
+            return 1
+
         command = _get_mon_module_command(":READ:MODULE:CHANNELNUMBER")
         response = _write_command(
             ser=self._serial,
@@ -30,6 +38,22 @@ class Module(BaseModule):
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
         return int(response[0])
+
+    @property
+    def channels(self) -> list[Channel]:
+        """The channels in the module.
+
+        Returns:
+            List[Channel]: A list of Channel objects.
+        """
+        if len(self._channels) == 0:
+            self._logger.debug("Initializing channels")
+            for channel in range(self.number_of_channels):
+                self._logger.debug(f"Creating channel {channel}")
+                self._channels.append(
+                    Channel(ser=self._serial, channel=channel, logger=self._logger)
+                )
+        return self._channels
 
     @property
     def firmware_release(self) -> str:

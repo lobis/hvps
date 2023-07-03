@@ -56,6 +56,10 @@ class Channel(BaseChannel):
         return float(response)
 
     @property
+    def voltage_set(self) -> float:
+        return self.vset
+
+    @property
     def vmin(self) -> float:
         response = _write_command(
             ser=self._serial,

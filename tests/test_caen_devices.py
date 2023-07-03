@@ -35,6 +35,15 @@ def test_caen_module(caplog):
         caen.module(35)
 
 
-def test_caen_channel():
-    # TODO: implement
-    pass
+def test_caen_channel(caplog):
+    caplog.set_level("DEBUG")
+
+    caen = Caen(connect=False, logging_level="DEBUG")
+
+    module = caen.module()
+
+    channel = module.channel(0)
+
+    assert "Creating channel 0" in caplog.text
+
+    print(f"channel: {channel.channel}")

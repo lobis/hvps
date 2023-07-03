@@ -4,16 +4,17 @@ import logging
 
 
 class Channel(ABC):
-    def __init__(self, _serial: serial.Serial, _logger: logging.Logger, channel: int):
+    def __init__(self, ser: serial.Serial, logger: logging.Logger, channel: int):
         """Initialize the Channel object.
 
         Args:
-            _serial (serial.Serial): The serial object used for communication.
+            ser (serial.Serial): The serial object used for communication.
+            logger (logging.Logger): The logger object used for logging.
             channel (int): The channel number.
 
         """
-        self._serial = _serial
-        self._logger = _logger
+        self._serial = ser
+        self._logger = logger
         self._channel = channel
 
     @property
