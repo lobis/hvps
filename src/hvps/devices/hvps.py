@@ -34,6 +34,13 @@ class Hvps:
         )
         self._logger.setLevel(logging_level)
 
+        formatter = logging.Formatter(
+            "%(asctime)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+        )
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(formatter)
+        self._logger.addHandler(stream_handler)
+
         self._modules: Dict[int, Module] = {}
 
         if port is None and connect:
