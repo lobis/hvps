@@ -12,9 +12,16 @@ def _write_command(
     command: bytes,
     response: bool = True,
 ) -> str | None:
-    logger.debug(f"Send command: {command}")
+    logger.debug(f"Sending command: {command}")
+    if not ser.is_open:
+        logger.error("Serial port is not open")
+        raise serial.SerialException("Serial port is not open")
+
     ser.write(command)
     if not response:
+        logger.warning(
+            "Calling _write_command without expecting a response. Manual readout of the response is required."
+        )
         return None
 
     response = ser.readline()

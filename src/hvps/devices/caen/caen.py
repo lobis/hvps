@@ -10,5 +10,6 @@ class Caen(Hvps):
         self._logger.debug(f"Getting module {module}")
         validate_board_number(module)
         if module not in self._modules:
+            self._logger.debug(f"Creating module {module}")
             self._modules[module] = Module(self._serial, self._logger, module)
         return self._modules[module]
