@@ -11,24 +11,18 @@
 
 ## 🤔 What is this?
 
-The goal of this Python package is to interface with different brands of high voltage power supplies in a uniform way.
-Currently only CAEN and iseg brands are supported. Communication is performed via serial port (over USB).
+This is a Python package for controlling high voltage power supplies (HVPS) over serial port.
+The aim is to provide a unified pythonic interface for different HVPS models.
 
-## ⚠️ Disclaimer
+Along with the Python package, a minimal set of bindings for Node.js is also provided. A nodered node is also available.
+They both rely on the Python package to be installed in order to work.
 
-The features of this package are based on my needs at the time of writing.
-I have done very limited testing on a single model (DT1471ET) but it should also work for other CAEN power supplies also
-supporting RS232.
-
-If you use this package, it is very possible you find a bug or some oversight.
-You are encouraged to make a [pull request](https://github.com/lobis/hvps/pulls) or to create
-an [issue](https://github.com/lobis/hvps/issues) to report a bug, to request additional features or to suggest
-improvements.
+Currently only **CAEN** and **iseg** brands are supported.
 
 ## ⚙️ Installation
 
 Installation via `pip` is supported.
-To install the latest [published version](https://github.com/lobis/lecroy-scope/releases), run:
+To install the latest [published version](https://github.com/lobis/hvps/releases), run:
 
 ```bash
 pip install hvps
@@ -42,28 +36,73 @@ pip install .[dev]
 
 ## 👨‍💻 Usage
 
-### CAEN
+There is a hierarchy of objects that represent the HVPS and its components:
+
+- `HVPS`: represents the HVPS itself and handles the connection to the serial port
+- `Module`: represents a module of the HVPS. Some HVPS support multiple modules over the same connection
+- `Channel`: represents a channel of the HVPS
+
+### Connection
+
+```python
+from hvps import Caen, Iseg
+import logging
+
+# connection interface is common to all HVPS
+# if no serial port is specified, the first available port will be used
+# if no baudrate is specified, the default baudrate will be used
+# if connect=False, the connection will not be established (useful for testing)
+# if logging_level is specified, the logger will be configured accordingly
+hvps = Caen(port="/dev/ttyUSB0", baudrate=115200, connect=True, logging_level=logging.DEBUG)
+
+# connection settings can be accessed
+print(f"port: {hvps.port}")
+print(f"baudrate: {hvps.baudrate}")
+```
+
+### Module
 
 ```python
 from hvps import Caen
 
-# automatically detect serial port and baudrate (can be manually set)
+# default connection settings
 caen = Caen()
-# get the first module. CAEN supports multiple modules over the same connection
-# typically only one module will be present
+
+module = caen.module()  # get the first module (module 0)
+# if multiple modules are present, they can be accessed by index e.g. caen.module(1)
+
+# get the module's name
+print(f"module name: {module.name}")
+```
+
+### Channel
+
+```python
+from hvps import Caen
+
+caen = Caen()
 module = caen.module(0)
 
-# get channel number 2
-channel = module.channel(2)
+print(f"number of channels: {module.number_of_channels}")
 
-# print current 'vset' and 'vmon' values
-print(f"vset: {channel.vset}")
+channel = module.channel(2)  # get channel number 2
+
+# get monitoring parameters
 print(f"vmon: {channel.vmon}")
+print(f"vset: {channel.vset}")
 
-# switch channel off and on
-channel.turn_off()
+# set values (remote mode must be enabled)
+# turn on channel
 channel.turn_on()
 
-# set a new value of 'vset'
 channel.vset = 300.0  # 300 V
 ```
+
+## ⚠️ Disclaimer
+
+The development of this package is mostly based on documentation with access to only a few models of HVPS.
+
+If you use this package, it is very possible you find a bug or some oversight.
+You are encouraged to make a [pull request](https://github.com/lobis/hvps/pulls) or to create
+an [issue](https://github.com/lobis/hvps/issues) to report a bug, to request additional features or to suggest
+improvements.
