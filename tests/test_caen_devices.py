@@ -3,7 +3,7 @@ import pytest
 
 
 def test_caen_module():
-    caen = Caen(connect=False)
+    caen = Caen(connect=False, logging_level="DEBUG")
 
     # for CAEN, modules are dynamically created
     [caen.module(i) for i in range(0, 32)]
