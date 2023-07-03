@@ -48,14 +48,20 @@ class Module(ABC):
         pass
 
     @property
+    @abstractmethod
     def channels(self) -> List[Channel]:
-        """The list of channels in the module.
+        """The channels in the module.
+
+        This property should be implemented by subclasses to provide the channels in the module.
 
         Returns:
-            List[Channel]: The list of channels.
+            List[Channel]: A list of Channel objects.
+
+        Raises:
+            NotImplementedError: If the subclass does not implement this property.
 
         """
-        return self._channels
+        pass
 
     def channel(self, channel: int) -> Channel:
         """Get the specified channel in the module.
@@ -70,7 +76,7 @@ class Module(ABC):
             KeyError: If the channel number is invalid.
 
         """
-        if channel not in range(self.number_of_channels):
+        if channel not in range(len(self.channels)):
             raise KeyError(
                 f"Invalid channel {channel}. Valid channels are 0..{self.number_of_channels - 1}"
             )
