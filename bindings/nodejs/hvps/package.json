@@ -14,6 +14,11 @@
   "license": "BSD-3-Clause",
   "main": "index.js",
   "name": "hvps",
+  "node-red": {
+    "nodes": {
+      "hvps": "hvps-nodered.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lobis/hvps.git"
