@@ -12,7 +12,7 @@ def _write_command(
     command: bytes,
     expected_response_type: type | None,
     response: bool = True,
-) -> List[str] | None:
+) -> str | List[str] | None:
     logger.debug(f"Send command: {command}")
     ser.write(command)
     if not response:
@@ -33,7 +33,9 @@ def _write_command(
     return response
 
 
-def _parse_response(response: bytes, expected_response_type: type | None) -> List[str]:
+def _parse_response(
+    response: bytes, expected_response_type: type | None
+) -> str | List[str]:
     """Parse the response from a device.
 
     Args:
@@ -47,7 +49,7 @@ def _parse_response(response: bytes, expected_response_type: type | None) -> Lis
     """
 
     try:
-        response: str = response.decode("ascii").strip()
+        response = response.decode("ascii").strip()
     except UnicodeDecodeError:
         raise ValueError(f"Invalid response: {response}")
 
@@ -75,5 +77,6 @@ def _parse_response(response: bytes, expected_response_type: type | None) -> Lis
             raise ValueError(
                 f"Invalid response: {response}, can't be identified as a {expected_response_type}, missmatch in RE"
             )
-
+    if len(split_response) == 1:
+        return split_response[0]
     return split_response

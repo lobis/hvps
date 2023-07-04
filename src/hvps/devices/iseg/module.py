@@ -1,10 +1,13 @@
 from __future__ import annotations
+
+import inspect
 from functools import cached_property
 from typing import List
 
 from ...commands.iseg.module import _get_mon_module_command, _get_set_module_command
-from ...commands.iseg import _write_command
-from ...utils.utils import string_number_to_bit_array
+from ...commands.iseg import _write_command, _MON_MODULE_COMMANDS
+from ...utils.utils import string_number_to_bit_array, check_and_convert
+
 from ..module import Module as BaseModule
 from .channel import Channel
 
@@ -28,16 +31,17 @@ class Module(BaseModule):
             )
             return 1
 
-        command = _get_mon_module_command(":READ:MODULE:CHANNELNUMBER")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def channels(self) -> List[Channel]:
@@ -63,16 +67,17 @@ class Module(BaseModule):
         Returns:
             str: The firmware release.
         """
-        command = _get_mon_module_command(":READ:FIRMWARE:RELEASE")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=str,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return response[0]
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_status(self) -> dict:
@@ -82,17 +87,18 @@ class Module(BaseModule):
         Returns:
             str: The board alarm status value.
         """
-        command = _get_mon_module_command(":READ:MODULE:STATUS")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=dict,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-
-        bit_array = string_number_to_bit_array(response[0])
+        register = check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        bit_array = string_number_to_bit_array(register)
         bit_array = list(reversed(bit_array))
 
         # TODO: review this
@@ -120,16 +126,17 @@ class Module(BaseModule):
         Returns:
             int: The number of steps for filtering.
         """
-        command = _get_mon_module_command(":CONF:AVER")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def kill_enable(self) -> int:
@@ -138,16 +145,17 @@ class Module(BaseModule):
         Returns:
             int: The current kill enable value. 1 for enable, 0 for disable.
         """
-        command = _get_mon_module_command(":CONF:KILL")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def adjustment(self) -> int:
@@ -156,16 +164,17 @@ class Module(BaseModule):
         Returns:
             int: The current fine adjustment state. 1 for on, 0 for off.
         """
-        command = _get_mon_module_command(":CONF:ADJUST")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_can_address(self) -> int:
@@ -174,16 +183,17 @@ class Module(BaseModule):
         Returns:
             int: The current CAN bus address of the module.
         """
-        command = _get_mon_module_command(":CONF:CAN:ADDR")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_can_bitrate(self) -> int:
@@ -192,16 +202,17 @@ class Module(BaseModule):
         Returns:
             int: The current CAN bus bit rate of the module.
         """
-        command = _get_mon_module_command(":CONF:CAN:BITRATE")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def serial_baud_rate(
@@ -214,16 +225,17 @@ class Module(BaseModule):
         Returns:
             int: The current serial baud rate of the device.
         """
-        command = _get_mon_module_command(":CONF:SERIAL:BAUD")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def serial_echo_enable(self) -> int:
@@ -232,16 +244,17 @@ class Module(BaseModule):
         Returns:
             int: 1 if serial echo is enabled, 0 if disabled.
         """
-        command = _get_mon_module_command(":CONF:SERIAL:ECHO")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def serial_echo_enabled(self) -> bool:
@@ -258,16 +271,17 @@ class Module(BaseModule):
         Returns:
             float: The current voltage limit of the module.
         """
-        command = _get_mon_module_command(":READ:VOLT:LIM")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0].rstrip("%"))
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_current_limit(self) -> float:
@@ -276,16 +290,17 @@ class Module(BaseModule):
         Returns:
             float: The current current limit of the module.
         """
-        command = _get_mon_module_command(":READ:CURR:LIM")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0].rstrip("%"))
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_voltage_ramp_speed(self) -> float:
@@ -294,16 +309,17 @@ class Module(BaseModule):
         Returns:
             float: The current voltage ramp speed of the module.
         """
-        command = _get_mon_module_command(":READ:RAMP:VOLT")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:3])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_current_ramp_speed(self) -> float:
@@ -312,16 +328,17 @@ class Module(BaseModule):
         Returns:
             float: The current current ramp speed of the module.
         """
-        command = _get_mon_module_command(":READ:RAMP:CURR")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:3])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_control_register(self) -> int:
@@ -330,16 +347,17 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Control register.
         """
-        command = _get_mon_module_command(":READ:MODULE:CONTROL")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_status_register(self) -> int:
@@ -348,16 +366,17 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:STATUS")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_event_status_register(self) -> int:
@@ -366,16 +385,17 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:STATUS")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_event_mask_register(self) -> int:
@@ -384,16 +404,17 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Mask register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:MASK")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_event_channel_status_register(self) -> int:
@@ -402,16 +423,17 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:CHANSTAT")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_event_channel_mask_register(self) -> int:
@@ -420,25 +442,29 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Mask register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:CHANMASK")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_supply_voltage(self) -> List[float]:
         """Query the module supply voltages.
 
         Returns:
-            Tuple[str, str, str, str, str, str]: The module supply voltages.
+            List[float, float, float, float, float, float, float]: The module supply voltages.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY? (@0-6)")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -448,7 +474,7 @@ class Module(BaseModule):
         if len(response) != 7:
             raise ValueError("Wrong number of values were received, one value expected")
 
-        return [float(string[:-1]) for string in response]
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_supply_voltage_p24v(self) -> float:
@@ -457,17 +483,17 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +24 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P24V")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_supply_voltage_n24v(self) -> float:
@@ -476,17 +502,17 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage -24 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:N24V")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_supply_voltage_p5v(self) -> float:
@@ -495,17 +521,17 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +5 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P5V")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_supply_voltage_p3v(self) -> float:
@@ -514,17 +540,17 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +3.3 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P3V")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_supply_voltage_p12v(self) -> float:
@@ -533,17 +559,17 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +12 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P12V")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_supply_voltage_n12v(self) -> float:
@@ -552,17 +578,17 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage -12 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:N12V")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def module_temperature(self) -> float:
@@ -571,17 +597,17 @@ class Module(BaseModule):
         Returns:
             float: The module temperature in degree Celsius.
         """
-        command = _get_mon_module_command(":READ:MODULE:TEMPERATURE")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        temperature = response[0][:-1]
-        return float(temperature)
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def setvalue_changes_counter(self) -> int:
@@ -590,16 +616,18 @@ class Module(BaseModule):
         Returns:
             int: The setvalue changes counter.
         """
-        command = _get_mon_module_command(":READ:MODULE:SETVALUE")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def firmware_name(self) -> str:
@@ -608,16 +636,18 @@ class Module(BaseModule):
         Returns:
             str: The firmware name.
         """
-        command = _get_mon_module_command(":READ:FIRMWARE:NAME")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=str,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return response[0]
+
+        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
 
     @property
     def configuration_mode(self) -> bool:
@@ -626,16 +656,20 @@ class Module(BaseModule):
         Returns:
             bool: true if in configuration mode, otherwise false.
         """
-        command = _get_mon_module_command(":SYSTEM:USER:CONFIG")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=bool,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0]) == 1
+
+        return (
+            check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS) == 1
+        )
 
     # Setters
 
@@ -646,14 +680,20 @@ class Module(BaseModule):
         Args:
             baud_rate (int): The serial baud rate to set.
         """
-        command = _get_set_module_command(":CONF:SERIAL:BAUD", baud_rate)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, baud_rate)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != baud_rate:
+        converted_response = check_and_convert(
+            command_name, baud_rate, response, _MON_MODULE_COMMANDS
+        )
+        if converted_response != 1 or converted_response != baud_rate:
             raise ValueError("Last command hasn't been processed.")
 
     @serial_echo_enable.setter
@@ -663,19 +703,20 @@ class Module(BaseModule):
         Args:
             enabled (int): 1 to enable serial echo, 0 to disable.
         """
-        if enabled not in [0, 1]:
-            raise ValueError(
-                "Invalid serial echo value. Please choose 1 for enabled or 0 for disabled."
-            )
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, enabled)
 
-        command = _get_set_module_command(":CONF:SERIAL:ECHO", enabled)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
+        if (
+            check_and_convert(command_name, enabled, response, _MON_MODULE_COMMANDS)
+            != 1
+        ):
             raise ValueError("Last command hasn't been processed.")
 
     @filter_averaging_steps.setter
@@ -688,20 +729,17 @@ class Module(BaseModule):
         Raises:
             ValueError: If an invalid number of steps is provided.
         """
-        valid_steps = [1, 16, 64, 256, 512, 1024]
-        if steps not in valid_steps:
-            raise ValueError(
-                f"Invalid number of steps. Please choose from {valid_steps}."
-            )
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, steps)
 
-        command = _get_set_module_command(":CONF:AVER", str(steps))
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
+        if check_and_convert(command_name, steps, response, _MON_MODULE_COMMANDS) != 1:
             raise ValueError("Last command hasn't been processed.")
 
     @kill_enable.setter
@@ -711,19 +749,17 @@ class Module(BaseModule):
         Args:
             enable (int): The kill enable value to set. Accepts 1 for enable or 0 for disable.
         """
-        if enable not in [0, 1]:
-            raise ValueError(
-                "Invalid kill enable value. Please choose 1 for enable or 0 for disable."
-            )
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, enable)
 
-        command = _get_set_module_command(":CONF:KILL", str(enable))
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
+        if check_and_convert(command_name, enable, response, _MON_MODULE_COMMANDS) != 1:
             raise ValueError("Last command hasn't been processed.")
 
     @adjustment.setter
@@ -733,19 +769,17 @@ class Module(BaseModule):
         Args:
             value (int): The adjustment value to set. Accepts 1 for on or 0 for off.
         """
-        if value not in [0, 1]:
-            raise ValueError(
-                "Invalid adjustment value. Please choose 1 for on or 0 for off."
-            )
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, value)
 
-        command = _get_set_module_command(":CONF:ADJUST", str(value))
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
+        if check_and_convert(command_name, value, response, _MON_MODULE_COMMANDS) != 1:
             raise ValueError("Last command hasn't been processed.")
 
     @module_event_mask_register.setter
@@ -755,14 +789,17 @@ class Module(BaseModule):
         Args:
             mask (int): The value to set in the Module Event Mask register.
         """
-        command = _get_set_module_command(":CONF:EVENT:MASK", str(mask))
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, mask)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
+        if check_and_convert(command_name, mask, response, _MON_MODULE_COMMANDS) != 1:
             raise ValueError("Last command hasn't been processed.")
 
     @module_event_channel_mask_register.setter
@@ -772,14 +809,17 @@ class Module(BaseModule):
         Args:
             mask (int): The value to set in the Module Event Channel Mask register.
         """
-        command = _get_set_module_command(":CONF:EVENT:CHANMASK", str(mask))
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, mask)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
+        if check_and_convert(command_name, mask, response, _MON_MODULE_COMMANDS) != 1:
             raise ValueError("Last command hasn't been processed.")
 
     @module_can_address.setter
@@ -789,19 +829,21 @@ class Module(BaseModule):
         Args:
             address (int): The CAN bus address to set (0-63).
         """
-        if not (0 <= address <= 63):
-            raise ValueError(
-                "Invalid CAN bus address. Please choose an address between 0 and 63."
-            )
 
-        command = _get_set_module_command(":CONF:CAN:ADDR", str(address))
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, address)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
+        if (
+            check_and_convert(command_name, address, response, _MON_MODULE_COMMANDS)
+            != 1
+        ):
             raise ValueError("Last command hasn't been processed.")
 
     @module_can_bitrate.setter
@@ -811,19 +853,21 @@ class Module(BaseModule):
         Args:
             bitrate (int): The CAN bus bit rate to set. Accepts 125000 or 250000.
         """
-        if bitrate not in [125000, 250000]:
-            raise ValueError(
-                "Invalid CAN bus bitrate. Please choose either 125000 or 250000."
-            )
 
-        command = _get_set_module_command(":CONF:CAN:BITRATE", str(bitrate))
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, bitrate)
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
+        if (
+            check_and_convert(command_name, bitrate, response, _MON_MODULE_COMMANDS)
+            != 1
+        ):
             raise ValueError("Last command hasn't been processed.")
 
     def enter_configuration_mode(self, serial_number: int):
@@ -833,17 +877,31 @@ class Module(BaseModule):
             serial_number (int): The device serial number.
 
         """
-        command = _get_set_module_command(":SYSTEM:USER:CONFIG", str(serial_number))
-        _write_command(
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, serial_number)
+
+        response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
 
+        if (
+            check_and_convert(
+                command_name, serial_number, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
+            raise ValueError("Last command hasn't been processed.")
+
     def exit_configuration_mode(self):
         """Set the device back to normal mode."""
-        command = _get_set_module_command(":SYSTEM:USER:CONFIG", "0")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, 0)
+
         _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -861,14 +919,17 @@ class Module(BaseModule):
 
     def reset_module_event_status(self) -> None:
         """Reset the Module Event Status register."""
-        command = _get_set_module_command(":CONF:EVENT CLEAR", "")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, "")
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
+        if check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS) != 1:
             raise ValueError("Last command hasn't been processed.")
 
     def clear_module_event_status_bits(self, bits: int) -> None:
@@ -877,12 +938,66 @@ class Module(BaseModule):
         Args:
             bits (int): The bits to clear in the Module Event Status register.
         """
-        command = _get_set_module_command(":CONF:EVENT", str(bits))
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, str(bits))
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
+        if check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS) != 1:
             raise ValueError("Last command hasn't been processed.")
+
+
+# TODO: test consistency with methods and commands
+_mon_module_methods_to_commands = {
+    "channel": ":READ:MODULE:CHANNELNUMBER",
+    "firmware_release": ":READ:FIRMWARE:RELEASE",
+    "module_status": ":READ:MODULE:STATUS",
+    "filter_averaging_steps": ":CONF:AVER",
+    "kill_enable": ":CONF:KILL",
+    "adjustment": ":CONF:ADJUST",
+    "module_can_address": ":CONF:CAN:ADDR",
+    "module_can_bitrate": ":CONF:CAN:BITRATE",
+    "serial_baud_rate": ":CONF:SERIAL:BAUD",
+    "serial_echo_enable": ":CONF:SERIAL:ECHO",
+    "serial_echo_enabled": ":READ:VOLT:LIM",
+    "module_current_limit": ":READ:CURR:LIM",
+    "module_voltage_ramp_speed": ":READ:RAMP:VOLT",
+    "module_current_ramp_speed": ":READ:RAMP:CURR",
+    "module_control_register": ":READ:MODULE:CONTROL",
+    "module_status_register": ":READ:MODULE:STATUS",
+    "module_event_status_register": ":READ:MODULE:EVENT:STATUS",
+    "module_event_mask_register": ":READ:MODULE:EVENT:MASK",
+    "module_event_channel_status_register": ":READ:MODULE:EVENT:CHANSTAT",
+    "module_event_channel_mask_register": ":READ:MODULE:EVENT:CHANMASK",
+    "module_supply_voltage": ":READ:MODULE:SUPPLY? (@0-6)",
+    "module_supply_voltage_p24v": ":READ:MODULE:SUPPLY:P24V",
+    "module_supply_voltage_n24v": ":READ:MODULE:SUPPLY:N24V",
+    "module_supply_voltage_p5v": ":READ:MODULE:SUPPLY:P5V",
+    "module_supply_voltage_p3v": ":READ:MODULE:SUPPLY:P3V",
+    "module_supply_voltage_p12v": ":READ:MODULE:SUPPLY:P12V",
+    "module_supply_voltage_n12v": ":READ:MODULE:SUPPLY:N12V",
+    "module_temperature": ":READ:MODULE:TEMPERATURE",
+    "setvalue_changes_counter": ":READ:MODULE:SETVALUE",
+    "firmware_name": ":READ:FIRMWARE:NAME",
+    "configuration_mode": ":SYSTEM:USER:CONFIG",
+}
+_set_module_methods_to_commands = {
+    "serial_baud_rate": ":CONF:SERIAL:BAUD",
+    "serial_echo_enable": ":CONF:SERIAL:ECHO",
+    "filter_averaging_steps": ":CONF:AVER",
+    "kill_enable": ":CONF:KILL",
+    "adjustment": ":CONF:ADJUST",
+    "module_event_mask_register": ":CONF:EVENT:MASK",
+    "module_event_channel_mask_register": ":CONF:EVENT:CHANMASK",
+    "module_can_address": ":CONF:CAN:ADDR",
+    "module_can_bitrate": ":CONF:CAN:BITRATE",
+    "enter_configuration_mode": ":SYSTEM:USER:CONFIG",
+    "exit_configuration_mode": ":SYSTEM:USER:CONFIG",
+    "set_serial_echo_enabled": ":CONF:EVENT CLEAR",
+    "clear_module_event_status_bits": ":CONF:EVENT",
+}

@@ -1,13 +1,18 @@
 from __future__ import annotations
+
+import inspect
 from typing import List
 
 from ...commands.iseg.channel import (
     _get_set_channel_command,
     _get_mon_channel_command,
+    _MON_CHANNEL_COMMANDS,
+    _SET_CHANNEL_COMMANDS,
 )
 from ...commands.iseg import _write_command
 
 from ..channel import Channel as BaseChannel
+from ...utils.utils import check_and_convert
 
 
 class Channel(BaseChannel):
@@ -22,20 +27,17 @@ class Channel(BaseChannel):
         Returns:
             The current action value.
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:TRIP:ACTION")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Unexpected response. Multiple action values received.")
-        if not 0 <= int(response[0]) <= 4:
-            raise ValueError(
-                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
-            )
-        return int(response[0])
+
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def trip_timeout(
@@ -47,41 +49,38 @@ class Channel(BaseChannel):
         Returns:
             The current action value.
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:TRIP:TIME")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Unexpected response. Multiple action values received.")
-        return int(response[0])
+
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def external_inhibit_action(
         self,
     ) -> int:  # Instruction for NHR or SHR only. Instruction for NHS
         """
-        Query the current action to be taken when a current trip occurs for the channel.
+        Query the action that should happen when an External Inhibit for the channel occurs.
 
         Returns:
             The current action value.
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:INHP:ACTION")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Unexpected response. Multiple action values received.")
-        if not 0 <= int(response[0]) <= 4:
-            raise ValueError(
-                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
-            )
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def output_mode(self) -> int:  # Instruction for NHR or SHR only.
@@ -93,7 +92,9 @@ class Channel(BaseChannel):
 
         Output Mode allowed values: 1, 2, 3.
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -104,10 +105,7 @@ class Channel(BaseChannel):
         if len(response) != 1:
             raise ValueError("Wrong number of values were sent, one value expected")
 
-        allowed_modes = [1, 2, 3]
-        if int(response[0]) not in allowed_modes:
-            raise ValueError("Invalid output mode. Allowed modes are: 1, 2, 3.")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def available_output_modes(self) -> List[int]:  # Instruction for NHR or SHR only
@@ -118,7 +116,9 @@ class Channel(BaseChannel):
             The list of available output mode values.
 
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE:LIST")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -126,22 +126,7 @@ class Channel(BaseChannel):
             expected_response_type=List[int],
         )
 
-        if 0 >= len(response) > 3:
-            raise ValueError("Invalid number of output modes received.")
-
-        try:
-            output_values = [int(mode) for mode in response]
-        except ValueError:
-            raise ValueError("Invalid output mode value received.")
-
-        allowed_modes = [1, 2, 3]
-        for mode in output_values:
-            if mode not in allowed_modes:
-                raise ValueError(
-                    f"Invalid output mode. Allowed modes are: {allowed_modes}"
-                )
-
-        return output_values
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def output_polarity(self) -> str:  # Instruction for NHR or SHR only
@@ -155,16 +140,16 @@ class Channel(BaseChannel):
             polarity = channel.output_polarity
             print(polarity)  # Example output: "n"
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:POL")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=str,
         )
-        if len(response) != 1:
-            raise ValueError("Last command hasn't been processed.")
-        return response[0]
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def available_output_polarities(self):  # Instruction for NHR or SHR only
@@ -182,7 +167,9 @@ class Channel(BaseChannel):
             polarities = channel.available_output_polarities
             print(polarities)  # Example output: ["p", "n"]
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:POL:LIST")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -190,16 +177,7 @@ class Channel(BaseChannel):
             expected_response_type=str,
         )
 
-        if len(response) != 2:
-            raise ValueError("Wrong number of values were sent, two values expected")
-
-        for polarity in response:
-            if polarity not in ["p", "n"]:
-                raise ValueError(
-                    "Invalid polarity value. Valid values are 'p' for positive and 'n' for negative."
-                )
-
-        return response
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def voltage_set(self):
@@ -213,16 +191,16 @@ class Channel(BaseChannel):
             voltage = channel.voltage_set
             print(voltage)  # Example output: 1234.0
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=str,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-        return float(response[0][:-1])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def voltage_limit(self) -> float:  # Instruction for SHR only
@@ -236,16 +214,16 @@ class Channel(BaseChannel):
             limit = channel.voltage_limit
             print(limit)  # Example output: 3000.0
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:LIM")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-        return float(response[0][:-1])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def voltage_nominal(self) -> float:
@@ -259,85 +237,85 @@ class Channel(BaseChannel):
             nominal = channel.voltage_nominal
             print(nominal)  # Example output: 6000.0
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:NOM")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-        return float(response[0][:-1])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
-    def voltage_mode(self) -> str:  # Instruction for NHR or SHR only
+    def voltage_mode(self) -> float:  # Instruction for NHR or SHR only
         """
         Query the configured channel voltage mode with polarity sign in Volt.
 
         Returns:
-            str: The configured channel voltage mode with polarity sign in Volt.
+            float: The configured channel voltage mode with polarity sign in Volt.
 
         Example:
             mode = channel.voltage_mode
-            print(mode)  # Example output: "6.0E3V"
+            print(mode)  # Example output: 6.0
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:MODE")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=str,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-        return response[0][:-1]
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
-    def voltage_mode_list(self) -> List[str]:  # Instruction for NHR or SHR only
+    def voltage_mode_list(self) -> List[float]:  # Instruction for NHR or SHR only
         """
         Query the available channel voltage modes as a list.
 
         Returns:
-            List[str]: The 3 available channel voltage modes as a list of strings.
+            List[float]: The 3 available channel voltage modes as a list of strings.
 
         Example:
             mode_list = channel.voltage_mode_list
-            print(mode_list)  # Example output: ["2.0E3V", "4.0E3V", "6.0E3V"]
+            print(mode_list)  # Example output: [2.0E3, 4.0E3, 6.0E3]
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:MODE:LIST")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=List[str],
         )
-        if len(response) != 3:
-            raise ValueError("Wrong number of values were sent, three values expected")
-        return [mode[:-1] for mode in response]
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
-    def voltage_bounds(self) -> str:
+    def voltage_bounds(self) -> float:
         """
         Query the channel voltage bounds in Volt.
 
         Returns:
-            str: The channel voltage bounds in Volt.
+            float: The channel voltage bounds in Volt.
 
         Example:
             bounds = channel.voltage_bounds
-            print(bounds)  # Example output: "0.00000E3V"
+            print(bounds)  # Example output: 0.00000E3
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:BOUNDS")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=str,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-        return response[0][:-1]
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def set_on(self) -> bool:
@@ -351,16 +329,18 @@ class Channel(BaseChannel):
             is_on = channel.set_on
             print(is_on)  # Example output: True
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:ON")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=bool,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0][:-1]) == 1
+        return (
+            check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS) == 1
+        )
 
     @property
     def emergency_off(self) -> bool:
@@ -374,16 +354,18 @@ class Channel(BaseChannel):
             is_emergency_off = channel.emergency_off
             print(is_emergency_off)  # Example output: False
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:EMCY")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=bool,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0][:-1]) == 1
+        return (
+            check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS) == 1
+        )
 
     @property
     def current_set(self) -> float:
@@ -398,16 +380,16 @@ class Channel(BaseChannel):
             print(current)  # Example output: 50.000E-6
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def current_limit(self) -> float:  # Instruction for SHR only
@@ -422,18 +404,16 @@ class Channel(BaseChannel):
             print(limit)  # Example output: 5.00000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR:LIM")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-1]
-        )  # Remove the last character from the response (unit)
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def current_nominal(self) -> float:
@@ -448,18 +428,16 @@ class Channel(BaseChannel):
             print(nominal)  # Example output: 6.00000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR:NOM")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-1]
-        )  # Remove the last character from the response (unit)
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def current_mode(self) -> float:  # Instruction for NHR or SHR only
@@ -474,18 +452,16 @@ class Channel(BaseChannel):
             print(mode)  # Example output: 2.00000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR:MODE")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-1]
-        )  # Remove the last character from the response (unit)
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def current_mode_list(self) -> List[float]:  # Instruction for NHR or SHR only
@@ -500,19 +476,16 @@ class Channel(BaseChannel):
             print(modes)  # Example output: [6.0E-3, 4.0E-3, 2.0E-3]
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR:MODE:LIST")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=List[float],
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        modes = [
-            float(mode[:-1]) for mode in response
-        ]  # Remove the last character from each mode (unit)
-        return modes
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def current_bounds(self) -> float:
@@ -527,16 +500,16 @@ class Channel(BaseChannel):
             print(bounds)  # Example output: 0.00000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR:BOUNDS")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def current_ramp_speed(self) -> float:  # Instruction for EHS, NHR or SHR only
@@ -551,16 +524,16 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 2.0000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:CURR")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def voltage_ramp_speed(self) -> float:  # Instruction for EHS, NHR or SHR only
@@ -575,16 +548,16 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 0.25000E3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:VOLT")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def voltage_ramp_speed_minimum(
@@ -601,16 +574,16 @@ class Channel(BaseChannel):
             print(speed_min)  # Example output: 0.00005E3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:VOLT:MIN")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def voltage_ramp_speed_maximum(
@@ -627,16 +600,16 @@ class Channel(BaseChannel):
             print(speed_max)  # Example output: 1.20000E3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:VOLT:MAX")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def current_ramp_speed_minimum(
@@ -653,16 +626,16 @@ class Channel(BaseChannel):
             print(speed_min)  # Example output: 1.0000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:CURR:MIN")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def current_ramp_speed_maximum(
@@ -679,16 +652,16 @@ class Channel(BaseChannel):
             print(speed_max)  # Example output: 6.0000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:CURR:MAX")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def channel_control(self) -> int:
@@ -703,16 +676,16 @@ class Channel(BaseChannel):
             print(control)  # Example output: 8
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CHAN:CONTROL")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def channel_status(self) -> int:
@@ -727,16 +700,16 @@ class Channel(BaseChannel):
             print(status)  # Example output: 132
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CHAN:STATUS")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def channel_event_mask(self) -> int:
@@ -750,16 +723,16 @@ class Channel(BaseChannel):
             mask = channel.channel_event_mask
             print(mask)  # Example output: 0
         """
-        command = _get_mon_channel_command(self._channel, "READ:CHAN:EVENT:MASK")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def measured_voltage(self) -> float:
@@ -773,16 +746,16 @@ class Channel(BaseChannel):
             voltage = channel.measured_voltage
             print(voltage)  # Example output: 1234.56
         """
-        command = _get_mon_channel_command(self._channel, ":MEAS:VOLT")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def measured_current(self) -> float:
@@ -796,16 +769,16 @@ class Channel(BaseChannel):
             current = channel.measured_current
             print(current)  # Example output: 0.00123456
         """
-        command = _get_mon_channel_command(self._channel, ":MEAS:CURR")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def channel_voltage_ramp_up_speed(
@@ -821,16 +794,16 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_up_speed
             print(speed)  # Example output: 0.250E3
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:VOLT:UP")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])  # Remove the last 3 characters (unit)
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def channel_voltage_ramp_down_speed(
@@ -846,18 +819,16 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_down_speed
             print(speed)  # Example output: 0.12500E3
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:VOLT:DOWN")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-3]
-        )  # Remove the last 3 characters (unit) and cast to float
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def channel_current_ramp_up_speed(self) -> float:
@@ -871,18 +842,16 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_down_speed
             print(speed)  # Example output: 0.12500E3
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:UP")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-3]
-        )  # Remove the last 3 characters (unit) and cast to float
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     @property
     def channel_current_ramp_down_speed(self) -> float:
@@ -893,18 +862,16 @@ class Channel(BaseChannel):
             float: The channel current ramp down speed in Ampere/second.
 
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:DOWN")
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_channel_methods_to_commands[method_name]
+        command = _get_mon_channel_command(self._channel, command_name)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-3]
-        )  # Remove the last 3 characters (unit) and cast to float
+        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
 
     # Setters
 
@@ -923,18 +890,19 @@ class Channel(BaseChannel):
                     - 3: Shut down the whole module without ramp
                     - 4: Disable the Delayed Trip function
         """
-        if not 0 <= action <= 4:
-            raise ValueError(
-                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
-            )
-        command = _get_set_channel_command(self._channel, ":CONF:TRIP:ACTION", action)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, action)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if (
+            check_and_convert(command_name, action, response, _SET_CHANNEL_COMMANDS)
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     @trip_timeout.setter
@@ -947,16 +915,19 @@ class Channel(BaseChannel):
         Args:
             timeout: The timeout value to set in milliseconds. Must be in the range 1 to 4095 ms.
         """
-        if not 1 <= timeout <= 4095:
-            raise ValueError("Timeout value must be in the range 1 to 4095 ms.")
-        command = _get_set_channel_command(self._channel, ":CONF:TRIP:TIME", timeout)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, timeout)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if (
+            check_and_convert(command_name, timeout, response, _SET_CHANNEL_COMMANDS)
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     @external_inhibit_action.setter
@@ -974,18 +945,19 @@ class Channel(BaseChannel):
                     - 3: Shut down the whole module without ramp
                     - 4: Disable the External Inhibit function
         """
-        if not 0 <= action <= 4:
-            raise ValueError(
-                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
-            )
-        command = _get_set_channel_command(self._channel, ":CONF:INHP:ACTION", action)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, action)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if (
+            check_and_convert(command_name, action, response, _SET_CHANNEL_COMMANDS)
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     @output_mode.setter
@@ -1001,17 +973,16 @@ class Channel(BaseChannel):
 
         Output Mode allowed values: 1, 2, 3.
         """
-        allowed_modes = [1, 2, 3]
-        if mode not in allowed_modes:
-            raise ValueError("Invalid output mode. Allowed modes are: 1, 2, 3.")
-        command = _get_set_channel_command(self._channel, ":CONF:OUTPUT:MODE", mode)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, mode)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if check_and_convert(command_name, mode, response, _SET_CHANNEL_COMMANDS) != 1:
             raise ValueError("Last command haven't been processed.")
 
     @output_polarity.setter
@@ -1030,19 +1001,20 @@ class Channel(BaseChannel):
         Example:
             channel.output_polarity("n")
         """
-        if polarity not in ["p", "n"]:
-            raise ValueError(
-                "Invalid polarity value. Valid values are 'p' for positive and 'n' for negative."
-            )
-        command = _get_set_channel_command(self._channel, ":CONF:OUTPUT:POL", polarity)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, polarity)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if (
+            check_and_convert(command_name, polarity, response, _SET_CHANNEL_COMMANDS)
+            != 1
+        ):
+            raise ValueError("Last command haven't been processed.")
 
     @voltage_set.setter
     def voltage_set(self, vset: float) -> None:
@@ -1052,15 +1024,17 @@ class Channel(BaseChannel):
         Args:
             vset (float): The voltage set value to set in Volt.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT", vset)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, vset)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if check_and_convert(command_name, vset, response, _SET_CHANNEL_COMMANDS) != 1:
+            raise ValueError("Last command haven't been processed.")
 
     @voltage_bounds.setter
     def voltage_bounds(self, vbounds: float) -> None:
@@ -1070,29 +1044,20 @@ class Channel(BaseChannel):
         Args:
             vbounds (float): The voltage bounds value to set in Volt.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT:BOUNDS", vbounds)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, vbounds)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
-
-    def clear_emergency_off(self) -> None:
-        """
-        Clear the channel from state emergency off. The channel goes to state off.
-        """
-        command = _get_set_channel_command(self._channel, ":VOLT EMCY", "CLR")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
-        )
-        if int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if (
+            check_and_convert(command_name, vbounds, response, _SET_CHANNEL_COMMANDS)
+            != 1
+        ):
+            raise ValueError("Last command haven't been processed.")
 
     @current_set.setter
     def current_set(self, iset: float) -> None:
@@ -1102,14 +1067,16 @@ class Channel(BaseChannel):
         Args:
             iset (float): The current set value to set in Ampere.
         """
-        command = _get_set_channel_command(self._channel, ":CURR", iset)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, iset)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if check_and_convert(command_name, iset, response, _SET_CHANNEL_COMMANDS) != 1:
             raise ValueError("Last command haven't been processed.")
 
     @current_bounds.setter
@@ -1120,14 +1087,19 @@ class Channel(BaseChannel):
         Args:
             ibounds (float): The current bounds value to set in Ampere.
         """
-        command = _get_set_channel_command(self._channel, ":CURR:BOUNDS", ibounds)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, ibounds)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if (
+            check_and_convert(command_name, ibounds, response, _SET_CHANNEL_COMMANDS)
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     def set_channel_voltage_ramp_up_down_speed(
@@ -1142,15 +1114,17 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_up_down_speed(250)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT", speed)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, speed)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+            raise ValueError("Last command haven't been processed.")
 
     @channel_voltage_ramp_up_speed.setter
     def channel_voltage_ramp_up_speed(
@@ -1165,15 +1139,17 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_up_speed(250)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT:UP", speed)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, speed)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+            raise ValueError("Last command haven't been processed.")
 
     @channel_voltage_ramp_down_speed.setter
     def channel_voltage_ramp_down_speed(
@@ -1188,15 +1164,17 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_down_speed(125.0)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT:DOWN", speed)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, speed)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+            raise ValueError("Last command haven't been processed.")
 
     def set_channel_current_ramp_up_down_speed(
         self, speed: float
@@ -1210,15 +1188,17 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_up_down_speed(125.0)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR", speed)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, speed)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+            raise ValueError("Last command haven't been processed.")
 
     @channel_current_ramp_up_speed.setter
     def channel_current_ramp_up_speed(
@@ -1233,15 +1213,17 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_up_speed(125.0)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR:UP", speed)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, speed)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+            raise ValueError("Last command haven't been processed.")
 
     @channel_current_ramp_down_speed.setter
     def channel_current_ramp_down_speed(
@@ -1256,84 +1238,96 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_down_speed(125.0)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR:DOWN", speed)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, speed)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+            raise ValueError("Last command haven't been processed.")
 
     def switch_on_high_voltage(self) -> None:
         """
         Switch on the high voltage with the configured ramp speed.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT ON", None)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, None)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if check_and_convert(command_name, None, response, _SET_CHANNEL_COMMANDS) != 1:
             raise ValueError("Last command haven't been processed.")
 
     def switch_off_high_voltage(self) -> None:
         """
         Switch off the high voltage with the configured ramp speed.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT OFF", None)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, None)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if check_and_convert(command_name, None, response, _SET_CHANNEL_COMMANDS) != 1:
             raise ValueError("Last command haven't been processed.")
 
     def shutdown_channel_high_voltage(self) -> None:
         """
         Shut down the channel high voltage (without ramp). The channel stays in Emergency Off until the command EMCY CLR is given.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT EMCY OFF", None)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, None)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if check_and_convert(command_name, None, response, _SET_CHANNEL_COMMANDS) != 1:
             raise ValueError("Last command haven't been processed.")
 
     def clear_channel_emergency_off(self) -> None:
         """
         Clear the channel from state emergency off. The channel goes to state off.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT EMCY CLR", None)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, None)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if check_and_convert(command_name, None, response, _SET_CHANNEL_COMMANDS) != 1:
             raise ValueError("Last command haven't been processed.")
 
     def clear_event_status(self) -> None:
         """
         Clear the Channel Event Status register.
         """
-        command = _get_set_channel_command(self._channel, ":EVENT CLEAR", None)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, None)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if check_and_convert(command_name, None, response, _SET_CHANNEL_COMMANDS) != 1:
             raise ValueError("Last command haven't been processed.")
 
     def clear_event_bits(self, bits: int) -> None:
@@ -1344,14 +1338,16 @@ class Channel(BaseChannel):
         Args:
             bits: The bits or bit combinations to clear. Should be provided as an integer.
         """
-        command = _get_set_channel_command(self._channel, ":EVENT", bits)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, bits)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if check_and_convert(command_name, bits, response, _SET_CHANNEL_COMMANDS) != 1:
             raise ValueError("Last command haven't been processed.")
 
     def set_event_mask(self, mask: int) -> None:
@@ -1361,12 +1357,80 @@ class Channel(BaseChannel):
         Args:
             mask: new mask value
         """
-        command = _get_set_channel_command(self._channel, ":EVENT:MASK", mask)
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_channel_methods_to_commands[method_name]
+        command = _get_set_channel_command(self._channel, command_name, mask)
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             command=command,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if check_and_convert(command_name, mask, response, _SET_CHANNEL_COMMANDS) != 1:
             raise ValueError("Last command haven't been processed.")
+
+
+# TODO: test consistency
+_mon_channel_methods_to_commands = {
+    "trip_action": ":CONF:TRIP:ACTION",
+    "trip_timeout": ":CONF:TRIP:TIME",
+    "external_inhibit_action": ":CONF:INHP:ACTION",
+    "output_mode": ":CONF:OUTPUT:MODE",
+    "available_output_modes": ":CONF:OUTPUT:MODE:LIST",
+    "output_polarity": ":CONF:OUTPUT:POL",
+    "available_output_polarities": ":CONF:OUTPUT:POL:LIST",
+    "voltage_set": ":READ:VOLT",
+    "voltage_limit": ":READ:VOLT:LIM",
+    "voltage_nominal": ":READ:VOLT:NOM",
+    "voltage_mode": ":READ:VOLT:MODE",
+    "voltage_mode_list": ":READ:VOLT:MODE:LIST",
+    "voltage_bounds": ":READ:VOLT:BOUNDS",
+    "set_on": ":READ:VOLT:ON",
+    "emergency_off": ":READ:VOLT:EMCY",
+    "current_set": ":READ:CURR",
+    "current_limit": ":READ:CURR:LIM",
+    "current_nominal": ":READ:CURR:NOM",
+    "current_mode": ":READ:CURR:MODE",
+    "current_mode_list": ":READ:CURR:MODE:LIST",
+    "current_bounds": ":READ:CURR:BOUNDS",
+    "current_ramp_speed": ":READ:RAMP:CURR",
+    "voltage_ramp_speed": ":READ:RAMP:VOLT",
+    "voltage_ramp_speed_minimum": ":READ:RAMP:VOLT:MIN",
+    "voltage_ramp_speed_maximum": ":READ:RAMP:VOLT:MAX",
+    "current_ramp_speed_minimum": ":READ:RAMP:CURR:MIN",
+    "current_ramp_speed_maximum": ":READ:RAMP:CURR:MAX",
+    "channel_control": ":READ:CHAN:CONTROL",
+    "channel_status": ":READ:CHAN:STATUS",
+    "channel_event_mask": "READ:CHAN:EVENT:MASK",
+    "measured_voltage": ":MEAS:VOLT",
+    "measured_current": ":MEAS:CURR",
+    "channel_voltage_ramp_up_speed": ":CONF:RAMP:VOLT:UP",
+    "channel_voltage_ramp_down_speed": ":CONF:RAMP:VOLT:DOWN",
+    "channel_current_ramp_up_speed": ":CONF:RAMP:CURR:UP",
+    "channel_current_ramp_down_speed": ":CONF:RAMP:CURR:DOWN",
+}
+_set_channel_methods_to_commands = {
+    "trip_action": ":CONF:TRIP:ACTION",
+    "trip_timeout": ":CONF:TRIP:TIME",
+    "external_inhibit_action": ":CONF:INHP:ACTION",
+    "output_mode": ":CONF:OUTPUT:MODE",
+    "output_polarity": ":CONF:OUTPUT:POL",
+    "voltage_set": ":VOLT",
+    "voltage_bounds": ":VOLT:BOUNDS",
+    "clear_emergency_off": ":VOLT EMCY, CLR",
+    "current_set": ":CURR",
+    "current_bounds": ":CURR:BOUNDS",
+    "set_channel_voltage_ramp_up_down_speed": ":CONF:RAMP:VOLT",
+    "channel_voltage_ramp_up_speed": ":CONF:RAMP:VOLT:UP",
+    "channel_voltage_ramp_down_speed": ":CONF:RAMP:VOLT:DOWN",
+    "set_channel_current_ramp_up_down_speed": ":CONF:RAMP:CURR",
+    "channel_current_ramp_up_speed": ":CONF:RAMP:CURR:UP",
+    "channel_current_ramp_down_speed": ":CONF:RAMP:CURR:DOWN",
+    "switch_on_high_voltage": ":VOLT ON",
+    "switch_off_high_voltage": ":VOLT OFF",
+    "shutdown_channel_high_voltage": ":VOLT EMCY OFF",
+    "clear_channel_emergency_off": ":VOLT EMCY CLR",
+    "clear_event_status": ":EVENT CLEAR",
+    "clear_event_bits": ":EVENT",
+    "set_event_mask": ":EVENT:MASK",
+}
