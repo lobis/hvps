@@ -23,11 +23,11 @@ jobs:
           sed -i "s/__version__ = \".*\"/__version__ = \"$TAG\"/" src/hvps/version.py
 
           # Update the package.json file for bindings
-          sed -i "s/\"version\": \".*\",/\"version\": \"$TAG\",/" bindings/nodejs/hvps/package.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"$TAG\"/" bindings/nodejs/hvps/package.json
 
           # Update the package.json file for nodered
-          sed -i "s/\"version\": \".*\",/\"version\": \"$TAG\",/" bindings/nodejs/nodered/package.json
-          sed -i "s/\"hvps\": \".*\",/\"version\": \"$TAG\",/" bindings/nodejs/nodered/package.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"$TAG\"/" bindings/nodejs/nodered/package.json
+          sed -i "s/\"hvps\": \".*\"/\"version\": \"$TAG\"/" bindings/nodejs/nodered/package.json
 
           # Commit and push changes
           git config --local user.name "Luis Antonio Obis Aparicio"
