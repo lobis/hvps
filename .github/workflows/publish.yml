@@ -159,7 +159,7 @@ jobs:
         run: |
           git config --local user.name "Luis Antonio Obis Aparicio"
           git config --local user.email "luis.antonio.obis@gmail.com"
-          git add bindings/nodejs/nodered/package-lock.json
+          git add package-lock.json
           git commit -m "Update nodered package-lock.json"
           git push origin HEAD:main
 
