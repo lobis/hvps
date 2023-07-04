@@ -1,7 +1,8 @@
 # HVPS
 
 [![PyPI version](https://badge.fury.io/py/hvps.svg)](https://badge.fury.io/py/hvps)
-[![npm version](https://badge.fury.io/js/hvps.svg)](https://badge.fury.io/js/hvps)
+[![node.js bindings](https://badge.fury.io/js/hvps.svg)](https://badge.fury.io/js/hvps)
+[![node-red node](https://badge.fury.io/js/hvps-node-red.svg)](https://www.npmjs.com/package/hvps-node-red)
 
 [![PyPI downloads](https://img.shields.io/pypi/dm/hvps.svg)](https://pypi.org/project/hvps/)
 ![Python Version](https://img.shields.io/badge/python-3.8-blue.svg)
