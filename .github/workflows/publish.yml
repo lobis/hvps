@@ -22,13 +22,17 @@ jobs:
           # Update the version file (version.py)
           sed -i "s/__version__ = \".*\"/__version__ = \"$TAG\"/" src/hvps/version.py
 
-          # Update the package.json file
-          sed -i "s/\"version\": \".*\",/\"version\": \"$TAG\",/" bindings/nodejs/package.json
+          # Update the package.json file for bindings
+          sed -i "s/\"version\": \".*\"/\"version\": \"$TAG\"/" bindings/nodejs/hvps/package.json
+
+          # Update the package.json file for nodered
+          sed -i "s/\"version\": \".*\"/\"version\": \"$TAG\"/" bindings/nodejs/nodered/package.json
+          sed -i "s/\"hvps\": \".*\"/\"hvps\": \"$TAG\"/" bindings/nodejs/nodered/package.json
 
           # Commit and push changes
           git config --local user.name "Luis Antonio Obis Aparicio"
           git config --local user.email "luis.antonio.obis@gmail.com"
-          git add src/hvps/version.py bindings/nodejs/package.json
+          git add src/hvps/version.py bindings/nodejs/hvps/package.json bindings/nodejs/nodered/package.json
           git commit -m "Update version to $TAG"
           git push origin HEAD:main
 
@@ -74,7 +78,7 @@ jobs:
 
       - name: Verify npm package version matches tag
         run: |
-          python -c "import os,json;version=json.load(open('bindings/nodejs/package.json'))['version'];assert '${{ github.event.release.tag_name }}' == 'v' + version"
+          python -c "import os,json;version=json.load(open('bindings/nodejs/hvps/package.json'))['version'];assert '${{ github.event.release.tag_name }}' == 'v' + version"
 
       - name: Cache dist directory
         uses: actions/cache@v3
@@ -98,12 +102,12 @@ jobs:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
 
-  publish-to-npm:
+  publish-bindings-to-npm:
     needs: [ publish-to-pypi ]
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: bindings/nodejs
+        working-directory: bindings/nodejs/hvps
 
     steps:
       - name: restore source code from cache (contains update to version)
@@ -116,8 +120,48 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: bindings/nodejs/package-lock.json
+          cache-dependency-path: bindings/nodejs/hvps/package-lock.json
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-node-to-npm:
+    needs: [ publish-bindings-to-npm ]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bindings/nodejs/nodered
+
+    steps:
+      - name: restore source code from cache (contains update to version)
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ runner.os }}-src-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: bindings/nodejs/nodered/package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Update package-lock.json
+        run: npm install
+
+      - name: Push changes
+        run: |
+          git config --local user.name "Luis Antonio Obis Aparicio"
+          git config --local user.email "luis.antonio.obis@gmail.com"
+          git add package-lock.json
+          git commit -m "Update nodered package-lock.json"
+          git push origin HEAD:main
 
       - name: Install dependencies
         run: npm ci

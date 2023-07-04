@@ -40,7 +40,7 @@ class Module(BaseModule):
         return int(response[0])
 
     @property
-    def channels(self) -> list[Channel]:
+    def channels(self) -> List[Channel]:
         """The channels in the module.
 
         Returns:

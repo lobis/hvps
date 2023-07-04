@@ -1,0 +1,27 @@
+{
+  "author": "Luis Antonio Obis Aparicio (@lobis)",
+  "bugs": {
+    "url": "https://github.com/lobis/hvps/issues"
+  },
+  "dependencies": {
+    "hvps": "0.0.33"
+  },
+  "description": "node-red node for the HVPS python package",
+  "homepage": "https://github.com/lobis/hvps#readme",
+  "license": "BSD-3-Clause",
+  "main": "hvps-nodered.js",
+  "name": "hvps-node-red",
+  "node-red": {
+    "nodes": {
+      "hvps-nodered": "hvps-nodered.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lobis/hvps.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.0.33"
+}
