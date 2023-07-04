@@ -6,11 +6,11 @@
   "dependencies": {
     "hvps": "0.0.21"
   },
-  "description": "Bindings for the HVPS python package",
+  "description": "node-red node for the HVPS python package",
   "homepage": "https://github.com/lobis/hvps#readme",
   "license": "BSD-3-Clause",
   "main": "index.js",
-  "name": "hvps",
+  "name": "hvps-node-red",
   "node-red": {
     "nodes": {
       "hvps": "hvps-nodered.js"

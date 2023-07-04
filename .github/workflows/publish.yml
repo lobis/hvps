@@ -102,7 +102,7 @@ jobs:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
 
-  publish-to-npm:
+  publish-bindings-to-npm:
     needs: [ publish-to-pypi ]
     runs-on: ubuntu-latest
     defaults:
@@ -120,7 +120,34 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: bindings/nodejs/hvps/package-lock.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-node-to-npm:
+    needs: [ publish-to-pypi ]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bindings/nodejs/nodered
+
+    steps:
+      - name: restore source code from cache (contains update to version)
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ runner.os }}-src-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies

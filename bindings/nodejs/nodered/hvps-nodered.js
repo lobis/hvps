@@ -1,3 +1,5 @@
+import { ExecutionContext } from "hvps";
+
 module.exports = function (RED) {
     function HVPS(config) {
         RED.nodes.createNode(this, config);
