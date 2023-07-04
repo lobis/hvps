@@ -132,7 +132,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-node-to-npm:
-    needs: [ publish-to-pypi ]
+    needs: [ publish-bindings-to-npm ]
     runs-on: ubuntu-latest
     defaults:
       run:
