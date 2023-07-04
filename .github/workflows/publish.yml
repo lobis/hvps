@@ -14,6 +14,10 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PUSH_GITHUB_TOKEN }}
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
       - name: Update Version to Release Tag
         run: |
           # Extract the release tag number
@@ -29,10 +33,13 @@ jobs:
           sed -i "s/\"version\": \".*\"/\"version\": \"$TAG\"/" bindings/nodejs/nodered/package.json
           sed -i "s/\"hvps\": \".*\"/\"hvps\": \"$TAG\"/" bindings/nodejs/nodered/package.json
 
+          # Update the package.lock for the nodered node
+          npm install --prefix bindings/nodejs/nodered
+
           # Commit and push changes
           git config --local user.name "Luis Antonio Obis Aparicio"
           git config --local user.email "luis.antonio.obis@gmail.com"
-          git add src/hvps/version.py bindings/nodejs/hvps/package.json bindings/nodejs/nodered/package.json
+          git add src/hvps/version.py bindings/nodejs/hvps/package.json bindings/nodejs/nodered/package.json bindings/nodejs/nodered/package-lock.json
           git commit -m "Update version to $TAG"
           git push origin HEAD:main
 
