@@ -18,8 +18,17 @@ const cli = yargs
 const context = new ExecutionContext(cli.python);
 context.print();
 
-// Get the remaining arguments as a string
-const remainingArgs = cli._.join(' ');
-// these should be passed to the python code. TODO: not working!
+// print all arguments, options, etc.
+const userInput = process.argv.slice(2).join(' ');
+console.log(`User Input: ${userInput}`);
+
+// define an array of flags to exclude
+const excludedFlags = ['--python', '-p']; // Add any other flags to exclude here
+
+// remove the excluded flags and their values from the arguments
+const excludedFlagsPattern = excludedFlags.map((flag) => `(?:${flag}(?:=[^\\s]+|\\s+[^-\\s]+)?)`).join('|');
+const remainingArgs = userInput.replace(new RegExp(excludedFlagsPattern, 'g'), '').trim();
+
+console.log(`Remaining Args: ${remainingArgs}`);
 
 context.run(remainingArgs);

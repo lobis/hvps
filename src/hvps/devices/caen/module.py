@@ -1,4 +1,5 @@
 from functools import cached_property
+from typing import List
 
 from ...commands.caen.module import _get_mon_module_command, _get_set_module_command
 from ...commands.caen import _write_command
@@ -27,6 +28,14 @@ class Module(BaseModule):
         Returns:
             int: The number of channels.
         """
+        self._logger.debug("Getting number of channels")
+        if not self._serial.is_open:
+            # TODO: we should not cache the property if the serial port is not open
+            self._logger.warning(
+                "Serial port is not open. Returning 1 as number of channels."
+            )
+            return 1
+
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -36,15 +45,24 @@ class Module(BaseModule):
         return int(response)
 
     @property
-    def channels(self):
+    def channels(self) -> List[Channel]:
         """The channels in the module.
 
         Returns:
             List[Channel]: A list of Channel objects.
         """
         if len(self._channels) == 0:
+            self._logger.debug("Initializing channels")
             for channel in range(self.number_of_channels):
-                self._channels.append(Channel(self._serial, channel, bd=self.bd))
+                self._logger.debug(f"Creating channel {channel}")
+                self._channels.append(
+                    Channel(
+                        ser=self._serial,
+                        logger=self._logger,
+                        channel=channel,
+                        bd=self.bd,
+                    )
+                )
         return self._channels
 
     @cached_property
