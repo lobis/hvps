@@ -120,7 +120,7 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: bindings/nodejs/hvps/package-lock.json
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
@@ -149,7 +149,7 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: bindings/nodejs/nodered/package-lock.json
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
