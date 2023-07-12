@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 
-from utils import (
+from hvps.utils import (
     check_command_input,
     string_number_to_bit_array,
     check_command_output_and_convert,

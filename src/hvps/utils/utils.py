@@ -1,3 +1,4 @@
+from __future__ import annotations
 from serial.tools import list_ports
 from typing import List, Dict
 import re

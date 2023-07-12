@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List, Dict
 
 from hvps import __version__ as hvps_version, Caen, Iseg
