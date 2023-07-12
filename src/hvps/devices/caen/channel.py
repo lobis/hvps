@@ -1,13 +1,12 @@
 import inspect
 
-from utils import check_command_output_and_convert
 from ...commands.caen.channel import (
     _get_set_channel_command,
     _get_mon_channel_command,
     _MON_CHANNEL_COMMANDS,
 )
 from ...commands.caen import _write_command
-from ...utils import string_number_to_bit_array
+from ...utils import string_number_to_bit_array, check_command_output_and_convert
 from ..channel import Channel as BaseChannel
 
 from time import sleep

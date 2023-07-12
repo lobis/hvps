@@ -1,5 +1,4 @@
-from types import NoneType
-
+from typing import List
 
 import pytest
 
@@ -56,11 +55,6 @@ def test_check_command_input():
     check_command_input(command_dict, "CMD3", "value")
 
 
-import pytest
-
-import pytest
-
-
 def test_remove_units():
     # Test case 1: Valid value with units
     value = "10.5kg"
@@ -85,10 +79,18 @@ def test_check_command_output_and_convert():
         "command_name_2": {
             "input_type": str,
             "allowed_input_values": ["input1", "input2"],
-            "output_type": NoneType,
+            "output_type": None,
+            "possible_output_values": None,
+        },
+        "command_name_3": {
+            "input_type": str,
+            "allowed_input_values": ["input1", "input2"],
+            "output_type": List[float],
             "possible_output_values": None,
         },
     }
+
+    # Test case 1: Valid output type
     command = "command_name"
     input_value = "input1"
     response = "2"
@@ -97,21 +99,14 @@ def test_check_command_output_and_convert():
     )
     assert result == 2
 
-    # Test case 2: Invalid input type
-    command = "command_name"
-    input_value = 10  # Invalid input type (should be str)
-    response = "2"
-    with pytest.raises(ValueError, match=r"Value must be a <class 'str'>."):
-        check_command_output_and_convert(command, input_value, response, command_dict)
-
-    # Test case 3: Invalid input value
-    command = "command_name"
-    input_value = "input3"  # Invalid input value (not in allowed_input_values)
-    response = "2"
-    with pytest.raises(
-        ValueError, match=r"Value must be one of \['input1', 'input2'\]. Got 'input3'."
-    ):
-        check_command_output_and_convert(command, input_value, response, command_dict)
+    # Test case 2: Valid output type
+    command = "command_name_3"
+    input_value = "input1"
+    response = "2.00,3E-6,4"
+    result = check_command_output_and_convert(
+        command, input_value, response, command_dict
+    )
+    assert result == [2.0, 0.000003, 4.0]
 
     # Test case 4: No response expected but got a response
     command = "command_name_2"
