@@ -1,9 +1,14 @@
+import inspect
 from functools import cached_property
 from typing import List
 
-from ...commands.caen.module import _get_mon_module_command, _get_set_module_command
+from ...commands.caen.module import (
+    _get_mon_module_command,
+    _get_set_module_command,
+    _MON_MODULE_COMMANDS,
+)
 from ...commands.caen import _write_command
-from ...utils.utils import string_number_to_bit_array
+from ...utils.utils import string_number_to_bit_array, check_command_output_and_convert
 from .channel import Channel
 from ..module import Module as BaseModule
 
@@ -36,13 +41,18 @@ class Module(BaseModule):
             )
             return 1
 
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_mon_module_command(self.bd, "BDNCH"),
+            # TODO: call _get_set_module_command from _write_command
+            command=_get_mon_module_command(self.bd, command_name),
         )
-        return int(response)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def channels(self) -> List[Channel]:
@@ -72,13 +82,17 @@ class Module(BaseModule):
         Returns:
             str: The name of the module.
         """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_mon_module_command(self.bd, "BDNAME"),
+            command=_get_mon_module_command(self.bd, command_name),
         )
-        return str(response)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def firmware_release(self) -> str:
@@ -88,13 +102,17 @@ class Module(BaseModule):
         Returns:
             str: The firmware release.
         """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_mon_module_command(self.bd, "BDFREL"),
+            command=_get_mon_module_command(self.bd, command_name),
         )
-        return response
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def serial_number(self) -> str:
@@ -104,14 +122,18 @@ class Module(BaseModule):
         Returns:
             str: The serial number.
         """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_mon_module_command(self.bd, "BDSNUM"),
+            command=_get_mon_module_command(self.bd, command_name),
         )
         # TODO: check if can be casted to int
-        return response
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def interlock_status(self) -> bool:
@@ -121,14 +143,18 @@ class Module(BaseModule):
         Returns:
             bool: Yes: True, No: False
         """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_mon_module_command(self.bd, "BDILK"),
+            command=_get_mon_module_command(self.bd, command_name),
         )
         if response == "YES":
-            return True
+            return check_command_output_and_convert(
+                command_name, None, response, _MON_MODULE_COMMANDS
+            )
         elif response == "NO":
             return False
         else:
@@ -142,15 +168,19 @@ class Module(BaseModule):
         Returns:
             str: The interlock mode.
         """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_mon_module_command(self.bd, "BDILKM"),
+            command=_get_mon_module_command(self.bd, command_name),
         )
         if response not in ["OPEN", "CLOSED"]:
             raise ValueError(f"Invalid response for 'interlock_mode': {response}")
-        return response
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def interlock_open(self) -> bool:
@@ -168,15 +198,19 @@ class Module(BaseModule):
         Returns:
             str: The control mode.
         """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_mon_module_command(self.bd, "BDCTR"),
+            command=_get_mon_module_command(self.bd, command_name),
         )
         if response not in ["LOCAL", "REMOTE"]:
             raise ValueError(f"Invalid response for 'control_mode': {response}")
-        return response
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def control_mode_local(self) -> bool:
@@ -206,11 +240,13 @@ class Module(BaseModule):
         if value not in ["LOCAL", "REMOTE"]:
             raise ValueError(f"Invalid value for 'control_mode': {value}")
 
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_set_module_command(self.bd, "BDCTR", value),
+            command=_get_set_module_command(self.bd, command_name, value),
         )
 
     def set_control_mode_local(self):
@@ -233,17 +269,21 @@ class Module(BaseModule):
         Returns:
             str: The local bus termination status.
         """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_mon_module_command(self.bd, "BDTERM"),
+            command=_get_mon_module_command(self.bd, command_name),
         )
         if response not in ["ON", "OFF"]:
             raise ValueError(
                 f"Invalid response for 'local_bus_termination_status': {response}"
             )
-        return response
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def local_bus_termination_status_on(self) -> bool:
@@ -269,13 +309,17 @@ class Module(BaseModule):
         Returns:
             str: The board alarm status value.
         """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_mon_module_command(self.bd, "BDALARM"),
+            command=_get_mon_module_command(self.bd, command_name),
         )
-
+        check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
         bit_array = string_number_to_bit_array(response)
 
         return {
@@ -300,11 +344,13 @@ class Module(BaseModule):
         if mode not in ["OPEN", "CLOSED"]:
             raise ValueError(f"Invalid value for 'interlock_mode': {mode}")
 
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_set_module_command(self.bd, "BDILKM", mode),
+            command=_get_set_module_command(self.bd, command_name, mode),
         )
 
     def close_interlock(self) -> None:
@@ -323,9 +369,29 @@ class Module(BaseModule):
         """
         Clear alarm signal
         """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
         _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            command=_get_set_module_command(self.bd, "BDCLR", None),
+            command=_get_set_module_command(self.bd, command_name, None),
         )
+
+
+_mon_module_methods_to_commands = {
+    "number_of_channels": "BDNCH",
+    "name": "BDNAME",
+    "firmware_release": "BDFREL",
+    "serial_number": "BDSNUM",
+    "interlock_status": "BDILK",
+    "interlock_mode": "BDILKM",
+    "local_bus_termination_status": "BDTERM",
+    "control_mode": "BDCTR",
+}
+_set_module_methods_to_commands = {
+    "control_mode": "BDCTR",
+    "board_alarm_status": "BDALARM",
+    "interlock_mode": "BDILKM",
+    "clear_alarm_signal": "BDCLR",
+}

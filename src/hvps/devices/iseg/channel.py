@@ -12,7 +12,7 @@ from ...commands.iseg.channel import (
 from ...commands.iseg import _write_command
 
 from ..channel import Channel as BaseChannel
-from ...utils.utils import check_and_convert
+from ...utils.utils import check_command_output_and_convert
 
 
 class Channel(BaseChannel):
@@ -37,7 +37,9 @@ class Channel(BaseChannel):
             expected_response_type=int,
         )
 
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def trip_timeout(
@@ -59,7 +61,9 @@ class Channel(BaseChannel):
             expected_response_type=int,
         )
 
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def external_inhibit_action(
@@ -80,7 +84,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def output_mode(self) -> int:  # Instruction for NHR or SHR only.
@@ -105,7 +111,9 @@ class Channel(BaseChannel):
         if len(response) != 1:
             raise ValueError("Wrong number of values were sent, one value expected")
 
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def available_output_modes(self) -> List[int]:  # Instruction for NHR or SHR only
@@ -126,7 +134,9 @@ class Channel(BaseChannel):
             expected_response_type=List[int],
         )
 
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def output_polarity(self) -> str:  # Instruction for NHR or SHR only
@@ -149,7 +159,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=str,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def available_output_polarities(self):  # Instruction for NHR or SHR only
@@ -177,7 +189,9 @@ class Channel(BaseChannel):
             expected_response_type=str,
         )
 
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def voltage_set(self):
@@ -200,7 +214,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=str,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def voltage_limit(self) -> float:  # Instruction for SHR only
@@ -223,7 +239,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def voltage_nominal(self) -> float:
@@ -246,7 +264,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def voltage_mode(self) -> float:  # Instruction for NHR or SHR only
@@ -269,7 +289,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=str,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def voltage_mode_list(self) -> List[float]:  # Instruction for NHR or SHR only
@@ -292,7 +314,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=List[str],
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def voltage_bounds(self) -> float:
@@ -315,7 +339,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=str,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def set_on(self) -> bool:
@@ -339,7 +365,10 @@ class Channel(BaseChannel):
             expected_response_type=bool,
         )
         return (
-            check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS) == 1
+            check_command_output_and_convert(
+                command_name, None, response, _MON_CHANNEL_COMMANDS
+            )
+            == 1
         )
 
     @property
@@ -364,7 +393,10 @@ class Channel(BaseChannel):
             expected_response_type=bool,
         )
         return (
-            check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS) == 1
+            check_command_output_and_convert(
+                command_name, None, response, _MON_CHANNEL_COMMANDS
+            )
+            == 1
         )
 
     @property
@@ -389,7 +421,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def current_limit(self) -> float:  # Instruction for SHR only
@@ -413,7 +447,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def current_nominal(self) -> float:
@@ -437,7 +473,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def current_mode(self) -> float:  # Instruction for NHR or SHR only
@@ -461,7 +499,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def current_mode_list(self) -> List[float]:  # Instruction for NHR or SHR only
@@ -485,7 +525,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=List[float],
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def current_bounds(self) -> float:
@@ -509,7 +551,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def current_ramp_speed(self) -> float:  # Instruction for EHS, NHR or SHR only
@@ -533,7 +577,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def voltage_ramp_speed(self) -> float:  # Instruction for EHS, NHR or SHR only
@@ -557,7 +603,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def voltage_ramp_speed_minimum(
@@ -583,7 +631,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def voltage_ramp_speed_maximum(
@@ -609,7 +659,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def current_ramp_speed_minimum(
@@ -635,7 +687,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def current_ramp_speed_maximum(
@@ -661,7 +715,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def channel_control(self) -> int:
@@ -685,7 +741,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def channel_status(self) -> int:
@@ -709,7 +767,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def channel_event_mask(self) -> int:
@@ -732,7 +792,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def measured_voltage(self) -> float:
@@ -755,7 +817,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def measured_current(self) -> float:
@@ -778,7 +842,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def channel_voltage_ramp_up_speed(
@@ -803,7 +869,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def channel_voltage_ramp_down_speed(
@@ -828,7 +896,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def channel_current_ramp_up_speed(self) -> float:
@@ -851,7 +921,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     @property
     def channel_current_ramp_down_speed(self) -> float:
@@ -871,7 +943,9 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_CHANNEL_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_CHANNEL_COMMANDS
+        )
 
     # Setters
 
@@ -900,7 +974,9 @@ class Channel(BaseChannel):
             expected_response_type=None,
         )
         if (
-            check_and_convert(command_name, action, response, _SET_CHANNEL_COMMANDS)
+            check_command_output_and_convert(
+                command_name, action, response, _SET_CHANNEL_COMMANDS
+            )
             != 1
         ):
             raise ValueError("Last command haven't been processed.")
@@ -925,7 +1001,9 @@ class Channel(BaseChannel):
             expected_response_type=None,
         )
         if (
-            check_and_convert(command_name, timeout, response, _SET_CHANNEL_COMMANDS)
+            check_command_output_and_convert(
+                command_name, timeout, response, _SET_CHANNEL_COMMANDS
+            )
             != 1
         ):
             raise ValueError("Last command haven't been processed.")
@@ -955,7 +1033,9 @@ class Channel(BaseChannel):
             expected_response_type=None,
         )
         if (
-            check_and_convert(command_name, action, response, _SET_CHANNEL_COMMANDS)
+            check_command_output_and_convert(
+                command_name, action, response, _SET_CHANNEL_COMMANDS
+            )
             != 1
         ):
             raise ValueError("Last command haven't been processed.")
@@ -982,7 +1062,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, mode, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, mode, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     @output_polarity.setter
@@ -1011,7 +1096,9 @@ class Channel(BaseChannel):
             expected_response_type=None,
         )
         if (
-            check_and_convert(command_name, polarity, response, _SET_CHANNEL_COMMANDS)
+            check_command_output_and_convert(
+                command_name, polarity, response, _SET_CHANNEL_COMMANDS
+            )
             != 1
         ):
             raise ValueError("Last command haven't been processed.")
@@ -1033,7 +1120,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, vset, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, vset, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     @voltage_bounds.setter
@@ -1054,7 +1146,9 @@ class Channel(BaseChannel):
             expected_response_type=None,
         )
         if (
-            check_and_convert(command_name, vbounds, response, _SET_CHANNEL_COMMANDS)
+            check_command_output_and_convert(
+                command_name, vbounds, response, _SET_CHANNEL_COMMANDS
+            )
             != 1
         ):
             raise ValueError("Last command haven't been processed.")
@@ -1076,7 +1170,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, iset, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, iset, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     @current_bounds.setter
@@ -1097,7 +1196,9 @@ class Channel(BaseChannel):
             expected_response_type=None,
         )
         if (
-            check_and_convert(command_name, ibounds, response, _SET_CHANNEL_COMMANDS)
+            check_command_output_and_convert(
+                command_name, ibounds, response, _SET_CHANNEL_COMMANDS
+            )
             != 1
         ):
             raise ValueError("Last command haven't been processed.")
@@ -1123,7 +1224,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, speed, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     @channel_voltage_ramp_up_speed.setter
@@ -1148,7 +1254,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, speed, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     @channel_voltage_ramp_down_speed.setter
@@ -1173,7 +1284,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, speed, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     def set_channel_current_ramp_up_down_speed(
@@ -1197,7 +1313,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, speed, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     @channel_current_ramp_up_speed.setter
@@ -1222,7 +1343,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, speed, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     @channel_current_ramp_down_speed.setter
@@ -1247,7 +1373,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, speed, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, speed, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     def switch_on_high_voltage(self) -> None:
@@ -1263,7 +1394,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, None, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, None, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     def switch_off_high_voltage(self) -> None:
@@ -1279,7 +1415,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, None, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, None, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     def shutdown_channel_high_voltage(self) -> None:
@@ -1295,7 +1436,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, None, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, None, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     def clear_channel_emergency_off(self) -> None:
@@ -1311,7 +1457,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, None, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, None, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     def clear_event_status(self) -> None:
@@ -1327,7 +1478,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, None, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, None, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     def clear_event_bits(self, bits: int) -> None:
@@ -1347,7 +1503,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, bits, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, bits, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
     def set_event_mask(self, mask: int) -> None:
@@ -1366,7 +1527,12 @@ class Channel(BaseChannel):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, mask, response, _SET_CHANNEL_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, mask, response, _SET_CHANNEL_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command haven't been processed.")
 
 

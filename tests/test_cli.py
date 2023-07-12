@@ -5,7 +5,10 @@ import sys
 
 def run_main_with_arguments(arguments: list) -> tuple:
     main_file_path = os.path.join(
-        os.path.dirname(__file__), "..", "src/hvps", "__main__.py"
+        os.path.dirname(__file__),
+        "..",
+        "src/hvps",
+        "__main__.py",
     )
     main_file_path = os.path.abspath(main_file_path)
 
@@ -22,7 +25,7 @@ def run_main_with_arguments(arguments: list) -> tuple:
     return stdout.decode(), stderr.decode(), exit_code
 
 
-def test_cli_channel_mon():
+def test_cli_caen_channel_mon():
     for parameter in [
         "VSET",
         "VMIN",
@@ -84,7 +87,7 @@ def test_cli_channel_mon():
         ), f"exit_code: {exit_code} for arguments: {arguments}"
 
 
-def test_cli_channel_set():
+def test_cli_caen_channel_set():
     for parameter in [
         "VSET",
         "ISET",
@@ -126,17 +129,16 @@ def test_cli_channel_set():
         ), f"exit_code: {exit_code} for arguments: {arguments}"
 
 
-def test_cli_module_mon():
+def test_cli_caen_module_mon():
     for parameter in [
-        "BDNAME",
-        "BDNCH",
-        "BDFREL",
-        "BDSNUM",
-        "BDILK",
-        "BDILKM",
-        "BDCTR",
-        "BDTERM",
-        "BDALARM",
+        "number_of_channels",
+        "name",
+        "firmware_release",
+        "serial_number",
+        "interlock_status",
+        "interlock_mode",
+        "local_bus_termination_status",
+        "control_mode",
         "INVALID_PARAMETER",
     ]:
         arguments = [
@@ -164,10 +166,12 @@ def test_cli_module_mon():
         ), f"exit_code: {exit_code} for arguments: {arguments}"
 
 
-def test_cli_module_set():
+def test_cli_caen_module_set():
     for parameter in [
-        "BDILKM",
-        "BDCLR",
+        "control_mode",
+        "board_alarm_status",
+        "interlock_mode",
+        "clear_alarm_signal",
     ]:
         arguments = [
             "--port",
@@ -178,6 +182,223 @@ def test_cli_module_set():
             "2",
             "--test",
             "caen",
+            f"{parameter}",
+            "200",
+        ]
+
+        stdout, stderr, exit_code = run_main_with_arguments(arguments)
+
+        print(f"arguments: {arguments}")
+        print(f"stdout: {stdout}")
+        print(f"stderr: {stderr}")
+        print(f"exit_code: {exit_code}")
+
+        # ON / OFF are special cases, they cannot be set to a value, so they should return exit code 1
+        exit_code_expected = 0 if parameter not in ["ON", "OFF"] else 1
+        assert (
+            exit_code == exit_code_expected
+        ), f"exit_code: {exit_code} for arguments: {arguments}"
+
+
+def test_cli_iseg_channel_mon():
+    for parameter in [
+        "trip_action",
+        "trip_timeout",
+        "external_inhibit_action",
+        "output_mode",
+        "available_output_modes",
+        "output_polarity",
+        "available_output_polarities",
+        "voltage_set",
+        "voltage_limit",
+        "voltage_nominal",
+        "voltage_mode",
+        "voltage_mode_list",
+        "voltage_bounds",
+        "set_on",
+        "emergency_off",
+        "current_set",
+        "current_limit",
+        "current_nominal",
+        "current_mode",
+        "current_mode_list",
+        "current_bounds",
+        "current_ramp_speed",
+        "voltage_ramp_speed",
+        "voltage_ramp_speed_minimum",
+        "voltage_ramp_speed_maximum",
+        "current_ramp_speed_minimum",
+        "current_ramp_speed_maximum",
+        "channel_control",
+        "channel_status",
+        "channel_event_mask",
+        "measured_voltage",
+        "measured_current",
+        "channel_voltage_ramp_up_speed",
+        "channel_voltage_ramp_down_speed",
+        "channel_current_ramp_up_speed",
+        "channel_current_ramp_down_speed",
+        "INVALID_PARAMETER",
+    ]:
+        arguments = [
+            "--port",
+            "/dev/ttyUSB0",
+            "--baud",
+            "9600",
+            "--channel",
+            "2",
+            "--test",
+            "iseg",
+            f"{parameter}",
+        ]
+
+        stdout, stderr, exit_code = run_main_with_arguments(arguments)
+
+        print(f"arguments: {arguments}")
+        print(f"stdout: {stdout}")
+        print(f"stderr: {stderr}")
+        print(f"exit_code: {exit_code}")
+
+        exit_code_expected = 0 if parameter not in ["INVALID_PARAMETER"] else 1
+        assert (
+            exit_code == exit_code_expected
+        ), f"exit_code: {exit_code} for arguments: {arguments}"
+
+
+def test_cli_iseg_channel_set():
+    for parameter in [
+        "trip_action",
+        "trip_timeout",
+        "external_inhibit_action",
+        "output_mode",
+        "output_polarity",
+        "voltage_set",
+        "voltage_bounds",
+        "clear_emergency_off",
+        "current_set",
+        "current_bounds",
+        "set_channel_voltage_ramp_up_down_speed",
+        "channel_voltage_ramp_up_speed",
+        "channel_voltage_ramp_down_speed",
+        "set_channel_current_ramp_up_down_speed",
+        "channel_current_ramp_up_speed",
+        "channel_current_ramp_down_speed",
+        "switch_on_high_voltage",
+        "switch_off_high_voltage",
+        "shutdown_channel_high_voltage",
+        "clear_channel_emergency_off",
+        "clear_event_status",
+        "clear_event_bits",
+        "set_event_mask",
+    ]:
+        arguments = [
+            "--port",
+            "/dev/ttyUSB0",
+            "--baud",
+            "9600",
+            "--channel",
+            "2",
+            "--test",
+            "iseg",
+            f"{parameter}",
+            "100",
+        ]
+
+        stdout, stderr, exit_code = run_main_with_arguments(arguments)
+
+        print(f"arguments: {arguments}")
+        print(f"stdout: {stdout}")
+        print(f"stderr: {stderr}")
+        print(f"exit_code: {exit_code}")
+
+        # ON / OFF are special cases, they cannot be set to a value, so they should return exit code 1
+        exit_code_expected = 0 if parameter not in ["ON", "OFF"] else 1
+        assert (
+            exit_code == exit_code_expected
+        ), f"exit_code: {exit_code} for arguments: {arguments}"
+
+
+def test_cli_iseg_module_mon():
+    for parameter in [
+        "channel",
+        "firmware_release",
+        "module_status",
+        "filter_averaging_steps",
+        "kill_enable",
+        "adjustment",
+        "module_can_address",
+        "module_can_bitrate",
+        "serial_baud_rate",
+        "serial_echo_enable",
+        "serial_echo_enabled",
+        "module_current_limit",
+        "module_voltage_ramp_speed",
+        "module_current_ramp_speed",
+        "module_control_register",
+        "module_status_register",
+        "module_event_status_register",
+        "module_event_mask_register",
+        "module_event_channel_status_register",
+        "module_event_channel_mask_register",
+        "module_supply_voltage",
+        "module_supply_voltage_p24v",
+        "module_supply_voltage_n24v",
+        "module_supply_voltage_p5v",
+        "module_supply_voltage_p3v",
+        "module_supply_voltage_p12v",
+        "module_supply_voltage_n12v",
+        "module_temperature",
+        "setvalue_changes_counter",
+        "firmware_name",
+        "configuration_mode",
+        "INVALID_PARAMETER",
+    ]:
+        arguments = [
+            "--port",
+            "/dev/ttyUSB0",
+            "--baud",
+            "9600",
+            "--test",
+            "iseg",
+            f"{parameter}",
+        ]
+
+        stdout, stderr, exit_code = run_main_with_arguments(arguments)
+
+        print(f"arguments: {arguments}")
+        print(f"stdout: {stdout}")
+        print(f"stderr: {stderr}")
+        print(f"exit_code: {exit_code}")
+
+        exit_code_expected = 0 if parameter not in ["INVALID_PARAMETER"] else 1
+        assert (
+            exit_code == exit_code_expected
+        ), f"exit_code: {exit_code} for arguments: {arguments}"
+
+
+def test_cli_iseg_module_set():
+    for parameter in [
+        "serial_baud_rate",
+        "serial_echo_enable",
+        "filter_averaging_steps",
+        "kill_enable",
+        "adjustment",
+        "module_event_mask_register",
+        "module_event_channel_mask_register",
+        "module_can_address",
+        "module_can_bitrate",
+        "enter_configuration_mode",
+        "exit_configuration_mode",
+        "set_serial_echo_enabled",
+        "clear_module_event_status_bits",
+    ]:
+        arguments = [
+            "--port",
+            "/dev/ttyUSB0",
+            "--baud",
+            "9600",
+            "--test",
+            "iseg",
             f"{parameter}",
             "200",
         ]

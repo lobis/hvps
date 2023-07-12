@@ -32,10 +32,10 @@ def test_caen_module_set_commands():
 
     with pytest.raises(ValueError):
         # invalid board number
-        _get_set_module_command(-1, "BDILKM", 10)
+        _get_set_module_command(-1, "BDILKM", "OPEN")
 
-    command = _get_set_module_command(0, "BDILKM", 10)
-    assert command == b"$BD:00,CMD:SET,PAR:BDILKM,VAL:10\r\n"
+    command = _get_set_module_command(0, "BDILKM", "OPEN")
+    assert command == b"$BD:00,CMD:SET,PAR:BDILKM,VAL:OPEN\r\n"
 
 
 def test_caen_channel_get_commands():

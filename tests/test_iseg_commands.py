@@ -64,16 +64,16 @@ def test_iseg_channel_set_commands():
 
     with pytest.raises(ValueError):
         # invalid channel number
-        _get_set_channel_command(-1, ":VOLT:BOUNDS", 10)
+        _get_set_channel_command(-1, ":VOLT:BOUNDS", 10.0)
 
-    command = _get_set_channel_command(0, ":VOLT:BOUNDS", 10)
-    assert command == b":VOLT:BOUNDS 10,(@0);*OPC?\r\n"
+    command = _get_set_channel_command(0, ":VOLT:BOUNDS", 10.0)
+    assert command == b":VOLT:BOUNDS 1.000E+01,(@0);*OPC?\r\n"
 
 
 def test_iseg_parse_response():
     response = b"1\r\n"
-    parsed_response = _parse_response(response, None)
-    assert parsed_response == ["1"]
+    parsed_response = _parse_response(response, int)
+    assert parsed_response == "1"
 
     response = b"p,n\r\n"
     parsed_response = _parse_response(response, List[str])
@@ -81,15 +81,15 @@ def test_iseg_parse_response():
 
     response = b"p\r\n"
     parsed_response = _parse_response(response, str)
-    assert parsed_response == ["p"]
+    assert parsed_response == "p"
 
     response = b"1.23400E3\r\n"
     parsed_response = _parse_response(response, float)
-    assert parsed_response == ["1.23400E3"]
+    assert parsed_response == "1.23400E3"
 
     response = b"132\r\n"
     parsed_response = _parse_response(response, int)
-    assert parsed_response == ["132"]
+    assert parsed_response == "132"
 
     # non-supported type
     with pytest.raises(ValueError):

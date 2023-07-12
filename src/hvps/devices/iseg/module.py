@@ -4,9 +4,13 @@ import inspect
 from functools import cached_property
 from typing import List
 
-from ...commands.iseg.module import _get_mon_module_command, _get_set_module_command
-from ...commands.iseg import _write_command, _MON_MODULE_COMMANDS
-from ...utils.utils import string_number_to_bit_array, check_and_convert
+from ...commands.iseg.module import (
+    _get_mon_module_command,
+    _get_set_module_command,
+    _MON_MODULE_COMMANDS,
+)
+from ...commands.iseg import _write_command
+from ...utils.utils import string_number_to_bit_array, check_command_output_and_convert
 
 from ..module import Module as BaseModule
 from .channel import Channel
@@ -41,7 +45,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def channels(self) -> List[Channel]:
@@ -77,7 +83,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=str,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_status(self) -> dict:
@@ -97,7 +105,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=dict,
         )
-        register = check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        register = check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
         bit_array = string_number_to_bit_array(register)
         bit_array = list(reversed(bit_array))
 
@@ -136,7 +146,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def kill_enable(self) -> int:
@@ -155,7 +167,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def adjustment(self) -> int:
@@ -174,7 +188,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_can_address(self) -> int:
@@ -193,7 +209,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_can_bitrate(self) -> int:
@@ -212,7 +230,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def serial_baud_rate(
@@ -235,7 +255,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def serial_echo_enable(self) -> int:
@@ -254,7 +276,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def serial_echo_enabled(self) -> bool:
@@ -281,7 +305,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_current_limit(self) -> float:
@@ -300,7 +326,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_voltage_ramp_speed(self) -> float:
@@ -319,7 +347,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_current_ramp_speed(self) -> float:
@@ -338,7 +368,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_control_register(self) -> int:
@@ -357,7 +389,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_status_register(self) -> int:
@@ -376,7 +410,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_event_status_register(self) -> int:
@@ -395,7 +431,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_event_mask_register(self) -> int:
@@ -414,7 +452,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_event_channel_status_register(self) -> int:
@@ -433,7 +473,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_event_channel_mask_register(self) -> int:
@@ -452,7 +494,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=int,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_supply_voltage(self) -> List[float]:
@@ -474,7 +518,9 @@ class Module(BaseModule):
         if len(response) != 7:
             raise ValueError("Wrong number of values were received, one value expected")
 
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_supply_voltage_p24v(self) -> float:
@@ -493,7 +539,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_supply_voltage_n24v(self) -> float:
@@ -512,7 +560,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_supply_voltage_p5v(self) -> float:
@@ -531,7 +581,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_supply_voltage_p3v(self) -> float:
@@ -550,7 +602,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_supply_voltage_p12v(self) -> float:
@@ -569,7 +623,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_supply_voltage_n12v(self) -> float:
@@ -588,7 +644,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def module_temperature(self) -> float:
@@ -607,7 +665,9 @@ class Module(BaseModule):
             command=command,
             expected_response_type=float,
         )
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def setvalue_changes_counter(self) -> int:
@@ -627,7 +687,9 @@ class Module(BaseModule):
             expected_response_type=int,
         )
 
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def firmware_name(self) -> str:
@@ -647,7 +709,9 @@ class Module(BaseModule):
             expected_response_type=str,
         )
 
-        return check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS)
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
 
     @property
     def configuration_mode(self) -> bool:
@@ -668,7 +732,10 @@ class Module(BaseModule):
         )
 
         return (
-            check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS) == 1
+            check_command_output_and_convert(
+                command_name, None, response, _MON_MODULE_COMMANDS
+            )
+            == 1
         )
 
     # Setters
@@ -690,7 +757,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        converted_response = check_and_convert(
+        converted_response = check_command_output_and_convert(
             command_name, baud_rate, response, _MON_MODULE_COMMANDS
         )
         if converted_response != 1 or converted_response != baud_rate:
@@ -714,7 +781,9 @@ class Module(BaseModule):
             expected_response_type=None,
         )
         if (
-            check_and_convert(command_name, enabled, response, _MON_MODULE_COMMANDS)
+            check_command_output_and_convert(
+                command_name, enabled, response, _MON_MODULE_COMMANDS
+            )
             != 1
         ):
             raise ValueError("Last command hasn't been processed.")
@@ -739,7 +808,12 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, steps, response, _MON_MODULE_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, steps, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command hasn't been processed.")
 
     @kill_enable.setter
@@ -759,7 +833,12 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, enable, response, _MON_MODULE_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, enable, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command hasn't been processed.")
 
     @adjustment.setter
@@ -779,7 +858,12 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, value, response, _MON_MODULE_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, value, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command hasn't been processed.")
 
     @module_event_mask_register.setter
@@ -799,7 +883,12 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, mask, response, _MON_MODULE_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, mask, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command hasn't been processed.")
 
     @module_event_channel_mask_register.setter
@@ -819,7 +908,12 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, mask, response, _MON_MODULE_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, mask, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command hasn't been processed.")
 
     @module_can_address.setter
@@ -841,7 +935,9 @@ class Module(BaseModule):
             expected_response_type=None,
         )
         if (
-            check_and_convert(command_name, address, response, _MON_MODULE_COMMANDS)
+            check_command_output_and_convert(
+                command_name, address, response, _MON_MODULE_COMMANDS
+            )
             != 1
         ):
             raise ValueError("Last command hasn't been processed.")
@@ -865,7 +961,9 @@ class Module(BaseModule):
             expected_response_type=None,
         )
         if (
-            check_and_convert(command_name, bitrate, response, _MON_MODULE_COMMANDS)
+            check_command_output_and_convert(
+                command_name, bitrate, response, _MON_MODULE_COMMANDS
+            )
             != 1
         ):
             raise ValueError("Last command hasn't been processed.")
@@ -889,7 +987,7 @@ class Module(BaseModule):
         )
 
         if (
-            check_and_convert(
+            check_command_output_and_convert(
                 command_name, serial_number, response, _MON_MODULE_COMMANDS
             )
             != 1
@@ -929,7 +1027,12 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, None, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command hasn't been processed.")
 
     def clear_module_event_status_bits(self, bits: int) -> None:
@@ -940,7 +1043,7 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, str(bits))
+        command = _get_set_module_command(command_name, bits)
 
         response = _write_command(
             ser=self._serial,
@@ -948,7 +1051,12 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if check_and_convert(command_name, None, response, _MON_MODULE_COMMANDS) != 1:
+        if (
+            check_command_output_and_convert(
+                command_name, bits, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
             raise ValueError("Last command hasn't been processed.")
 
 

@@ -1,3 +1,5 @@
+from types import NoneType
+
 from serial.tools import list_ports
 from typing import List, Dict
 import re
@@ -48,7 +50,45 @@ def remove_units(value: str) -> str:
     return value_without_units
 
 
-def check_and_convert(
+def check_command_input(
+    command_dict: Dict, command: str, input_value: int | float | str | None = None
+) -> None:
+    """
+    Check the input type and value of a command.
+
+    Args:
+        command (str): The command.
+        input_value (int | float | str | None): The input value.
+        command_dict (Dict): The command dictionary, Must be of the form:
+            "command_name": {"input_type": input_type,
+                                "allowed_input_values": allowed_input_values,
+                                "output_type": output_type,
+                                "possible_output_values": possible_output_values}
+                                ...
+                            }
+    Throws:
+        ValueError: If the input value is not of the correct type, is not in the allowed values list or
+                    if the command is not in the command dictionary.
+    """
+    command = command.upper()
+    if command not in command_dict:
+        valid_commands = ", ".join(command_dict.keys())
+        raise ValueError(
+            f"Invalid command '{command}'. Valid commands are: {valid_commands}"
+        )
+
+    input_type = command_dict[command]["input_type"]
+    allowed_input_values = command_dict[command]["allowed_input_values"]
+
+    if not isinstance(input_value, input_type):
+        raise ValueError(f"Value {input_value} must be a {input_type}.")
+    if allowed_input_values and input_value not in allowed_input_values:
+        raise ValueError(
+            f"Value must be one of {allowed_input_values}. Got {input_value}."
+        )
+
+
+def check_command_output_and_convert(
     command: str,
     input_value: int | float | str | None | List[int] | List[float] | List[str],
     response: str | List[str] | None,
@@ -87,16 +127,26 @@ def check_and_convert(
             f"Value must be one of {allowed_input_values}. Got '{input_value}'."
         )
 
-    if output_type is None:
+    if output_type is NoneType:
         if response is not None:
             raise ValueError(f"No response expected but got: '{response}'.")
         else:
             return None
     else:
         if output_type == float or output_type == int:
-            value = output_type(remove_units(response))
+            try:
+                value = output_type(remove_units(response))
+            except ValueError:
+                raise ValueError(
+                    f"Invalid string '{response}'. Must be a {output_type}."
+                )
         elif output_type == List[float] or output_type == List[int]:
-            value = [output_type(remove_units(v)) for v in response]
+            try:
+                value = [output_type(remove_units(v)) for v in response]
+            except ValueError:
+                raise ValueError(
+                    f"Invalid string '{response}'. Must be a list of {output_type}."
+                )
         else:
             value = response
 
