@@ -196,15 +196,14 @@ def main():
     is_caen = args.brand == "caen"  # True if caen, False if iseg
     is_channel_mode = channel is not None  # True if channel is specified, False if not
 
+    # TODO: just before sending command / property, check if testing is enabled and abort if so
+    # catch port is open exception and print a message
+
     if is_caen:
-        if testing:
-            caen = None
-        else:
-            caen = Caen(port=args.port, baudrate=args.baud)
-        if testing:
-            module = None
-        else:
-            module = caen.module(args.module)
+        caen = Caen(port=args.port, baudrate=args.baud, connect=not testing)
+        # TODO: correct this
+        module = caen.module(caen_parser.module)
+
         if not is_channel_mode:
             # command is caen at module level
             setter_mode = _is_setter_mode(
@@ -253,14 +252,9 @@ def main():
                 )
 
     elif not is_caen:
-        if testing:
-            iseg = None
-        else:
-            iseg = Iseg(port=args.port, baudrate=args.baud)
-        if testing:
-            module = None
-        else:
-            module = iseg.module(0)
+        iseg = Iseg(port=args.port, baudrate=args.baud, connect=not testing)
+        module = iseg.module()
+
         if not is_channel_mode:
             # command is iseg at module level
             setter_mode = _is_setter_mode(
