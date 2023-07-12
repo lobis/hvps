@@ -137,7 +137,6 @@ def main():
         help="Logging level. Default: INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
     )
-    parser.add_argument("--module", type=int, default=0, help="Module number. CAEN")
     parser.add_argument(
         "--channel", default=None, help="HV PS channel"
     )  # Required argument
@@ -150,7 +149,8 @@ def main():
 
     # CAEN
     caen_parser = subparsers.add_parser("caen", help="CAEN HVPS")
-    caen_parser.add_argument("command", nargs=1, help="command name")
+    caen_parser.add_argument("module", type=int, default=0, help="Module number")
+    caen_parser.add_argument("command", nargs=1, help="Command name")
     caen_parser.add_argument(
         "value",
         nargs="?",
@@ -160,7 +160,7 @@ def main():
 
     # ISEG
     iseg_parser = subparsers.add_parser("iseg", help="iseg HVPS")
-    iseg_parser.add_argument("command", nargs=1, help="command name")
+    iseg_parser.add_argument("command", nargs=1, help="Command name")
     iseg_parser.add_argument(
         "value",
         nargs="?",
