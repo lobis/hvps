@@ -26,7 +26,7 @@ def test_check_command_input():
         },
         "CMD3": {
             "input_type": str,
-            "allowed_input_values": ["value"],
+            "allowed_input_values": ["VALUE"],
             "output_type": int,
             "possible_output_values": None,
         },
@@ -72,19 +72,19 @@ def test_check_command_output_and_convert():
     command_dict = {
         "command_name": {
             "input_type": str,
-            "allowed_input_values": ["input1", "input2"],
+            "allowed_input_values": ["INPUT1", "INPUT2"],
             "output_type": int,
             "possible_output_values": [1, 2, 3],
         },
         "command_name_2": {
             "input_type": str,
-            "allowed_input_values": ["input1", "input2"],
+            "allowed_input_values": ["INPUT1", "INPUT2"],
             "output_type": None,
             "possible_output_values": None,
         },
         "command_name_3": {
             "input_type": str,
-            "allowed_input_values": ["input1", "input2"],
+            "allowed_input_values": ["INPUT1", "INPUT2"],
             "output_type": List[float],
             "possible_output_values": None,
         },
@@ -92,7 +92,7 @@ def test_check_command_output_and_convert():
 
     # Test case 1: Valid output type
     command = "command_name"
-    input_value = "input1"
+    input_value = "INPUT1"
     response = "2"
     result = check_command_output_and_convert(
         command, input_value, response, command_dict
@@ -101,7 +101,7 @@ def test_check_command_output_and_convert():
 
     # Test case 2: Valid output type
     command = "command_name_3"
-    input_value = "input1"
+    input_value = "INPUT1"
     response = "2.00,3E-6,4"
     result = check_command_output_and_convert(
         command, input_value, response, command_dict
@@ -110,14 +110,14 @@ def test_check_command_output_and_convert():
 
     # Test case 4: No response expected but got a response
     command = "command_name_2"
-    input_value = "input1"
+    input_value = "INPUT1"
     response = "2"
     with pytest.raises(ValueError, match=r"No response expected but got: '2'."):
         check_command_output_and_convert(command, input_value, response, command_dict)
 
     # Test case 5: Invalid output value
     command = "command_name"
-    input_value = "input1"
+    input_value = "INPUT1"
     response = "4"  # Invalid output value (not in possible_output_values)
     with pytest.raises(
         ValueError, match=r"output value must be one of \[1, 2, 3\]. Got '4'."
