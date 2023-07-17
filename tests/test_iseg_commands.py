@@ -23,9 +23,6 @@ from hvps.commands.iseg.module import (
 )
 
 
-# TODO: validate commands generation and response parsing
-
-
 def test_iseg_module_get_commands():
     with pytest.raises(ValueError):
         # invalid parameter name

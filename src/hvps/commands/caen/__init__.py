@@ -5,6 +5,7 @@ import logging
 import serial
 
 
+# TODO: add expected type of response
 def _write_command(
     ser: serial.Serial,
     logger: logging.Logger,
@@ -12,6 +13,19 @@ def _write_command(
     command: bytes,
     response: bool = True,
 ) -> str | None:
+    """
+    Implements the protocol of the HVPS for sending a command and parses its response
+    Args:
+        ser:
+        logger:
+        bd:
+        command:
+        response:
+
+    Returns:
+
+    """
+
     logger.debug(f"Sending command: {command}")
     if not ser.is_open:
         logger.error("Serial port is not open")

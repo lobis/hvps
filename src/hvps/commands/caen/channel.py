@@ -144,12 +144,61 @@ _MON_CHANNEL_COMMANDS = {
         "possible_output_values": [],
         "description": "Read out RAMP UP number of decimal digits",
     },
-    "RDWRDW": {
+    "RDW": {
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Read out RAMP DOWN value (XXX V/S)",
+    },
+    "RDWMIN": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out RAMP DOWN minimum value ( V/S )",
+    },
+    "RDWMAX": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out RAMP DOWN maximum value",
+    },
+    "RDWDEC": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out RAMP DOWN number of decimal digits",
+    },
+    "TRIP": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out TRIP value (XXXXX)",
+    },
+    "TRIPMIN": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "TRIP minimum value (S)",
+    },
+    "TRIPMAX": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out TRIP time minimum value ( S )",
+    },
+    "TRIPDEC": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Read out TRIP time number of decimal digits",
     },
     "PDWN": {
         "input_type": None,
@@ -175,19 +224,6 @@ _MON_CHANNEL_COMMANDS = {
 }
 
 # Dictionary mapping set channel commands to their descriptions
-_set_channel_commands = {
-    "VSET": "VAL:XXXX.X Set VSET value",
-    "ISET": "VAL:XXXX.XX Set ISET value",
-    "MAXV": "VAL:XXXX Set MAXVSET value",
-    "RUP": "VAL:XXX Set RAMP UP value",
-    "RDW": "VAL:XXX Set RAMP DOWN value",
-    "TRIP": "VAL:XXXX.X Set TRIP time value",
-    "PDWN": "VAL:RAMP/KILL Set POWER DOWN mode value",
-    "IMRANGE": "VAL:HIGH/LOW Set IMON RANGE value",
-    "ON": "Set Ch ON",
-    "OFF": "Set Ch OFF",
-}
-
 _SET_CHANNEL_COMMANDS = {
     "VSET": {
         "input_type": float,

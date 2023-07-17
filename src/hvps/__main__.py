@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import List, Dict
 
+import serial
+from serial.tools import list_ports
+import argparse
+import logging
+
 from hvps import __version__ as hvps_version, Caen, Iseg
 from hvps.commands.caen.module import (
     _SET_MODULE_COMMANDS as CAEN_SET_MODULE_COMMANDS,
@@ -16,33 +21,32 @@ from hvps.commands.iseg.channel import (
 )
 from hvps.devices.iseg.module import (
     _mon_module_methods_to_commands as iseg_mon_module_methods,
-)
-from hvps.devices.iseg.module import (
     _set_module_methods_to_commands as iseg_set_module_methods,
 )
 from hvps.devices.iseg.channel import (
     _mon_channel_methods_to_commands as iseg_mon_channel_methods,
-)
-from hvps.devices.iseg.channel import (
     _set_channel_methods_to_commands as iseg_set_channel_methods,
 )
 from hvps.devices.caen.module import (
     _mon_module_methods_to_commands as caen_mon_module_methods,
-)
-from hvps.devices.caen.module import (
     _set_module_methods_to_commands as caen_set_module_methods,
 )
 from hvps.devices.caen.channel import (
     _mon_channel_methods_to_commands as caen_mon_channel_methods,
-)
-from hvps.devices.caen.channel import (
     _set_channel_methods_to_commands as caen_set_channel_methods,
 )
 
-from serial.tools import list_ports
-
-import argparse
-import logging
+# TODO: command help in cli
+# TODO: methods without command not in method to command dic (add the command of the method that calls them?)
+# TODO: test consistency of method to command dictionary
+# TODO: call commands methods in cli
+# TODO: name of parameter in function calls
+# TODO: modularity who?
+# TODO: add more logging messages
+# TODO: upedate docstrings
+# TODO: abstract methods
+# TODO: main only needs to know about argument order. It should call an hvps method called
+#       call_command passing name of method and value. method inference should happen there, so do checking.
 
 
 def _is_setter_mode(
@@ -51,7 +55,22 @@ def _is_setter_mode(
     monitor_commands: List[str],
     set_commands: List[str],
 ) -> bool:
-    setter_mode = value is not None
+    """
+    Check if command is a setter command or a monitor command
+
+    Args:
+        command: command to check
+        value: value to set command to, if applicable
+        monitor_commands: list of monitor commands
+        set_commands: list of set commands
+
+    Returns: True if setter mode, False if monitor mode
+
+    Throws:
+        Exception if command is not a valid monitor or set command
+    """
+    setter_mode = value is not None  # if it gets a value must be a setter
+    # but if not it can be a setter if is not between the monitor commands
     if value is None and command not in monitor_commands:
         if command in set_commands:
             return True
@@ -64,52 +83,81 @@ def _is_setter_mode(
 
 
 def _call_setter_method(
-    command: str,
+    method: str,
     value: str | None,
     o: object,
     methods_to_commands: Dict[str, str],
     commands: Dict[str, Dict],
     testing: bool = False,
-):
-    if command not in methods_to_commands:
-        raise Exception(
-            f"Channel command '{command}' not a valid setter command: {caen_set_channel_methods}"
-        )
-    if testing:
-        print("Testing mode enabled, commands will not be run")
-        return
+) -> None:
+    """
+    Call setter method of name command with value value on object o
 
-    command_input_type = commands[methods_to_commands[command]]["input_type"]
+    Args:
+        method: command to call (must be a setter)
+        value: value to set command to, if applicable
+        o: object to call command on
+        methods_to_commands: dictionary of methods to commands
+        commands: dictionary of commands
+        testing: if True, commands will not be run
+
+    Throws:
+        Exception if command is not a valid setter command
+
+    Returns:
+        None
+    """
+
+    command_input_type = commands[methods_to_commands[method]]["input_type"]
     # True if sets a property, False if setter just sets non-readable state in the hvps
-    sets_property = isinstance(getattr(o, command), property)
+    sets_property = isinstance(getattr(o, method), property)
 
     if value is None and command_input_type is None:
         # setter with no input value
-        getattr(o, command)()
+        getattr(o, method)()
     elif value is None and command_input_type is not None:
         # setter with no input value called with a value as input
-        raise Exception(f"Command '{command}' doesn't accept a value")
+        raise Exception(f"Command '{method}' doesn't accept a value")
     elif value is not None:
         # setter with input value
         if sets_property:
-            setattr(o, command, value)
+            setattr(o, method, value)
         else:
-            getattr(o, command)(value)
-    print(f"setter {command} called with value: {value}")
+            getattr(o, method)(value)
+    try:
+        print(f"setter {method} called with value: {value}")
+    except serial.SerialException as e:
+        if testing:
+            print(f"setter {method} called")
+        else:
+            raise e
 
 
 def _call_monitor_method(
-    command: str, o: object, methods_to_commands: Dict[str, str], testing: bool = False
-):
-    if command not in methods_to_commands:
-        raise Exception(
-            f"Channel command '{command}' not a valid monitor command: {caen_mon_channel_methods}"
-        )
-    if testing:
-        print("Testing mode enabled, commands will not be run")
-        return
+    method: str, o: object, methods_to_commands: Dict[str, str], testing: bool = False
+) -> None:
+    """
+    Call monitor method of name command on object o
 
-    print(f"{command}: {getattr(o, command)}")
+    Args:
+        method: method to call (must be a monitor method)
+        o: object to call command on
+        methods_to_commands: dictionary of methods to commands
+        testing: if True, commands will not be run
+
+    Throws:
+        Exception if command is not a valid monitor command
+
+    Returns:
+        None
+    """
+    try:
+        print(f"{method}: {getattr(o, method)}")
+    except serial.SerialException as e:
+        if testing:
+            print(f"monitor {method} called")
+        else:
+            raise e
 
 
 def main():
@@ -138,7 +186,7 @@ def main():
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
     )
     parser.add_argument(
-        "--channel", default=None, help="HV PS channel"
+        "--channel", default=None, type=int, help="HV PS channel"
     )  # Required argument
     parser.add_argument(
         "--test", action="store_true", help="Testing mode. Do not run commands"
@@ -149,28 +197,35 @@ def main():
 
     # CAEN
     caen_parser = subparsers.add_parser("caen", help="CAEN HVPS")
-    caen_parser.add_argument("module", type=int, default=0, help="Module number")
-    caen_parser.add_argument("command", nargs=1, help="Command name")
+    caen_parser.add_argument("--module", default=0, type=int, help="Module number")
+    caen_parser.add_argument("method", nargs=1, help="Command name")
     caen_parser.add_argument(
         "value",
         nargs="?",
         default=None,
-        help="Value to set command to, if applicable",
+        help="Value to set method to, if applicable",
     )
 
     # ISEG
     iseg_parser = subparsers.add_parser("iseg", help="iseg HVPS")
-    iseg_parser.add_argument("command", nargs=1, help="Command name")
+    iseg_parser.add_argument("method", nargs=1, help="Command name")
     iseg_parser.add_argument(
         "value",
         nargs="?",
         default=None,
-        help="Value to set command to, if applicable",
+        help="Value to set method to, if applicable",
     )
 
     # validate args
     args = parser.parse_args()
     logging.basicConfig(level=args.log.upper())
+    testing = True if args.test else False
+    method = str(args.method[0]).lower()
+    value = args.value
+    channel = args.channel
+    is_caen = args.brand == "caen"  # True if caen, False if iseg
+    is_channel_mode = channel is not None  # True if channel is specified, False if not
+
     if args.ports:
         ports = [port.device for port in list_ports.comports()]
         print(f"Number of ports available: {len(ports)}")
@@ -178,36 +233,17 @@ def main():
             print(f"  - {port}")
         exit(0)
 
-    if args.brand == "iseg" and args.module is not None:
-        print(
-            f"WARNING: ISEG power supplies just have one module, ignoring --module {args.module}"
-        )
-
-    if args.brand != "iseg" and args.brand != "caen":
-        raise Exception(f"Brand '{args.brand}' not supported")
-
-    testing = False
-    if args.test:
-        testing = True
-    command = str(args.command[0]).lower()
-    value = args.value
-    channel = args.channel
-    setter_mode = None  # True if command is a setter command, False if monitor command
-    is_caen = args.brand == "caen"  # True if caen, False if iseg
-    is_channel_mode = channel is not None  # True if channel is specified, False if not
-
-    # TODO: just before sending command / property, check if testing is enabled and abort if so
-    # catch port is open exception and print a message
+    setter_mode = None  # True if method is a setter method, False if monitor method
 
     if is_caen:
+        module = args.module
         caen = Caen(port=args.port, baudrate=args.baud, connect=not testing)
-        # TODO: correct this
-        module = caen.module(caen_parser.module)
+        module = caen.module(module)
 
         if not is_channel_mode:
-            # command is caen at module level
+            # method is caen at module level
             setter_mode = _is_setter_mode(
-                command,
+                method,
                 value,
                 caen_mon_module_methods.keys(),
                 caen_set_module_methods.keys(),
@@ -215,23 +251,20 @@ def main():
 
             if setter_mode:
                 _call_setter_method(
-                    command,
+                    method,
                     value,
-                    caen,
+                    module,
                     caen_set_module_methods,
                     CAEN_SET_MODULE_COMMANDS,
                     testing,
                 )
             else:
-                _call_monitor_method(command, caen, caen_mon_module_methods, testing)
+                _call_monitor_method(method, module, caen_mon_module_methods, testing)
         else:
-            # command is caen at channel level
-            if testing:
-                channel = None
-            else:
-                channel = module.channel(args.channel)
+            # method is caen at channel level
+            channel = module.channel(args.channel)
             setter_mode = _is_setter_mode(
-                command,
+                method,
                 value,
                 caen_mon_channel_methods.keys(),
                 caen_set_channel_methods.keys(),
@@ -239,7 +272,7 @@ def main():
 
             if setter_mode:
                 _call_setter_method(
-                    command,
+                    method,
                     value,
                     channel,
                     caen_set_channel_methods,
@@ -247,25 +280,23 @@ def main():
                     testing,
                 )
             else:
-                _call_monitor_method(
-                    command, channel, caen_mon_channel_methods, testing
-                )
+                _call_monitor_method(method, channel, caen_mon_channel_methods, testing)
 
     elif not is_caen:
         iseg = Iseg(port=args.port, baudrate=args.baud, connect=not testing)
         module = iseg.module()
 
         if not is_channel_mode:
-            # command is iseg at module level
+            # method is iseg at module level
             setter_mode = _is_setter_mode(
-                command,
+                method,
                 value,
                 iseg_mon_module_methods.keys(),
                 iseg_set_module_methods.keys(),
             )
             if setter_mode:
                 _call_setter_method(
-                    command,
+                    method,
                     value,
                     module,
                     iseg_set_module_methods,
@@ -273,22 +304,19 @@ def main():
                     testing,
                 )
             else:
-                _call_monitor_method(command, module, iseg_mon_module_methods, testing)
+                _call_monitor_method(method, module, iseg_mon_module_methods, testing)
         else:
-            # command is iseg at channel level
-            if testing:
-                channel = None
-            else:
-                channel = module.channel(args.channel)
+            # method is iseg at channel level
+            channel = module.channel(args.channel)
             setter_mode = _is_setter_mode(
-                command,
+                method,
                 value,
                 iseg_mon_channel_methods.keys(),
                 iseg_set_channel_methods.keys(),
             )
             if setter_mode:
                 _call_setter_method(
-                    command,
+                    method,
                     value,
                     channel,
                     iseg_set_channel_methods,
@@ -296,9 +324,7 @@ def main():
                     testing,
                 )
             else:
-                _call_monitor_method(
-                    command, channel, iseg_mon_channel_methods, testing
-                )
+                _call_monitor_method(method, channel, iseg_mon_channel_methods, testing)
 
 
 if __name__ == "__main__":

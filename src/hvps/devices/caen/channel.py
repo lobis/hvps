@@ -51,7 +51,7 @@ class Channel(BaseChannel):
     @property
     def vset(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -69,7 +69,7 @@ class Channel(BaseChannel):
     @property
     def vmin(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -83,7 +83,7 @@ class Channel(BaseChannel):
     @property
     def vmax(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -97,7 +97,7 @@ class Channel(BaseChannel):
     @property
     def vdec(self) -> int:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -111,7 +111,7 @@ class Channel(BaseChannel):
     @property
     def vmon(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -125,7 +125,7 @@ class Channel(BaseChannel):
     @property
     def iset(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -139,7 +139,7 @@ class Channel(BaseChannel):
     @property
     def imin(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -153,7 +153,7 @@ class Channel(BaseChannel):
     @property
     def imax(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -167,7 +167,7 @@ class Channel(BaseChannel):
     @property
     def isdec(self) -> int:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -181,7 +181,7 @@ class Channel(BaseChannel):
     @property
     def imon(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -193,25 +193,29 @@ class Channel(BaseChannel):
         )
 
     @property
-    def imrange(self) -> bool:
+    def imrange(self) -> str:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self._bd,
             command=_get_mon_channel_command(self._bd, self._channel, command_name),
         )
-        if response not in ["HIGH", "LOW"]:
-            raise ValueError(f"Unexpected response {response}")
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
         )
+
+    def imrange_high(self) -> bool:
+        return self.imrange == "HIGH"
+
+    def imrange_low(self) -> bool:
+        return self.imrange == "LOW"
 
     @property
     def imdec(self) -> int:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -225,7 +229,7 @@ class Channel(BaseChannel):
     @property
     def maxv(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -239,7 +243,7 @@ class Channel(BaseChannel):
     @property
     def mvmin(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -253,7 +257,7 @@ class Channel(BaseChannel):
     @property
     def mvmax(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -267,7 +271,7 @@ class Channel(BaseChannel):
     @property
     def mvdec(self) -> int:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -281,7 +285,7 @@ class Channel(BaseChannel):
     @property
     def rup(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -295,7 +299,7 @@ class Channel(BaseChannel):
     @property
     def rupmin(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -309,7 +313,7 @@ class Channel(BaseChannel):
     @property
     def rupmax(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -323,7 +327,7 @@ class Channel(BaseChannel):
     @property
     def rupdec(self) -> int:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -337,7 +341,7 @@ class Channel(BaseChannel):
     @property
     def rdw(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -351,7 +355,7 @@ class Channel(BaseChannel):
     @property
     def rdwmin(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -365,7 +369,7 @@ class Channel(BaseChannel):
     @property
     def rdwmax(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -379,7 +383,7 @@ class Channel(BaseChannel):
     @property
     def rdwdec(self) -> int:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -393,7 +397,7 @@ class Channel(BaseChannel):
     @property
     def trip(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -407,7 +411,7 @@ class Channel(BaseChannel):
     @property
     def tripmin(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -421,7 +425,7 @@ class Channel(BaseChannel):
     @property
     def tripmax(self) -> float:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -435,7 +439,7 @@ class Channel(BaseChannel):
     @property
     def tripdec(self) -> int:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -449,7 +453,7 @@ class Channel(BaseChannel):
     @property
     def pdwn(self) -> str:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -463,7 +467,7 @@ class Channel(BaseChannel):
     @property
     def pol(self) -> str:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -485,7 +489,7 @@ class Channel(BaseChannel):
     @property
     def stat(self) -> dict:
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
+        command_name = _mon_channel_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,

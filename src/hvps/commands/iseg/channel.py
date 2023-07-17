@@ -236,6 +236,13 @@ _MON_CHANNEL_COMMANDS = {
         "possible_output_values": [],
         "description": "Query the Channel Status register.",
     },
+    "READ:CHAN:EVENT:MASK": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Query the Channel Event Mask register.",
+    },
     ":MEAS:VOLT": {
         "input_type": None,
         "allowed_input_values": [],
@@ -249,6 +256,34 @@ _MON_CHANNEL_COMMANDS = {
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the measured channel current in Ampere.",
+    },
+    ":CONF:RAMP:VOLT:UP": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Set the channel voltage ramp up speed in Volt/second.",
+    },
+    ":CONF:RAMP:VOLT:DOWN": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Set the channel voltage ramp down speed in Volt/second.",
+    },
+    ":CONF:RAMP:CURR:UP": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Set the channel current ramp up speed in Ampere/second.",
+    },
+    ":CONF:RAMP:CURR:DOWN": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Set the channel current ramp down speed in Ampere/second.",
     },
 }
 

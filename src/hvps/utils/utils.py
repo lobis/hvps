@@ -86,6 +86,14 @@ def check_command_input(
             return
     if not isinstance(input_value, input_type):
         raise ValueError(f"Value {input_value} must be a {input_type}.")
+
+    if isinstance(input_value, str):
+        input_value = input_value.upper()
+    elif isinstance(input_value, List):
+        input_value = [
+            value.upper() if isinstance(value, str) else value for value in input_value
+        ]
+
     if allowed_input_values and input_value not in allowed_input_values:
         raise ValueError(
             f"Value must be one of {allowed_input_values}. Got {input_value}."

@@ -713,31 +713,6 @@ class Module(BaseModule):
             command_name, None, response, _MON_MODULE_COMMANDS
         )
 
-    @property
-    def configuration_mode(self) -> bool:
-        """Check if the device is in configuration mode.
-
-        Returns:
-            bool: true if in configuration mode, otherwise false.
-        """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
-
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=bool,
-        )
-
-        return (
-            check_command_output_and_convert(
-                command_name, None, response, _MON_MODULE_COMMANDS
-            )
-            == 1
-        )
-
     # Setters
 
     @serial_baud_rate.setter
@@ -1092,7 +1067,6 @@ _mon_module_methods_to_commands = {
     "module_temperature": ":READ:MODULE:TEMPERATURE",
     "setvalue_changes_counter": ":READ:MODULE:SETVALUE",
     "firmware_name": ":READ:FIRMWARE:NAME",
-    "configuration_mode": ":SYSTEM:USER:CONFIG",
 }
 _set_module_methods_to_commands = {
     "serial_baud_rate": ":CONF:SERIAL:BAUD",

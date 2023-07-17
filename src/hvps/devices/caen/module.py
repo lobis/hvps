@@ -42,12 +42,11 @@ class Module(BaseModule):
             return 1
 
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
+        command_name = _mon_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
-            # TODO: call _get_set_module_command from _write_command
             command=_get_mon_module_command(self.bd, command_name),
         )
         return check_command_output_and_convert(
@@ -83,7 +82,7 @@ class Module(BaseModule):
             str: The name of the module.
         """
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
+        command_name = _mon_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -103,7 +102,7 @@ class Module(BaseModule):
             str: The firmware release.
         """
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
+        command_name = _mon_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -123,7 +122,7 @@ class Module(BaseModule):
             str: The serial number.
         """
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
+        command_name = _mon_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -144,21 +143,17 @@ class Module(BaseModule):
             bool: Yes: True, No: False
         """
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
+        command_name = _mon_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, command_name),
         )
-        if response == "YES":
-            return check_command_output_and_convert(
-                command_name, None, response, _MON_MODULE_COMMANDS
-            )
-        elif response == "NO":
-            return False
-        else:
-            raise ValueError(f"Invalid response for 'interlock_status': {response}")
+        response = check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
+        return response == "YES"
 
     @property
     def interlock_mode(self) -> str:
@@ -169,15 +164,13 @@ class Module(BaseModule):
             str: The interlock mode.
         """
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
+        command_name = _mon_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, command_name),
         )
-        if response not in ["OPEN", "CLOSED"]:
-            raise ValueError(f"Invalid response for 'interlock_mode': {response}")
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
         )
@@ -199,15 +192,13 @@ class Module(BaseModule):
             str: The control mode.
         """
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
+        command_name = _mon_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
             bd=self.bd,
             command=_get_mon_module_command(self.bd, command_name),
         )
-        if response not in ["LOCAL", "REMOTE"]:
-            raise ValueError(f"Invalid response for 'control_mode': {response}")
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
         )
@@ -228,39 +219,6 @@ class Module(BaseModule):
         """
         return self.control_mode == "REMOTE"
 
-    @control_mode.setter
-    def control_mode(self, value: str):
-        """
-        Set Control Mode (LOCAL / REMOTE)
-
-        Args:
-            value (str): The control mode.
-        """
-        value = value.upper()
-        if value not in ["LOCAL", "REMOTE"]:
-            raise ValueError(f"Invalid value for 'control_mode': {value}")
-
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_set_module_command(self.bd, command_name, value),
-        )
-
-    def set_control_mode_local(self):
-        """
-        Set Control Mode to LOCAL
-        """
-        self.control_mode = "LOCAL"
-
-    def set_control_mode_remote(self):
-        """
-        Set Control Mode to REMOTE
-        """
-        self.control_mode = "REMOTE"
-
     @property
     def local_bus_termination_status(self) -> str:
         """
@@ -270,7 +228,7 @@ class Module(BaseModule):
             str: The local bus termination status.
         """
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
+        command_name = _mon_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -310,7 +268,7 @@ class Module(BaseModule):
             str: The board alarm status value.
         """
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
+        command_name = _mon_module_methods_to_commands[method_name]
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -340,9 +298,6 @@ class Module(BaseModule):
         Args:
             mode (str): The interlock mode to set.
         """
-        mode = mode.upper()
-        if mode not in ["OPEN", "CLOSED"]:
-            raise ValueError(f"Invalid value for 'interlock_mode': {mode}")
 
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
@@ -388,10 +343,9 @@ _mon_module_methods_to_commands = {
     "interlock_mode": "BDILKM",
     "local_bus_termination_status": "BDTERM",
     "control_mode": "BDCTR",
+    "board_alarm_status": "BDALARM",
 }
 _set_module_methods_to_commands = {
-    "control_mode": "BDCTR",
-    "board_alarm_status": "BDALARM",
     "interlock_mode": "BDILKM",
     "clear_alarm_signal": "BDCLR",
 }

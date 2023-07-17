@@ -6,6 +6,7 @@ import serial
 import re
 
 
+# TODO: change name to arg response
 def _write_command(
     ser: serial.Serial,
     logger: logging.Logger,
@@ -13,6 +14,22 @@ def _write_command(
     expected_response_type: type | None,
     response: bool = True,
 ) -> str | List[str] | None:
+    """
+    Implements the protocol of the HVPS for sending a command and parses its response
+
+    Args:
+        ser: The serial port.
+        logger: The logger.
+        command: The command to send.
+        expected_response_type: The expected type of the response.
+        response: Whether to expect a response or not.
+
+    Throws:
+        ValueError: If the response is invalid, cannot be decoded, or does not match the expected pattern.
+
+    Returns:
+        str | List[str] | None: The parsed response.
+    """
     logger.debug(f"Send command: {command}")
     ser.write(command)
     if not response:

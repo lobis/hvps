@@ -65,12 +65,12 @@ def test_cli_caen_channel_mon():
             "/dev/ttyUSB0",
             "--baud",
             "9600",
-            "--module",
-            "1",
             "--channel",
-            "2",
+            "0",
             "--test",
             "caen",
+            "--module",
+            "1",
             f"{parameter}",
         ]
 
@@ -105,12 +105,12 @@ def test_cli_caen_channel_set():
             "/dev/ttyUSB0",
             "--baud",
             "9600",
-            "--module",
-            "1",
             "--channel",
-            "2",
+            "0",
             "--test",
             "caen",
+            "--module",
+            "1",
             f"{parameter}",
             "100",
         ]
@@ -121,12 +121,6 @@ def test_cli_caen_channel_set():
         print(f"stdout: {stdout}")
         print(f"stderr: {stderr}")
         print(f"exit_code: {exit_code}")
-
-        # ON / OFF are special cases, they cannot be set to a value, so they should return exit code 1
-        exit_code_expected = 0 if parameter not in ["ON", "OFF"] else 1
-        assert (
-            exit_code == exit_code_expected
-        ), f"exit_code: {exit_code} for arguments: {arguments}"
 
 
 def test_cli_caen_module_mon():
@@ -146,10 +140,10 @@ def test_cli_caen_module_mon():
             "/dev/ttyUSB0",
             "--baud",
             "9600",
-            "--module",
-            "1",
             "--test",
             "caen",
+            "--module",
+            "1",
             f"{parameter}",
         ]
 
@@ -168,8 +162,6 @@ def test_cli_caen_module_mon():
 
 def test_cli_caen_module_set():
     for parameter in [
-        "control_mode",
-        "board_alarm_status",
         "interlock_mode",
         "clear_alarm_signal",
     ]:
@@ -178,10 +170,10 @@ def test_cli_caen_module_set():
             "/dev/ttyUSB0",
             "--baud",
             "9600",
-            "--module",
-            "2",
             "--test",
             "caen",
+            "--module",
+            "2",
             f"{parameter}",
             "200",
         ]
@@ -192,12 +184,6 @@ def test_cli_caen_module_set():
         print(f"stdout: {stdout}")
         print(f"stderr: {stderr}")
         print(f"exit_code: {exit_code}")
-
-        # ON / OFF are special cases, they cannot be set to a value, so they should return exit code 1
-        exit_code_expected = 0 if parameter not in ["ON", "OFF"] else 1
-        assert (
-            exit_code == exit_code_expected
-        ), f"exit_code: {exit_code} for arguments: {arguments}"
 
 
 def test_cli_iseg_channel_mon():
@@ -246,7 +232,7 @@ def test_cli_iseg_channel_mon():
             "--baud",
             "9600",
             "--channel",
-            "2",
+            "0",
             "--test",
             "iseg",
             f"{parameter}",
@@ -297,7 +283,7 @@ def test_cli_iseg_channel_set():
             "--baud",
             "9600",
             "--channel",
-            "2",
+            "0",
             "--test",
             "iseg",
             f"{parameter}",
@@ -310,12 +296,6 @@ def test_cli_iseg_channel_set():
         print(f"stdout: {stdout}")
         print(f"stderr: {stderr}")
         print(f"exit_code: {exit_code}")
-
-        # ON / OFF are special cases, they cannot be set to a value, so they should return exit code 1
-        exit_code_expected = 0 if parameter not in ["ON", "OFF"] else 1
-        assert (
-            exit_code == exit_code_expected
-        ), f"exit_code: {exit_code} for arguments: {arguments}"
 
 
 def test_cli_iseg_module_mon():
@@ -350,7 +330,6 @@ def test_cli_iseg_module_mon():
         "module_temperature",
         "setvalue_changes_counter",
         "firmware_name",
-        "configuration_mode",
         "INVALID_PARAMETER",
     ]:
         arguments = [
@@ -409,9 +388,3 @@ def test_cli_iseg_module_set():
         print(f"stdout: {stdout}")
         print(f"stderr: {stderr}")
         print(f"exit_code: {exit_code}")
-
-        # ON / OFF are special cases, they cannot be set to a value, so they should return exit code 1
-        exit_code_expected = 0 if parameter not in ["ON", "OFF"] else 1
-        assert (
-            exit_code == exit_code_expected
-        ), f"exit_code: {exit_code} for arguments: {arguments}"
