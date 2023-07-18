@@ -713,6 +713,50 @@ class Module(BaseModule):
             command_name, None, response, _MON_MODULE_COMMANDS
         )
 
+    @property
+    def id_string(self) -> str:
+        """Query the module's ID string.
+
+        Returns:
+            str: The ID string.
+        """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=str,
+        )
+
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
+
+    @property
+    def instruction_set(self) -> str:
+        """Query the module's instruction set.
+
+        Returns:
+            str: The instruction set.
+        """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _mon_module_methods_to_commands[method_name]
+        command = _get_mon_module_command(command_name)
+
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=str,
+        )
+
+        return check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
+
     # Setters
 
     @serial_baud_rate.setter
@@ -1034,6 +1078,113 @@ class Module(BaseModule):
         ):
             raise ValueError("Last command hasn't been processed.")
 
+    def clear_all_event_status_registers(self) -> None:
+        """Clear all event status registers (module and channels)."""
+
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, "")
+
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
+        if (
+            check_command_output_and_convert(
+                command_name, None, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
+            raise ValueError("Last command hasn't been processed.")
+
+    def reset_to_save_values(self) -> None:
+        """Reset the module to the saved values."""
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, "")
+
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
+        if (
+            check_command_output_and_convert(
+                command_name, None, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
+            raise ValueError("Last command hasn't been processed.")
+
+    def set_command_set(self, command_set: str) -> None:
+        """Set the command set to use for the module.
+
+        Args:
+            command_set (str): The command set to use for the module.
+        """
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, command_set)
+
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
+        if (
+            check_command_output_and_convert(
+                command_name, command_set, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
+            raise ValueError("Last command hasn't been processed.")
+
+    def local_lockout(self) -> None:
+        """Lockout the module from the local interface."""
+
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, "")
+
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
+        if (
+            check_command_output_and_convert(
+                command_name, None, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
+            raise ValueError("Last command hasn't been processed.")
+
+    def goto_local(self) -> None:
+        """Go to local mode."""
+
+        method_name = inspect.currentframe().f_code.co_name
+        command_name = _set_module_methods_to_commands[method_name]
+        command = _get_set_module_command(command_name, "")
+
+        response = _write_command(
+            ser=self._serial,
+            logger=self._logger,
+            command=command,
+            expected_response_type=None,
+        )
+        if (
+            check_command_output_and_convert(
+                command_name, None, response, _MON_MODULE_COMMANDS
+            )
+            != 1
+        ):
+            raise ValueError("Last command hasn't been processed.")
+
 
 # TODO: test consistency with methods and commands
 _mon_module_methods_to_commands = {
@@ -1067,6 +1218,8 @@ _mon_module_methods_to_commands = {
     "module_temperature": ":READ:MODULE:TEMPERATURE",
     "setvalue_changes_counter": ":READ:MODULE:SETVALUE",
     "firmware_name": ":READ:FIRMWARE:NAME",
+    "id_string": "*IDN",
+    "instruction_set": "*INSTR",
 }
 _set_module_methods_to_commands = {
     "serial_baud_rate": ":CONF:SERIAL:BAUD",
@@ -1082,4 +1235,9 @@ _set_module_methods_to_commands = {
     "exit_configuration_mode": ":SYSTEM:USER:CONFIG",
     "set_serial_echo_enabled": ":CONF:EVENT CLEAR",
     "clear_module_event_status_bits": ":CONF:EVENT",
+    "clear_all_event_status_registers": "*CLS",
+    "reset_to_save_values": "*RST",
+    "set_command_set": "*INSTR",
+    "local_lockout": "*LLO",
+    "goto_local": "*GTL",
 }

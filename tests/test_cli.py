@@ -330,6 +330,8 @@ def test_cli_iseg_module_mon():
         "module_temperature",
         "setvalue_changes_counter",
         "firmware_name",
+        "id_string",
+        "instruction_set",
         "INVALID_PARAMETER",
     ]:
         arguments = [
@@ -370,6 +372,11 @@ def test_cli_iseg_module_set():
         "exit_configuration_mode",
         "set_serial_echo_enabled",
         "clear_module_event_status_bits",
+        "clear_all_event_status_registers",
+        "reset_to_save_values",
+        "set_command_set",
+        "local_lockout",
+        "goto_local",
     ]:
         arguments = [
             "--port",

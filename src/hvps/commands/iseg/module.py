@@ -222,6 +222,20 @@ _MON_MODULE_COMMANDS = {
         "possible_output_values": [],
         "description": "Query the Module Event Channel Mask register",
     },
+    "*IDN": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": [],
+        "description": "Query the module's identification string",
+    },
+    "*INSTR": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": [],
+        "description": "Query the currently selected instruction set. All devices support the EDCP command set. Some devices (HPS, EHQ) support further command sets, refer to the devices manual for them.",
+    },
 }
 
 _SET_MODULE_COMMANDS = {
@@ -308,6 +322,44 @@ _SET_MODULE_COMMANDS = {
         "output_type": None,
         "possible_output_values": [],
         "description": "Clear single bits or bit combinations in the Module Event Status register.",
+    },
+    "*CLS": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Clear the Module Event Status and all Channel Event Status registers",
+    },
+    "*RST": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Reset the device to save values: \n\
+                        - turn high voltage off with ramp for all channel \n\
+                        - set voltage set Vset to zero for all channels \n\
+                        - set current set Iset to the current nominal for all channels",
+    },
+    "*INSTR": {
+        "input_type": str,
+        "allowed_input_values": ["EDCP"],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Switch the device to the EDCP command set. Only for devices that support other command sets beside EDCP. For HPS and EHQ with other command sets, refer to the devices manual. This setting is permanent.",
+    },
+    "*LLO": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Local Lockout: Front panel buttons and rotary encoders are disabled. The device can only be controlled remotely.",
+    },
+    "*GTL": {
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Go to local: Front panel buttons and rotary encoders are enabled. The device can be controlled locally.",
     },
 }
 
