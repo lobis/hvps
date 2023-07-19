@@ -6,7 +6,8 @@ from serial.tools import list_ports
 import argparse
 import logging
 
-from hvps import __version__ as hvps_version, Caen, Iseg
+from hvps import __version__ as hvps_version
+from hvps import Caen, Iseg
 from hvps.commands.caen.module import (
     _SET_MODULE_COMMANDS as CAEN_SET_MODULE_COMMANDS,
 )
@@ -220,11 +221,6 @@ def main():
     args = parser.parse_args()
     logging.basicConfig(level=args.log.upper())
     testing = True if args.test else False
-    method = str(args.method[0]).lower()
-    value = args.value
-    channel = args.channel
-    is_caen = args.brand == "caen"  # True if caen, False if iseg
-    is_channel_mode = channel is not None  # True if channel is specified, False if not
 
     if args.ports:
         ports = [port.device for port in list_ports.comports()]
@@ -232,6 +228,13 @@ def main():
         for port in ports:
             print(f"  - {port}")
         exit(0)
+
+    # TODO: add validation for main call with --ports
+    method = str(args.method[0]).lower() if args.method else None
+    value = args.value
+    channel = args.channel
+    is_caen = args.brand == "caen"  # True if caen, False if iseg
+    is_channel_mode = channel is not None  # True if channel is specified, False if not
 
     setter_mode = None  # True if method is a setter method, False if monitor method
 
