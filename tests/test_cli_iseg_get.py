@@ -24,6 +24,7 @@ def run_main_with_arguments(arguments: list) -> tuple:
 
     return stdout.decode(), stderr.decode(), exit_code
 
+
 def test_cli_iseg_channel_mon():
     for parameter in [
         "trip_action",
@@ -143,5 +144,3 @@ def test_cli_iseg_module_mon():
         assert (
             exit_code == exit_code_expected
         ), f"exit_code: {exit_code} for arguments: {arguments}"
-
-
