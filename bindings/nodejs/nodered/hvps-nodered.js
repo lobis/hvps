@@ -1,11 +1,12 @@
-import { ExecutionContext } from "hvps";
+hvps = require('hvps')
 
 module.exports = function (RED) {
     function HVPS(config) {
         RED.nodes.createNode(this, config);
         const node = this;
+        context = new hvps.ExecutionContext("/usr/bin/python");
         node.on('input', function (msg) {
-            msg.payload = msg.payload.toLowerCase();
+            msg.payload = context.run(msg.payload);
             node.send(msg);
         });
     }
