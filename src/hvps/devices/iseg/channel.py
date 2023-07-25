@@ -362,7 +362,7 @@ class Channel(BaseChannel):
             ser=self._serial,
             logger=self._logger,
             command=command,
-            expected_response_type=bool,
+            expected_response_type=int,
         )
         return (
             check_command_output_and_convert(
@@ -390,7 +390,7 @@ class Channel(BaseChannel):
             ser=self._serial,
             logger=self._logger,
             command=command,
-            expected_response_type=bool,
+            expected_response_type=int,
         )
         return (
             check_command_output_and_convert(

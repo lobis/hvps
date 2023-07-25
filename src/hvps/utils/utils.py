@@ -41,7 +41,7 @@ def remove_units(value: str) -> str:
         The value without units.
     """
     # Regular expression pattern to match the units at the end of the string
-    pattern = r"[A-Za-z/]+?$"
+    pattern = r"[A-Za-z/%]+?$"
 
     # Remove the units using regex substitution
     value_without_units = re.sub(pattern, "", value)
@@ -84,8 +84,6 @@ def check_command_input(
             raise ValueError(f"Command {command} does not take an input value.")
         else:
             return
-    if not isinstance(input_value, input_type):
-        raise ValueError(f"Value {input_value} must be a {input_type}.")
 
     if isinstance(input_value, str):
         input_value = input_value.upper()

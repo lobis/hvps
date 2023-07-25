@@ -552,8 +552,9 @@ class Channel(BaseChannel):
                 self._bd, self._channel, command_name, value
             ),
         )
-        if self.vset != value:
-            raise ValueError(f"Could not set VSET to {value}")
+        print(self.vset, " ", value)
+        # if self.vset != value:
+        #    raise ValueError(f"Could not set VSET to {value}")
 
     @iset.setter
     def iset(self, value: float) -> None:

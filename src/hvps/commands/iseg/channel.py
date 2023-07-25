@@ -37,7 +37,7 @@ _MON_CHANNEL_COMMANDS = {
         "input_type": None,
         "allowed_input_values": [],
         "output_type": List[int],
-        "possible_output_values": [[1, 2, 3]],
+        "possible_output_values": [[1], [2], [3], [1, 2], [1, 3], [2, 3], [1, 2, 3]],
         "description": "Query the available channel output modes as a list.",
     },
     ":CONF:OUTPUT:POL": {

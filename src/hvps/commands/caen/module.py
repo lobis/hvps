@@ -43,7 +43,7 @@ _MON_MODULE_COMMANDS = {
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
-        "possible_output_values": ["OPEN, CLOSED"],
+        "possible_output_values": ["OPEN", "CLOSED"],
         "description": "Read out INTERLOCK mode (OPEN/CLOSED)",
     },
     "BDCTR": {

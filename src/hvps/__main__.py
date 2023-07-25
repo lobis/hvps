@@ -90,6 +90,7 @@ def _call_setter_method(
     methods_to_commands: Dict[str, str],
     commands: Dict[str, Dict],
     testing: bool = False,
+    logger: logging.Logger = None,
 ) -> None:
     """
     Call setter method of name command with value value on object o
@@ -111,31 +112,38 @@ def _call_setter_method(
 
     command_input_type = commands[methods_to_commands[method]]["input_type"]
     # True if sets a property, False if setter just sets non-readable state in the hvps
-    sets_property = isinstance(getattr(o, method), property)
+    sets_property = isinstance(getattr(type(o), method), property)
 
-    if value is None and command_input_type is None:
-        # setter with no input value
-        getattr(o, method)()
-    elif value is None and command_input_type is not None:
-        # setter with no input value called with a value as input
-        raise Exception(f"Command '{method}' doesn't accept a value")
-    elif value is not None:
-        # setter with input value
-        if sets_property:
-            setattr(o, method, value)
-        else:
-            getattr(o, method)(value)
     try:
-        print(f"setter {method} called with value: {value}")
+        if value is None and command_input_type is None:
+            # setter with no input value
+            getattr(o, method)()
+        elif value is None and command_input_type is not None:
+            # setter with no input value called with a value as input
+            raise Exception(f"Command '{method}' doesn't accept a value")
+        elif value is not None:
+            # setter with input value
+            if sets_property:
+                setattr(o, method, value)
+            else:
+                getattr(o, method)(value)
     except serial.SerialException as e:
         if testing:
             print(f"setter {method} called")
         else:
             raise e
 
+    result = f"{method} {value}: ok"
+    print(result)
+    logger.info(result)
+
 
 def _call_monitor_method(
-    method: str, o: object, methods_to_commands: Dict[str, str], testing: bool = False
+    method: str,
+    o: object,
+    methods_to_commands: Dict[str, str],
+    testing: bool = False,
+    logger: logging.Logger = None,
 ) -> None:
     """
     Call monitor method of name command on object o
@@ -153,7 +161,9 @@ def _call_monitor_method(
         None
     """
     try:
-        print(f"{method}: {getattr(o, method)}")
+        result = f"{method}: {getattr(o, method)}"
+        print(result)
+        logger.info(result)
     except serial.SerialException as e:
         if testing:
             print(f"monitor {method} called")
@@ -260,9 +270,12 @@ def main():
                     caen_set_module_methods,
                     CAEN_SET_MODULE_COMMANDS,
                     testing,
+                    caen._logger,
                 )
             else:
-                _call_monitor_method(method, module, caen_mon_module_methods, testing)
+                _call_monitor_method(
+                    method, module, caen_mon_module_methods, testing, caen._logger
+                )
         else:
             # method is caen at channel level
             channel = module.channel(args.channel)
@@ -281,9 +294,12 @@ def main():
                     caen_set_channel_methods,
                     CAEN_SET_CHANNEL_COMMANDS,
                     testing,
+                    caen._logger,
                 )
             else:
-                _call_monitor_method(method, channel, caen_mon_channel_methods, testing)
+                _call_monitor_method(
+                    method, channel, caen_mon_channel_methods, testing, caen._logger
+                )
 
     elif not is_caen:
         iseg = Iseg(port=args.port, baudrate=args.baud, connect=not testing)
@@ -305,9 +321,12 @@ def main():
                     iseg_set_module_methods,
                     ISEG_SET_MODULE_COMMANDS,
                     testing,
+                    caen._logger,
                 )
             else:
-                _call_monitor_method(method, module, iseg_mon_module_methods, testing)
+                _call_monitor_method(
+                    method, module, iseg_mon_module_methods, testing, iseg._logger
+                )
         else:
             # method is iseg at channel level
             channel = module.channel(args.channel)
@@ -325,9 +344,12 @@ def main():
                     iseg_set_channel_methods,
                     ISEG_SET_CHANNEL_COMMANDS,
                     testing,
+                    caen._logger,
                 )
             else:
-                _call_monitor_method(method, channel, iseg_mon_channel_methods, testing)
+                _call_monitor_method(
+                    method, channel, iseg_mon_channel_methods, testing, iseg._logger
+                )
 
 
 if __name__ == "__main__":

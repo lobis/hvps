@@ -76,7 +76,7 @@ def _parse_response(
             r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?(\s*[a-zA-Z]+(/+[a-zA-Z]+)?)?$"
         )
     elif expected_response_type == int or expected_response_type == List[int]:
-        pattern = r"^[-+]?\d+$"
+        pattern = r"^[-+]?\d+(\s*[a-zA-Z]+(/+[a-zA-Z]+)?)?$"
     elif expected_response_type == str or expected_response_type == List[str]:
         pattern = r"^[\x00-\x7F]+$"
     elif expected_response_type is None:
@@ -87,7 +87,7 @@ def _parse_response(
         )
 
     split_response = response.split(",")
-
+    split_response = [s for s in split_response if not s == ""]
     for r in split_response:
         match = re.match(pattern, r)
         if not match:

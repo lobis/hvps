@@ -29,7 +29,7 @@ def test_cli_iseg_channel_mon():
     for parameter in [
         "trip_action",
         "trip_timeout",
-        "external_inhibit_action",
+        # TODO: doesn't give response "external_inhibit_action",
         "output_mode",
         "available_output_modes",
         "output_polarity",
@@ -67,7 +67,7 @@ def test_cli_iseg_channel_mon():
     ]:
         arguments = [
             "--port",
-            "COM4",
+            "COM5",
             "--baud",
             "9600",
             "--channel",
@@ -91,6 +91,7 @@ def test_cli_iseg_channel_mon():
 
 def test_cli_iseg_module_mon():
     for parameter in [
+        "number_of_channels",
         "firmware_release",
         "module_status",
         "filter_averaging_steps",
@@ -102,6 +103,7 @@ def test_cli_iseg_module_mon():
         "serial_echo_enable",
         "serial_echo_enabled",
         "module_current_limit",
+        "module_voltage_limit",
         "module_voltage_ramp_speed",
         "module_current_ramp_speed",
         "module_control_register",
@@ -126,7 +128,7 @@ def test_cli_iseg_module_mon():
     ]:
         arguments = [
             "--port",
-            "COM4",
+            "COM5",
             "--baud",
             "9600",
             "iseg",

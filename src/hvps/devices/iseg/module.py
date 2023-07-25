@@ -103,7 +103,7 @@ class Module(BaseModule):
             ser=self._serial,
             logger=self._logger,
             command=command,
-            expected_response_type=dict,
+            expected_response_type=str,
         )
         register = check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -1188,7 +1188,7 @@ class Module(BaseModule):
 
 # TODO: test consistency with methods and commands
 _mon_module_methods_to_commands = {
-    "channel": ":READ:MODULE:CHANNELNUMBER",
+    "number_of_channels": ":READ:MODULE:CHANNELNUMBER",
     "firmware_release": ":READ:FIRMWARE:RELEASE",
     "module_status": ":READ:MODULE:STATUS",
     "filter_averaging_steps": ":CONF:AVER",

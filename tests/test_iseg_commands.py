@@ -32,15 +32,6 @@ def test_iseg_module_get_commands():
     assert command == b":READ:MODULE:EVENT:MASK?\r\n"
 
 
-def test_iseg_module_set_commands():
-    with pytest.raises(ValueError):
-        # invalid parameter name
-        _get_set_module_command("TEST", 16)
-
-    command = _get_set_module_command(":CONF:AVER", 16)
-    assert command == b":CONF:AVER 16;*OPC?\r\n"
-
-
 def test_iseg_channel_get_commands():
     with pytest.raises(ValueError):
         # invalid parameter name
@@ -52,6 +43,15 @@ def test_iseg_channel_get_commands():
 
     command = _get_mon_channel_command(0, ":CONF:OUTPUT:POL:LIST")
     assert command == b":CONF:OUTPUT:POL:LIST? (@0)\r\n"
+
+
+def test_iseg_module_set_commands():
+    with pytest.raises(ValueError):
+        # invalid parameter name
+        _get_set_module_command("TEST", 16)
+
+    command = _get_set_module_command(":CONF:AVER", 16)
+    assert command == b":CONF:AVER 16;*OPC?\r\n"
 
 
 def test_iseg_channel_set_commands():
@@ -94,4 +94,4 @@ def test_iseg_parse_response():
 
     # type missmatch
     with pytest.raises(ValueError):
-        _parse_response(b"1.23400E^3", float)
+        _parse_response(b"1.23400E3", int)

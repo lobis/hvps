@@ -97,8 +97,8 @@ def test_cli_caen_channel_set():
         "TRIP",
         "PDWN",
         "IMRANGE",
-        "ON",
-        "OFF",
+        "turn_on",
+        "turn_off",
     ]:
         arguments = [
             "--port",
@@ -300,7 +300,7 @@ def test_cli_iseg_channel_set():
 
 def test_cli_iseg_module_mon():
     for parameter in [
-        "channel",
+        "number_of_channels",
         "firmware_release",
         "module_status",
         "filter_averaging_steps",
