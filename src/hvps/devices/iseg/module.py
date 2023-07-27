@@ -776,11 +776,13 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        converted_response = check_command_output_and_convert(
-            command_name, baud_rate, response, _MON_MODULE_COMMANDS
-        )
-        if converted_response != 1 or converted_response != baud_rate:
+
+        if response != "1" or self.serial_baud_rate != baud_rate:
             raise ValueError("Last command hasn't been processed.")
+
+    # Be careful when switching off the echo as there is no other possibilit to synchronize the HV device
+    # with the computer (no hardware/software handshake). This mode is only available
+    # for compatibility reasons and without support.
 
     @serial_echo_enable.setter
     def serial_echo_enable(self, enabled: int) -> None:
@@ -799,12 +801,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, enabled, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1" or self.serial_echo_enable != enabled:
             raise ValueError("Last command hasn't been processed.")
 
     @filter_averaging_steps.setter
@@ -827,12 +824,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, steps, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1" or self.filter_averaging_steps != steps:
             raise ValueError("Last command hasn't been processed.")
 
     @kill_enable.setter
@@ -852,12 +844,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, enable, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1" or self.kill_enable != enable:
             raise ValueError("Last command hasn't been processed.")
 
     @adjustment.setter
@@ -877,12 +864,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, value, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1" or self.adjustment != value:
             raise ValueError("Last command hasn't been processed.")
 
     @module_event_mask_register.setter
@@ -902,12 +884,8 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, mask, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        # TODO: check if read value = mask, careful with reserved bits
+        if response != "1":
             raise ValueError("Last command hasn't been processed.")
 
     @module_event_channel_mask_register.setter
@@ -927,12 +905,8 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, mask, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        # TODO: check if read value = mask, careful with reserved bits
+        if response != "1":
             raise ValueError("Last command hasn't been processed.")
 
     @module_can_address.setter
@@ -953,12 +927,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, address, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1" or self.module_can_address != address:
             raise ValueError("Last command hasn't been processed.")
 
     @module_can_bitrate.setter
@@ -979,12 +948,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, bitrate, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1" or self.module_can_bitrate != bitrate:
             raise ValueError("Last command hasn't been processed.")
 
     def enter_configuration_mode(self, serial_number: int):
@@ -1005,12 +969,7 @@ class Module(BaseModule):
             expected_response_type=None,
         )
 
-        if (
-            check_command_output_and_convert(
-                command_name, serial_number, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1":
             raise ValueError("Last command hasn't been processed.")
 
     def exit_configuration_mode(self):
@@ -1026,10 +985,16 @@ class Module(BaseModule):
             expected_response_type=None,
         )
 
+    # Be careful when switching off the echo as there is no other possibilit to synchronize the HV device
+    # with the computer (no hardware/software handshake). This mode is only available
+    # for compatibility reasons and without support.
     def set_serial_echo_enabled(self) -> None:
         """Enable serial echo."""
         self.serial_echo_enable = 1
 
+    # Be careful when switching off the echo as there is no other possibilit to synchronize the HV device
+    # with the computer (no hardware/software handshake). This mode is only available
+    # for compatibility reasons and without support.
     def set_serial_echo_disabled(self) -> None:
         """Disable serial echo."""
         self.serial_echo_enable = 0
@@ -1038,7 +1003,7 @@ class Module(BaseModule):
         """Reset the Module Event Status register."""
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, "")
+        command = _get_set_module_command(command_name, None)
 
         response = _write_command(
             ser=self._serial,
@@ -1046,12 +1011,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, None, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1":
             raise ValueError("Last command hasn't been processed.")
 
     def clear_module_event_status_bits(self, bits: int) -> None:
@@ -1070,12 +1030,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, bits, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1":
             raise ValueError("Last command hasn't been processed.")
 
     def clear_all_event_status_registers(self) -> None:
@@ -1083,7 +1038,7 @@ class Module(BaseModule):
 
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, "")
+        command = _get_set_module_command(command_name, None)
 
         response = _write_command(
             ser=self._serial,
@@ -1091,19 +1046,14 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, None, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1":
             raise ValueError("Last command hasn't been processed.")
 
     def reset_to_save_values(self) -> None:
         """Reset the module to the saved values."""
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, "")
+        command = _get_set_module_command(command_name, None)
 
         response = _write_command(
             ser=self._serial,
@@ -1111,12 +1061,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, None, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1":
             raise ValueError("Last command hasn't been processed.")
 
     def set_command_set(self, command_set: str) -> None:
@@ -1135,12 +1080,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, command_set, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1":
             raise ValueError("Last command hasn't been processed.")
 
     def local_lockout(self) -> None:
@@ -1148,7 +1088,7 @@ class Module(BaseModule):
 
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, "")
+        command = _get_set_module_command(command_name, None)
 
         response = _write_command(
             ser=self._serial,
@@ -1156,12 +1096,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, None, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1":
             raise ValueError("Last command hasn't been processed.")
 
     def goto_local(self) -> None:
@@ -1169,7 +1104,7 @@ class Module(BaseModule):
 
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, "")
+        command = _get_set_module_command(command_name, None)
 
         response = _write_command(
             ser=self._serial,
@@ -1177,12 +1112,7 @@ class Module(BaseModule):
             command=command,
             expected_response_type=None,
         )
-        if (
-            check_command_output_and_convert(
-                command_name, None, response, _MON_MODULE_COMMANDS
-            )
-            != 1
-        ):
+        if response != "1":
             raise ValueError("Last command hasn't been processed.")
 
 
@@ -1198,8 +1128,9 @@ _mon_module_methods_to_commands = {
     "module_can_bitrate": ":CONF:CAN:BITRATE",
     "serial_baud_rate": ":CONF:SERIAL:BAUD",
     "serial_echo_enable": ":CONF:SERIAL:ECHO",
-    "serial_echo_enabled": ":READ:VOLT:LIM",
+    "serial_echo_enabled": ":CONF:SERIAL:ECHO",
     "module_current_limit": ":READ:CURR:LIM",
+    "module_voltage_limit": ":READ:VOLT:LIM",
     "module_voltage_ramp_speed": ":READ:RAMP:VOLT",
     "module_current_ramp_speed": ":READ:RAMP:CURR",
     "module_control_register": ":READ:MODULE:CONTROL",
@@ -1224,6 +1155,7 @@ _mon_module_methods_to_commands = {
 _set_module_methods_to_commands = {
     "serial_baud_rate": ":CONF:SERIAL:BAUD",
     "serial_echo_enable": ":CONF:SERIAL:ECHO",
+    "serial_echo_enabled": ":CONF:SERIAL:ECHO",
     "filter_averaging_steps": ":CONF:AVER",
     "kill_enable": ":CONF:KILL",
     "adjustment": ":CONF:ADJUST",
@@ -1233,7 +1165,7 @@ _set_module_methods_to_commands = {
     "module_can_bitrate": ":CONF:CAN:BITRATE",
     "enter_configuration_mode": ":SYSTEM:USER:CONFIG",
     "exit_configuration_mode": ":SYSTEM:USER:CONFIG",
-    "set_serial_echo_enabled": ":CONF:EVENT CLEAR",
+    "reset_module_event_status": ":CONF:EVENT CLEAR",
     "clear_module_event_status_bits": ":CONF:EVENT",
     "clear_all_event_status_registers": "*CLS",
     "reset_to_save_values": "*RST",

@@ -123,6 +123,7 @@ def _call_setter_method(
             raise Exception(f"Command '{method}' doesn't accept a value")
         elif value is not None:
             # setter with input value
+            value = command_input_type(value)
             if sets_property:
                 setattr(o, method, value)
             else:

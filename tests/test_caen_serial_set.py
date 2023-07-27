@@ -40,14 +40,13 @@ def test_caen_module_monitor():
     print(
         f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"
     )
-    caen.module(0)
+    module = caen.module(0)
 
-    # prev_interlock_open = module.interlock_open
-    # module.open_interlock()
-    # module.close_interlock()
-    # module.open_interlock() if prev_interlock_open else module.close_interlock()
-
-    # module.clear_alarm_signal()
+    prev_interlock_open = module.interlock_open
+    module.open_interlock()
+    module.close_interlock()
+    module.open_interlock() if prev_interlock_open else module.close_interlock()
+    module.clear_alarm_signal()
 
 
 @serial_skip_decorator

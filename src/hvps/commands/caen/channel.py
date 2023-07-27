@@ -371,19 +371,6 @@ def _get_set_channel_command(
 
     check_command_input(_SET_CHANNEL_COMMANDS, command, value)
 
-    if command in ["ON", "OFF"]:
-        if value is not None:
-            raise ValueError(f"command '{command}' does not accept a value")
-        return f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command}\r\n".encode(
-            "utf-8"
-        )
-    elif command == "IMRANGE":
-        if value not in ["HIGH", "LOW"]:
-            raise ValueError(f"command '{command}' only accepts 'HIGH' or 'LOW'")
-    elif command == "PDWN":
-        if value not in ["RAMP", "KILL"]:
-            raise ValueError(f"command '{command}' only accepts 'RAMP' or 'KILL'")
-
     return (
         f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command},VAL:{value}\r\n".encode(
             "utf-8"

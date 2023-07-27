@@ -1,13 +1,11 @@
-from hvps.devices.iseg.channel import Channel
 from hvps.utils import get_serial_ports
 from hvps import Iseg
 
 import pytest
 import sys
-import serial
 import logging
 
-serial_port = "COM4"  # change this to the serial port you are using
+serial_port = "COM5"  # change this to the serial port you are using
 serial_baud = 9600
 timeout = 5.0
 
@@ -22,7 +20,7 @@ def is_macos():
 
 
 serial_skip_decorator = pytest.mark.skipif(
-    serial_port_available() or not is_macos(), reason="No serial ports available"
+    not serial_port_available() or is_macos(), reason="No serial ports available"
 )
 
 
@@ -145,111 +143,125 @@ def test_iseg_module_monitor():
 
 @serial_skip_decorator
 def test_iseg_channel_monitor():
-    ser = serial.Serial(serial_port, serial_baud, timeout=timeout)
+    iseg = Iseg(
+        port=serial_port,
+        baudrate=serial_baud,
+        connect=True,
+        timeout=timeout,
+        logging_level=logging.DEBUG,
+    )
 
-    channel = Channel(ser, 0)
+    module = iseg.module(0)
 
-    trip_action = channel.trip_action
-    print(f"trip_action: {trip_action}")
+    for channel in module.channels:
+        print("")
+        print(f"Channel: {channel.channel}")
 
-    trip_timeout = channel.trip_timeout
-    print(f"trip_timeouts: {trip_timeout}")
+        trip_action = channel.trip_action
+        print(f"trip_action: {trip_action}")
 
-    output_mode = channel.output_mode
-    print(f"output_mode: {output_mode}")
+        trip_timeout = channel.trip_timeout
+        print(f"trip_timeouts: {trip_timeout}")
 
-    available_output_modes = channel.available_output_modes
-    print(f"available_output_modes: {available_output_modes}")
+        output_mode = channel.output_mode
+        print(f"output_mode: {output_mode}")
 
-    output_polarity = channel.output_polarity
-    print(f"output_polarity: {output_polarity}")
+        available_output_modes = channel.available_output_modes
+        print(f"available_output_modes: {available_output_modes}")
 
-    available_output_polarities = channel.available_output_polarities
-    print(f"available_output_polarities: {available_output_polarities}")
+        output_polarity = channel.output_polarity
+        print(f"output_polarity: {output_polarity}")
 
-    voltage_set = channel.voltage_set
-    print(f"voltage_set: {voltage_set}")
+        # TODO: channel.external_inhibit_action returns an empty list
+        # external_inhibit_action = channel.external_inhibit_action
+        # print(f"external_inhibit_action: {external_inhibit_action}")
 
-    voltage_limit = channel.voltage_limit
-    print(f"voltage_limit: {voltage_limit}")
+        available_output_polarities = channel.available_output_polarities
+        print(f"available_output_polarities: {available_output_polarities}")
 
-    voltage_nominal = channel.voltage_nominal
-    print(f"voltage_nominal: {voltage_nominal}")
+        voltage_set = channel.voltage_set
+        print(f"voltage_set: {voltage_set}")
 
-    voltage_mode = channel.voltage_mode
-    print(f"voltage_mode: {voltage_mode}")
+        voltage_limit = channel.voltage_limit
+        print(f"voltage_limit: {voltage_limit}")
 
-    voltage_mode_list = channel.voltage_mode_list
-    print(f"voltage_mode_list: {voltage_mode_list}")
+        voltage_nominal = channel.voltage_nominal
+        print(f"voltage_nominal: {voltage_nominal}")
 
-    voltage_bounds = channel.voltage_bounds
-    print(f"voltage_bounds: {voltage_bounds}")
+        voltage_mode = channel.voltage_mode
+        print(f"voltage_mode: {voltage_mode}")
 
-    set_on = channel.set_on
-    print(f"set_on: {set_on}")
+        voltage_mode_list = channel.voltage_mode_list
+        print(f"voltage_mode_list: {voltage_mode_list}")
 
-    emergency_off = channel.emergency_off
-    print(f"emergency_off: {emergency_off}")
+        voltage_bounds = channel.voltage_bounds
+        print(f"voltage_bounds: {voltage_bounds}")
 
-    current_set = channel.current_set
-    print(f"current_set: {current_set}")
+        set_on = channel.set_on
+        print(f"set_on: {set_on}")
 
-    current_limit = channel.current_limit
-    print(f"current_limit: {current_limit}")
+        emergency_off = channel.emergency_off
+        print(f"emergency_off: {emergency_off}")
 
-    current_nominal = channel.current_nominal
-    print(f"current_nominal: {current_nominal}")
+        current_set = channel.current_set
+        print(f"current_set: {current_set}")
 
-    current_mode = channel.current_mode
-    print(f"current_mode: {current_mode}")
+        current_limit = channel.current_limit
+        print(f"current_limit: {current_limit}")
 
-    modes = channel.current_mode_list
-    print(f"modes: {modes}")
+        current_nominal = channel.current_nominal
+        print(f"current_nominal: {current_nominal}")
 
-    bounds = channel.current_bounds
-    print(f"bounds: {bounds}")
+        current_mode = channel.current_mode
+        print(f"current_mode: {current_mode}")
 
-    speed = channel.current_ramp_speed
-    print(f"speed: {speed}")
+        modes = channel.current_mode_list
+        print(f"modes: {modes}")
 
-    speed = channel.voltage_ramp_speed
-    print(f"speed: {speed}")
+        bounds = channel.current_bounds
+        print(f"bounds: {bounds}")
 
-    speed_min = channel.voltage_ramp_speed_minimum
-    print(f"speed_min: {speed_min}")
+        speed = channel.current_ramp_speed
+        print(f"speed: {speed}")
 
-    speed_max = channel.voltage_ramp_speed_maximum
-    print(f"speed_max: {speed_max}")
+        speed = channel.voltage_ramp_speed
+        print(f"speed: {speed}")
 
-    speed_min = channel.current_ramp_speed_minimum
-    print(f"speed_min: {speed_min}")
+        speed_min = channel.voltage_ramp_speed_minimum
+        print(f"speed_min: {speed_min}")
 
-    speed_max = channel.current_ramp_speed_maximum
-    print(f"speed_max: {speed_max}")
+        speed_max = channel.voltage_ramp_speed_maximum
+        print(f"speed_max: {speed_max}")
 
-    control = channel.channel_control
-    print(f"control: {control}")
+        speed_min = channel.current_ramp_speed_minimum
+        print(f"speed_min: {speed_min}")
 
-    status = channel.channel_status
-    print(f"status: {status}")
+        speed_max = channel.current_ramp_speed_maximum
+        print(f"speed_max: {speed_max}")
 
-    mask = channel.channel_event_mask
-    print(f"mask: {mask}")
+        control = channel.channel_control
+        print(f"control: {control}")
 
-    voltage = channel.measured_voltage
-    print(f"voltage: {voltage}")
+        status = channel.channel_status
+        print(f"status: {status}")
 
-    current = channel.measured_current
-    print(f"current: {current}")
+        mask = channel.channel_event_mask
+        print(f"mask: {mask}")
 
-    speed = channel.channel_voltage_ramp_up_speed
-    print(f"speed: {speed}")
+        voltage = channel.measured_voltage
+        print(f"voltage: {voltage}")
 
-    speed = channel.channel_voltage_ramp_down_speed
-    print(f"speed: {speed}")
+        current = channel.measured_current
+        print(f"current: {current}")
 
-    speed = channel.channel_current_ramp_up_speed
-    print(f"speed: {speed}")
+        speed = channel.channel_voltage_ramp_up_speed
+        print(f"speed: {speed}")
 
-    speed = channel.channel_current_ramp_down_speed
-    print(f"speed: {speed}")
+        speed = channel.channel_voltage_ramp_down_speed
+        print(f"speed: {speed}")
+
+        speed = channel.channel_current_ramp_up_speed
+        print(f"speed: {speed}")
+
+        speed = channel.channel_current_ramp_down_speed
+        print(f"speed: {speed}")

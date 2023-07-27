@@ -297,7 +297,7 @@ _SET_CHANNEL_COMMANDS = {
     },
     ":CONF:TRIP:TIME": {
         "input_type": int,
-        "allowed_input_values": [*range(1, 4096)],
+        "allowed_input_values": [*range(0, 4096)],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set the trip timeout with one millisecond resolution.",

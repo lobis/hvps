@@ -80,6 +80,14 @@ def test_cli_caen_channel_mon():
         print(f"stderr: {stderr}")
         print(f"exit_code: {exit_code}")
 
+        # dump previous messages to a txt file named as the test source file + _results.txt
+        with open(__file__[:-3] + "_results.txt", "w") as f:
+            f.write(f"arguments: {arguments}\n")
+            f.write(f"stdout: {stdout}\n")
+            f.write(f"stderr: {stderr}\n")
+            f.write(f"exit_code: {exit_code}\n")
+        f.close()
+
         exit_code_expected = 0 if parameter not in ["INVALID_PARAMETER"] else 1
         assert (
             exit_code == exit_code_expected
@@ -116,6 +124,14 @@ def test_cli_caen_module_mon():
         print(f"stdout: {stdout}")
         print(f"stderr: {stderr}")
         print(f"exit_code: {exit_code}")
+
+        # dump previous messages to a txt file named as the test source file + _results.txt
+        with open(__file__[:-3] + "_results.txt", "w") as f:
+            f.write(f"arguments: {arguments}\n")
+            f.write(f"stdout: {stdout}\n")
+            f.write(f"stderr: {stderr}\n")
+            f.write(f"exit_code: {exit_code}\n")
+        f.close()
 
         exit_code_expected = 0 if parameter not in ["INVALID_PARAMETER"] else 1
         assert (

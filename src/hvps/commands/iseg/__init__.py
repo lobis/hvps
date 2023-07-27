@@ -73,14 +73,17 @@ def _parse_response(
     if expected_response_type == float or expected_response_type == List[float]:
         # pattern for a float in scientific notation followed or not by units
         pattern = (
-            r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?(\s*[a-zA-Z]+(/+[a-zA-Z]+)?)?$"
+            r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?(\s*[a-zA-Z%]+(/+[a-zA-Z]+)?)?$"
         )
     elif expected_response_type == int or expected_response_type == List[int]:
         pattern = r"^[-+]?\d+(\s*[a-zA-Z]+(/+[a-zA-Z]+)?)?$"
     elif expected_response_type == str or expected_response_type == List[str]:
         pattern = r"^[\x00-\x7F]+$"
     elif expected_response_type is None:
-        return response.split(",")
+        split_response = response.split(",")
+        if len(split_response) == 1:
+            return split_response[0]
+        return split_response
     else:
         raise ValueError(
             f"expected value type of {response}, {expected_response_type}, is not float, int or str"
