@@ -371,6 +371,11 @@ def _get_set_channel_command(
 
     check_command_input(_SET_CHANNEL_COMMANDS, command, value)
 
+    if value is None:
+        return f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command}\r\n".encode(
+            "utf-8"
+        )
+
     return (
         f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command},VAL:{value}\r\n".encode(
             "utf-8"

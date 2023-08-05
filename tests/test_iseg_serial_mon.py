@@ -5,7 +5,7 @@ import pytest
 import sys
 import logging
 
-serial_port = "COM5"  # change this to the serial port you are using
+serial_port = ""  # change this to the serial port you are using
 serial_baud = 9600
 timeout = 5.0
 
@@ -20,7 +20,7 @@ def is_macos():
 
 
 serial_skip_decorator = pytest.mark.skipif(
-    not serial_port_available() or is_macos(), reason="No serial ports available"
+    serial_port == "", reason="No serial ports set"
 )
 
 

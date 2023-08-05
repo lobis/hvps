@@ -1,6 +1,29 @@
 import os
 import subprocess
 import sys
+import pytest
+
+from hvps.utils import get_serial_ports
+
+
+caen_serial_port = ""
+iseg_serial_port = ""
+caen_baudrate = 115200
+iseg_baudrate = 9600
+
+
+def serial_port_available():
+    ports = get_serial_ports()
+    return ports != []
+
+
+def is_macos():
+    return sys.platform == "Darwin"
+
+
+serial_skip_decorator = pytest.mark.skipif(
+    caen_serial_port == "" or iseg_serial_port == "", reason="No serial ports set"
+)
 
 
 def run_main_with_arguments(arguments: list) -> tuple:
@@ -25,14 +48,15 @@ def run_main_with_arguments(arguments: list) -> tuple:
     return stdout.decode(), stderr.decode(), exit_code
 
 
+@serial_skip_decorator
 def test_cli_serial():
     """Tests the cli-api interface when serial port is connected"""
     for arguments in [
         [
             "--port",
-            "COM6",
+            caen_serial_port,
             "--baud",
-            "115200",
+            caen_baudrate,
             "--channel",
             "0",
             "caen",
@@ -43,9 +67,9 @@ def test_cli_serial():
         ],
         [
             "--port",
-            "COM6",
+            caen_serial_port,
             "--baud",
-            "115200",
+            caen_baudrate,
             "--channel",
             "0",
             "caen",
@@ -55,9 +79,9 @@ def test_cli_serial():
         ],
         [
             "--port",
-            "COM6",
+            caen_serial_port,
             "--baud",
-            "115200",
+            caen_baudrate,
             "caen",
             "--module",
             "0",
@@ -65,9 +89,9 @@ def test_cli_serial():
         ],
         [
             "--port",
-            "COM6",
+            caen_serial_port,
             "--baud",
-            "115200",
+            caen_baudrate,
             "caen",
             "--module",
             "0",
@@ -76,9 +100,9 @@ def test_cli_serial():
         ],
         [
             "--port",
-            "COM5",
+            iseg_serial_port,
             "--baud",
-            "115200",
+            iseg_baudrate,
             "--channel",
             "0",
             "iseg",
@@ -89,9 +113,9 @@ def test_cli_serial():
         ],
         [
             "--port",
-            "COM5",
+            iseg_serial_port,
             "--baud",
-            "115200",
+            iseg_baudrate,
             "--channel",
             "0",
             "iseg",
@@ -101,9 +125,9 @@ def test_cli_serial():
         ],
         [
             "--port",
-            "COM5",
+            iseg_serial_port,
             "--baud",
-            "115200",
+            iseg_baudrate,
             "iseg",
             "--module",
             "0",
@@ -111,9 +135,9 @@ def test_cli_serial():
         ],
         [
             "--port",
-            "COM5",
+            iseg_serial_port,
             "--baud",
-            "115200",
+            iseg_baudrate,
             "caen",
             "--module",
             "0",

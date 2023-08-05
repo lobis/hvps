@@ -43,7 +43,7 @@ def test_check_command_input():
     # Test case 2: invalid input type
     with pytest.raises(ValueError) as exc_info:
         check_command_input(command_dict, "CMD1", "5")
-    assert str(exc_info.value) == "Value 5 must be a <class 'int'>."
+    assert str(exc_info.value) == "Value 5 must be a number. Got <class 'str'> instead."
 
     # Test case 3: invalid input value
     with pytest.raises(ValueError) as exc_info:
@@ -52,7 +52,7 @@ def test_check_command_input():
 
     check_command_input(command_dict, "CMD2", 4.0)
 
-    check_command_input(command_dict, "CMD3", "value")
+    check_command_input(command_dict, "CMD3", "VALUE")
 
 
 def test_remove_units():

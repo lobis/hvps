@@ -84,6 +84,16 @@ def check_command_input(
             raise ValueError(f"Command {command} does not take an input value.")
         else:
             return
+    if input_type == str:
+        if not isinstance(input_value, str):
+            raise ValueError(
+                f"Value {input_value} must be a string. Got {type(input_value)} instead."
+            )
+    if input_type == int or input_type == float:
+        if not isinstance(input_value, (int, float)):
+            raise ValueError(
+                f"Value {input_value} must be a number. Got {type(input_value)} instead."
+            )
 
     if allowed_input_values and input_value not in allowed_input_values:
         raise ValueError(
