@@ -34,10 +34,78 @@ def test_iseg_module_monitor():
         logging_level=logging.DEBUG,
     )
 
-    print(
-        f"Serial port status: connected: {iseg.connected}, port: {iseg.port}, baudrate: {iseg.baudrate}, timeout: {iseg.timeout}"
-    )
-    iseg.module(0)
+    module = iseg.module(0)
+
+    # Setter methods
+    module.serial_baud_rate = 115200
+    with pytest.raises(ValueError):
+        module.serial_echo_enable = 2
+
+    prev_filter_averaging_steps = module.filter_averaging_steps
+    module.filter_averaging_steps = 256
+    with pytest.raises(ValueError):
+        module.filter_averaging_steps = 257
+    module.filter_averaging_steps = prev_filter_averaging_steps
+
+    prev_kill_enable = module.kill_enable
+    module.kill_enable = 1
+    with pytest.raises(ValueError):
+        module.kill_enable = 2
+    module.kill_enable = prev_kill_enable
+
+    prev_adjustment = module.adjustment
+    module.adjustment = 0
+    with pytest.raises(ValueError):
+        module.adjustment = 2
+    module.adjustment = prev_adjustment
+
+    module.module_event_mask_register = 5
+
+    id_string = module.id_string
+
+    # Other methods
+    module.enter_configuration_mode(id_string[2])
+
+    prev_module_can_address = module.module_can_address
+    module.module_can_address = 12
+    with pytest.raises(ValueError):
+        module.module_can_address = 250
+    module.module_can_address = prev_module_can_address
+
+    prev_module_can_bitrate = module.module_can_bitrate
+    module.module_can_bitrate = 250000
+    with pytest.raises(ValueError):
+        module.module_can_bitrate = 250
+    module.module_can_bitrate = prev_module_can_bitrate
+
+    module.exit_configuration_mode()
+    module.set_serial_echo_enabled()
+
+    """
+    Be careful when switching off the echo as there is no other possibility to
+    synchronize the HV device with the computer (no hardware/software
+    handshake).
+    This mode is only available for compatibility reasons and without support.
+
+    module.set_serial_echo_disabled()
+    """
+
+    module.reset_module_event_status()
+    module.clear_module_event_status_bits(8)
+    module.clear_all_event_status_registers()
+    module.reset_to_save_values()
+
+    """
+    Switch the device to the EDCP command set.
+    Only for devices that support other command sets beside EDCP.
+    For HPS and EHQ with other command sets, refer to the devices manual.
+    This setting is permanent.
+
+    module.set_command_set("EDCP")
+    """
+
+    module.local_lockout()
+    module.goto_local()
 
 
 @serial_skip_decorator

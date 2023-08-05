@@ -276,7 +276,7 @@ _SET_MODULE_COMMANDS = {
     },
     ":CONF:SERIAL:BAUD": {
         "input_type": int,
-        "allowed_input_values": [],
+        "allowed_input_values": [115200],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set the device's serial baud rate.",

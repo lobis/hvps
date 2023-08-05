@@ -1129,6 +1129,7 @@ _mon_module_methods_to_commands = {
     "serial_baud_rate": ":CONF:SERIAL:BAUD",
     "serial_echo_enable": ":CONF:SERIAL:ECHO",
     "serial_echo_enabled": ":CONF:SERIAL:ECHO",
+    "serial_echo_disabled": ":CONF:SERIAL:ECHO",
     "module_current_limit": ":READ:CURR:LIM",
     "module_voltage_limit": ":READ:VOLT:LIM",
     "module_voltage_ramp_speed": ":READ:RAMP:VOLT",
@@ -1155,7 +1156,8 @@ _mon_module_methods_to_commands = {
 _set_module_methods_to_commands = {
     "serial_baud_rate": ":CONF:SERIAL:BAUD",
     "serial_echo_enable": ":CONF:SERIAL:ECHO",
-    "serial_echo_enabled": ":CONF:SERIAL:ECHO",
+    "set_serial_echo_enabled": ":CONF:SERIAL:ECHO",
+    "set_serial_echo_disabled": ":CONF:SERIAL:ECHO",
     "filter_averaging_steps": ":CONF:AVER",
     "kill_enable": ":CONF:KILL",
     "adjustment": ":CONF:ADJUST",
