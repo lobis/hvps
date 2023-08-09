@@ -29,11 +29,31 @@ jobs:
           sed -i "s/\"version\": \".*\"/\"version\": \"$TAG\"/" bindings/nodejs/nodered/package.json
           sed -i "s/\"hvps\": \".*\"/\"hvps\": \"$TAG\"/" bindings/nodejs/nodered/package.json
 
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Update package-lock.json
+        run: |
+          cd bindings/nodejs/nodered
+          npm install
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Run pre-commit to format files
+        run: |
+          python -m pip install pre-commit
+          pre-commit run --all-files || true # ignore errors, we want to format the files
+
       - name: Commit and push changes
         run: |
           git config --local user.name "Luis Antonio Obis Aparicio"
           git config --local user.email "luis.antonio.obis@gmail.com"
-          git add src/hvps/version.py bindings/nodejs/hvps/package.json bindings/nodejs/nodered/package.json
+          git add src/hvps/version.py bindings/nodejs/hvps/package.json bindings/nodejs/nodered/package.json bindings/nodejs/nodered/package-lock.json
           git commit -m "Update version to ${{ github.event.release.tag_name }}"
           git push origin HEAD:main
 
@@ -152,27 +172,6 @@ jobs:
           cache: 'npm'
           cache-dependency-path: bindings/nodejs/nodered/package-lock.json
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Update package-lock.json
-        run: npm install
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-
-      - name: Run pre-commit to format files
-        run: |
-          python -m pip install pre-commit
-          pre-commit run --all-files || true # ignore errors, we want to format the files
-
-      - name: Push changes
-        run: |
-          git config --local user.name "Luis Antonio Obis Aparicio"
-          git config --local user.email "luis.antonio.obis@gmail.com"
-          git add package-lock.json
-          git commit -m "Update nodered package-lock.json"
-          git push origin HEAD:main
 
       - name: Install dependencies
         run: npm ci
