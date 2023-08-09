@@ -43,7 +43,7 @@ jobs:
         run: |
           git config --local user.name "Luis Antonio Obis Aparicio"
           git config --local user.email "luis.antonio.obis@gmail.com"
-          git add src/hvps/version.py bindings/nodejs/hvps/package.json bindings/nodejs/nodered/package.json
+          git add src/hvps/version.py bindings/nodejs/hvps/*.json bindings/nodejs/nodered/*.json
           git commit -m "Update version to ${{ github.event.release.tag_name }}"
           git push origin HEAD:main
 
