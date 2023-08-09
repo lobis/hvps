@@ -60,7 +60,7 @@ def _parse_response(response: bytes) -> (int, str):
     except UnicodeDecodeError:
         raise ValueError(f"Invalid response: {response}")
 
-    regex = re.compile(r"^#(?:BD:(?P<bd>\d{2}))?,CMD:OK(?:,VAL:(?P<val>.+))?$")
+    regex = re.compile(r"^#(?:BD:(?P<bd>\d{2}),)?,CMD:OK(?:,VAL:(?P<val>.+))?$")
     match = regex.match(response)
     if match is None:
         raise ValueError(f"Invalid response: '{response}'. Could not match regex")
