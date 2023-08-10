@@ -43,6 +43,7 @@ def _parse_response(response: bytes) -> (int, str):
 
     Returns:
         (int, str): The board number and the value of the response.
+                    If the response does not include a board number, we implicitly assume that it's the only board and always return board number = 0
 
     Raises:
         ValueError: If the response is invalid, cannot be decoded, or does not match the expected pattern.
@@ -59,11 +60,11 @@ def _parse_response(response: bytes) -> (int, str):
     except UnicodeDecodeError:
         raise ValueError(f"Invalid response: {response}")
 
-    regex = re.compile(r"^#BD:(\d{2}),CMD:OK(?:,VAL:(.+))?$")
+    regex = re.compile(r"^#(?:BD:(?P<bd>\d{2}),)?CMD:OK(?:,VAL:(?P<val>.+))?$")
     match = regex.match(response)
     if match is None:
         raise ValueError(f"Invalid response: '{response}'. Could not match regex")
-    bd = int(match.group(1))
-    value: str | None = match.group(2) if match.group(2) else None
+    bd = int(match.group("bd")) if match.group("bd") else 0
+    value: str | None = match.group("val") if match.group("val") else None
 
     return bd, value

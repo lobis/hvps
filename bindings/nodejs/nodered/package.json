@@ -4,7 +4,7 @@
     "url": "https://github.com/lobis/hvps/issues"
   },
   "dependencies": {
-    "hvps": "0.0.34"
+    "hvps": "0.0.39"
   },
   "description": "node-red node for the HVPS python package",
   "homepage": "https://github.com/lobis/hvps#readme",
@@ -23,5 +23,5 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "0.0.34"
+  "version": "0.0.39"
 }
