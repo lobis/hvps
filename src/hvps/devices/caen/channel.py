@@ -159,7 +159,7 @@ class Channel(BaseChannel):
         )
         if response not in ["HIGH", "LOW"]:
             raise ValueError(f"Unexpected response {response}")
-        return response == "HIGH"
+        return response
 
     @property
     def imdec(self) -> int:
