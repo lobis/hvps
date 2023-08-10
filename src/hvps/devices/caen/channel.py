@@ -150,7 +150,7 @@ class Channel(BaseChannel):
         return float(response)
 
     @property
-    def imrange(self) -> bool:
+    def imrange(self) -> str:
         response = _write_command(
             ser=self._serial,
             logger=self._logger,
@@ -159,7 +159,7 @@ class Channel(BaseChannel):
         )
         if response not in ["HIGH", "LOW"]:
             raise ValueError(f"Unexpected response {response}")
-        return response == "HIGH"
+        return response
 
     @property
     def imdec(self) -> int:
@@ -485,7 +485,8 @@ class Channel(BaseChannel):
             raise ValueError(f"Could not set PDWN to {value}")
 
     @imrange.setter
-    def imrange(self, value: float) -> None:
+    def imrange(self, value: str) -> None:
+        """Set channel to "HIGH" or "LOW" current monitor mode"""
         _write_command(
             ser=self._serial,
             logger=self._logger,
