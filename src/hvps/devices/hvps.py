@@ -5,6 +5,7 @@ from serial.tools import list_ports
 from typing import Dict
 import logging
 import uuid
+import threading
 
 from .module import Module
 
@@ -28,6 +29,9 @@ class Hvps:
             logging_level (int, optional): The logger level. Defaults to logger.WARNING.
 
         """
+
+        # Create a lock for the serial port
+        self._lock = threading.Lock()
 
         self._logger = logging.getLogger(
             f"{__name__}.{self.__class__.__name__}.{uuid.uuid4()}"

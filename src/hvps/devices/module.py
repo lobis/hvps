@@ -1,23 +1,33 @@
 from typing import List
 
 import serial
+import logging
+import threading
 from abc import ABC, abstractmethod
 
 from .channel import Channel
-import logging
 
 
 class Module(ABC):
-    def __init__(self, _serial: serial.Serial, _logger: logging.Logger, module: int):
+    def __init__(
+        self,
+        ser: serial.Serial,
+        logger: logging.Logger,
+        lock: threading.Lock,
+        module: int,
+    ):
         """Initialize the Module object.
 
         Args:
-            _serial (serial.Serial): The serial object used for communication.
+            ser (serial.Serial): The serial.Serial object.
+            logger (logging.Logger): The logger.
+            lock (threading.Lock): The lock.
             module (int): The module number.
 
         """
-        self._serial = _serial
-        self._logger = _logger
+        self._serial = ser
+        self._lock = lock
+        self._logger = logger
         self._module = module
         self._channels: List[Channel] = []
 
