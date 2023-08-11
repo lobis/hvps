@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ...commands.caen.channel import (
     _get_set_channel_command,
     _get_mon_channel_command,
