@@ -63,10 +63,10 @@ class Module(BaseModule):
                 self._logger.debug(f"Creating channel {channel}")
                 self._channels.append(
                     Channel(
-                        write_command_read_response=self._write_command_read_response,
-                        logger=self._logger,
                         channel=channel,
                         bd=self.bd,
+                        write_command_read_response=self._write_command_read_response,
+                        logger=self._logger,
                     )
                 )
         return self._channels

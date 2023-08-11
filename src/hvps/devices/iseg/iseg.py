@@ -7,4 +7,7 @@ from .module import Module
 class Iseg(Hvps):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._modules = {0: Module(self._serial, self._logger, 0)}
+        self._modules = {
+            i: Module(self._serial, self._logger, lock=self._lock, module=i)
+            for i in [0]
+        }

@@ -4,33 +4,36 @@ from typing import List
 import logging
 import serial
 import re
+import threading
 
 
-def _write_command(
+def _write_command_read_response(
     ser: serial.Serial,
+    lock: threading.Lock,
     logger: logging.Logger,
     command: bytes,
     expected_response_type: type | None,
     response: bool = True,
 ) -> List[str] | None:
-    logger.debug(f"Send command: {command}")
-    ser.write(command)
-    if not response:
-        return None
+    with lock:
+        logger.debug(f"Send command: {command}")
+        ser.write(command)
+        if not response:
+            return None
 
-    # echo reading
-    response = ser.readline()
-    logger.debug(f"Received response: {response}")
-    if response != command:
-        raise ValueError(
-            f"Invalid handshake echo response: {response}. expected {command}"
-        )
+        # echo reading
+        response = ser.readline()
+        logger.debug(f"Received response: {response}")
+        if response != command:
+            raise ValueError(
+                f"Invalid handshake echo response: {response}. expected {command}"
+            )
 
-    # response reading
-    response = ser.readline()
-    response = _parse_response(response, expected_response_type)
+        # response reading
+        response = ser.readline()
+        response = _parse_response(response, expected_response_type)
 
-    return response
+        return response
 
 
 def _parse_response(response: bytes, expected_response_type: type | None) -> List[str]:
