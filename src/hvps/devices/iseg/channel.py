@@ -21,9 +21,8 @@ class Channel(BaseChannel):
         Returns:
             The current action value.
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:TRIP:ACTION")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:TRIP:ACTION"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -44,9 +43,8 @@ class Channel(BaseChannel):
         Returns:
             The current action value.
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:TRIP:TIME")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:TRIP:TIME"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -63,9 +61,8 @@ class Channel(BaseChannel):
         Returns:
             The current action value.
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:INHP:ACTION")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:INHP:ACTION"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -86,9 +83,8 @@ class Channel(BaseChannel):
 
         Output Mode allowed values: 1, 2, 3.
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE"),
             expected_response_type=int,
         )
 
@@ -109,9 +105,8 @@ class Channel(BaseChannel):
             The list of available output mode values.
 
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE:LIST")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:OUTPUT:MODE:LIST"),
             expected_response_type=List[int],
         )
 
@@ -144,9 +139,8 @@ class Channel(BaseChannel):
             polarity = channel.output_polarity
             print(polarity)  # Example output: "n"
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:POL")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:OUTPUT:POL"),
             expected_response_type=str,
         )
         if len(response) != 1:
@@ -169,9 +163,8 @@ class Channel(BaseChannel):
             polarities = channel.available_output_polarities
             print(polarities)  # Example output: ["p", "n"]
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:OUTPUT:POL:LIST")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:OUTPUT:POL:LIST"),
             expected_response_type=str,
         )
 
@@ -198,9 +191,8 @@ class Channel(BaseChannel):
             voltage = channel.voltage_set
             print(voltage)  # Example output: 1234.0
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:VOLT"),
             expected_response_type=str,
         )
         if len(response) != 1:
@@ -219,9 +211,8 @@ class Channel(BaseChannel):
             limit = channel.voltage_limit
             print(limit)  # Example output: 3000.0
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:LIM")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:VOLT:LIM"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -240,9 +231,8 @@ class Channel(BaseChannel):
             nominal = channel.voltage_nominal
             print(nominal)  # Example output: 6000.0
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:NOM")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:VOLT:NOM"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -261,9 +251,8 @@ class Channel(BaseChannel):
             mode = channel.voltage_mode
             print(mode)  # Example output: "6.0E3V"
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:MODE")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:VOLT:MODE"),
             expected_response_type=str,
         )
         if len(response) != 1:
@@ -282,9 +271,8 @@ class Channel(BaseChannel):
             mode_list = channel.voltage_mode_list
             print(mode_list)  # Example output: ["2.0E3V", "4.0E3V", "6.0E3V"]
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:MODE:LIST")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:VOLT:MODE:LIST"),
             expected_response_type=List[str],
         )
         if len(response) != 3:
@@ -303,9 +291,8 @@ class Channel(BaseChannel):
             bounds = channel.voltage_bounds
             print(bounds)  # Example output: "0.00000E3V"
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:BOUNDS")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:VOLT:BOUNDS"),
             expected_response_type=str,
         )
         if len(response) != 1:
@@ -324,9 +311,8 @@ class Channel(BaseChannel):
             is_on = channel.set_on
             print(is_on)  # Example output: True
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:ON")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:VOLT:ON"),
             expected_response_type=bool,
         )
         if len(response) != 1:
@@ -345,9 +331,8 @@ class Channel(BaseChannel):
             is_emergency_off = channel.emergency_off
             print(is_emergency_off)  # Example output: False
         """
-        command = _get_mon_channel_command(self._channel, ":READ:VOLT:EMCY")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:VOLT:EMCY"),
             expected_response_type=bool,
         )
         if len(response) != 1:
@@ -367,9 +352,8 @@ class Channel(BaseChannel):
             print(current)  # Example output: 50.000E-6
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:CURR"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -389,9 +373,8 @@ class Channel(BaseChannel):
             print(limit)  # Example output: 5.00000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR:LIM")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:CURR:LIM"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -413,9 +396,8 @@ class Channel(BaseChannel):
             print(nominal)  # Example output: 6.00000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR:NOM")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:CURR:NOM"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -437,9 +419,8 @@ class Channel(BaseChannel):
             print(mode)  # Example output: 2.00000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR:MODE")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:CURR:MODE"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -461,9 +442,8 @@ class Channel(BaseChannel):
             print(modes)  # Example output: [6.0E-3, 4.0E-3, 2.0E-3]
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR:MODE:LIST")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:CURR:MODE:LIST"),
             expected_response_type=List[float],
         )
         if len(response) != 1:
@@ -486,9 +466,8 @@ class Channel(BaseChannel):
             print(bounds)  # Example output: 0.00000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CURR:BOUNDS")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:CURR:BOUNDS"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -508,9 +487,8 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 2.0000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:CURR")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:RAMP:CURR"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -530,9 +508,8 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 0.25000E3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:VOLT")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:RAMP:VOLT"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -554,9 +531,8 @@ class Channel(BaseChannel):
             print(speed_min)  # Example output: 0.00005E3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:VOLT:MIN")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:RAMP:VOLT:MIN"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -578,9 +554,8 @@ class Channel(BaseChannel):
             print(speed_max)  # Example output: 1.20000E3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:VOLT:MAX")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:RAMP:VOLT:MAX"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -602,9 +577,8 @@ class Channel(BaseChannel):
             print(speed_min)  # Example output: 1.0000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:CURR:MIN")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:RAMP:CURR:MIN"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -626,9 +600,8 @@ class Channel(BaseChannel):
             print(speed_max)  # Example output: 6.0000E-3
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:RAMP:CURR:MAX")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:RAMP:CURR:MAX"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -648,9 +621,8 @@ class Channel(BaseChannel):
             print(control)  # Example output: 8
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CHAN:CONTROL")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:CHAN:CONTROL"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -670,9 +642,8 @@ class Channel(BaseChannel):
             print(status)  # Example output: 132
 
         """
-        command = _get_mon_channel_command(self._channel, ":READ:CHAN:STATUS")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":READ:CHAN:STATUS"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -691,9 +662,8 @@ class Channel(BaseChannel):
             mask = channel.channel_event_mask
             print(mask)  # Example output: 0
         """
-        command = _get_mon_channel_command(self._channel, "READ:CHAN:EVENT:MASK")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, "READ:CHAN:EVENT:MASK"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -712,9 +682,8 @@ class Channel(BaseChannel):
             voltage = channel.measured_voltage
             print(voltage)  # Example output: 1234.56
         """
-        command = _get_mon_channel_command(self._channel, ":MEAS:VOLT")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":MEAS:VOLT"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -733,9 +702,8 @@ class Channel(BaseChannel):
             current = channel.measured_current
             print(current)  # Example output: 0.00123456
         """
-        command = _get_mon_channel_command(self._channel, ":MEAS:CURR")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":MEAS:CURR"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -756,9 +724,8 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_up_speed
             print(speed)  # Example output: 0.250E3
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:VOLT:UP")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:RAMP:VOLT:UP"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -779,9 +746,8 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_down_speed
             print(speed)  # Example output: 0.12500E3
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:VOLT:DOWN")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:RAMP:VOLT:DOWN"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -802,9 +768,8 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_down_speed
             print(speed)  # Example output: 0.12500E3
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:UP")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:UP"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -822,9 +787,8 @@ class Channel(BaseChannel):
             float: The channel current ramp down speed in Ampere/second.
 
         """
-        command = _get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:DOWN")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_channel_command(self._channel, ":CONF:RAMP:CURR:DOWN"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -854,9 +818,10 @@ class Channel(BaseChannel):
             raise ValueError(
                 "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
             )
-        command = _get_set_channel_command(self._channel, ":CONF:TRIP:ACTION", action)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(
+                self._channel, ":CONF:TRIP:ACTION", action
+            ),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -874,9 +839,8 @@ class Channel(BaseChannel):
         """
         if not 1 <= timeout <= 4095:
             raise ValueError("Timeout value must be in the range 1 to 4095 ms.")
-        command = _get_set_channel_command(self._channel, ":CONF:TRIP:TIME", timeout)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":CONF:TRIP:TIME", timeout),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -901,9 +865,10 @@ class Channel(BaseChannel):
             raise ValueError(
                 "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
             )
-        command = _get_set_channel_command(self._channel, ":CONF:INHP:ACTION", action)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(
+                self._channel, ":CONF:INHP:ACTION", action
+            ),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -925,9 +890,8 @@ class Channel(BaseChannel):
         allowed_modes = [1, 2, 3]
         if mode not in allowed_modes:
             raise ValueError("Invalid output mode. Allowed modes are: 1, 2, 3.")
-        command = _get_set_channel_command(self._channel, ":CONF:OUTPUT:MODE", mode)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":CONF:OUTPUT:MODE", mode),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -953,9 +917,10 @@ class Channel(BaseChannel):
             raise ValueError(
                 "Invalid polarity value. Valid values are 'p' for positive and 'n' for negative."
             )
-        command = _get_set_channel_command(self._channel, ":CONF:OUTPUT:POL", polarity)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(
+                self._channel, ":CONF:OUTPUT:POL", polarity
+            ),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -969,9 +934,8 @@ class Channel(BaseChannel):
         Args:
             vset (float): The voltage set value to set in Volt.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT", vset)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":VOLT", vset),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -985,9 +949,8 @@ class Channel(BaseChannel):
         Args:
             vbounds (float): The voltage bounds value to set in Volt.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT:BOUNDS", vbounds)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":VOLT:BOUNDS", vbounds),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -997,9 +960,8 @@ class Channel(BaseChannel):
         """
         Clear the channel from state emergency off. The channel goes to state off.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT EMCY", "CLR")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":VOLT EMCY", "CLR"),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -1013,9 +975,8 @@ class Channel(BaseChannel):
         Args:
             iset (float): The current set value to set in Ampere.
         """
-        command = _get_set_channel_command(self._channel, ":CURR", iset)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":CURR", iset),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -1029,9 +990,8 @@ class Channel(BaseChannel):
         Args:
             ibounds (float): The current bounds value to set in Ampere.
         """
-        command = _get_set_channel_command(self._channel, ":CURR:BOUNDS", ibounds)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":CURR:BOUNDS", ibounds),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -1049,9 +1009,8 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_up_down_speed(250)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT", speed)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":CONF:RAMP:VOLT", speed),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -1070,9 +1029,10 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_up_speed(250)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT:UP", speed)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(
+                self._channel, ":CONF:RAMP:VOLT:UP", speed
+            ),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -1091,9 +1051,10 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_down_speed(125.0)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:VOLT:DOWN", speed)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(
+                self._channel, ":CONF:RAMP:VOLT:DOWN", speed
+            ),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -1111,9 +1072,8 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_up_down_speed(125.0)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR", speed)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":CONF:RAMP:CURR", speed),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -1132,9 +1092,10 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_up_speed(125.0)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR:UP", speed)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(
+                self._channel, ":CONF:RAMP:CURR:UP", speed
+            ),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -1153,9 +1114,10 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_down_speed(125.0)
         """
-        command = _get_set_channel_command(self._channel, ":CONF:RAMP:CURR:DOWN", speed)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(
+                self._channel, ":CONF:RAMP:CURR:DOWN", speed
+            ),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -1165,9 +1127,8 @@ class Channel(BaseChannel):
         """
         Switch on the high voltage with the configured ramp speed.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT ON", None)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":VOLT ON", None),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -1177,9 +1138,8 @@ class Channel(BaseChannel):
         """
         Switch off the high voltage with the configured ramp speed.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT OFF", None)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":VOLT OFF", None),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -1189,9 +1149,8 @@ class Channel(BaseChannel):
         """
         Shut down the channel high voltage (without ramp). The channel stays in Emergency Off until the command EMCY CLR is given.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT EMCY OFF", None)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":VOLT EMCY OFF", None),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -1201,9 +1160,8 @@ class Channel(BaseChannel):
         """
         Clear the channel from state emergency off. The channel goes to state off.
         """
-        command = _get_set_channel_command(self._channel, ":VOLT EMCY CLR", None)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":VOLT EMCY CLR", None),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -1213,9 +1171,8 @@ class Channel(BaseChannel):
         """
         Clear the Channel Event Status register.
         """
-        command = _get_set_channel_command(self._channel, ":EVENT CLEAR", None)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":EVENT CLEAR", None),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -1229,9 +1186,8 @@ class Channel(BaseChannel):
         Args:
             bits: The bits or bit combinations to clear. Should be provided as an integer.
         """
-        command = _get_set_channel_command(self._channel, ":EVENT", bits)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":EVENT", bits),
             expected_response_type=None,
         )
         if int(response[0]) != 1:
@@ -1244,9 +1200,8 @@ class Channel(BaseChannel):
         Args:
             mask: new mask value
         """
-        command = _get_set_channel_command(self._channel, ":EVENT:MASK", mask)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_channel_command(self._channel, ":EVENT:MASK", mask),
             expected_response_type=None,
         )
         if int(response[0]) != 1:

@@ -39,9 +39,8 @@ class Module(BaseModule):
             )
             return 1
 
-        command = _get_mon_module_command(":READ:MODULE:CHANNELNUMBER")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:CHANNELNUMBER"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -76,9 +75,8 @@ class Module(BaseModule):
         Returns:
             str: The firmware release.
         """
-        command = _get_mon_module_command(":READ:FIRMWARE:RELEASE")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:FIRMWARE:RELEASE"),
             expected_response_type=str,
         )
         if len(response) != 1:
@@ -93,9 +91,8 @@ class Module(BaseModule):
         Returns:
             str: The board alarm status value.
         """
-        command = _get_mon_module_command(":READ:MODULE:STATUS")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:STATUS"),
             expected_response_type=dict,
         )
         if len(response) != 1:
@@ -129,9 +126,8 @@ class Module(BaseModule):
         Returns:
             int: The number of steps for filtering.
         """
-        command = _get_mon_module_command(":CONF:AVER")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":CONF:AVER"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -145,9 +141,8 @@ class Module(BaseModule):
         Returns:
             int: The current kill enable value. 1 for enable, 0 for disable.
         """
-        command = _get_mon_module_command(":CONF:KILL")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":CONF:KILL"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -161,9 +156,8 @@ class Module(BaseModule):
         Returns:
             int: The current fine adjustment state. 1 for on, 0 for off.
         """
-        command = _get_mon_module_command(":CONF:ADJUST")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":CONF:ADJUST"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -177,9 +171,8 @@ class Module(BaseModule):
         Returns:
             int: The current CAN bus address of the module.
         """
-        command = _get_mon_module_command(":CONF:CAN:ADDR")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":CONF:CAN:ADDR"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -193,9 +186,8 @@ class Module(BaseModule):
         Returns:
             int: The current CAN bus bit rate of the module.
         """
-        command = _get_mon_module_command(":CONF:CAN:BITRATE")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":CONF:CAN:BITRATE"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -213,9 +205,8 @@ class Module(BaseModule):
         Returns:
             int: The current serial baud rate of the device.
         """
-        command = _get_mon_module_command(":CONF:SERIAL:BAUD")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":CONF:SERIAL:BAUD"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -229,9 +220,8 @@ class Module(BaseModule):
         Returns:
             int: 1 if serial echo is enabled, 0 if disabled.
         """
-        command = _get_mon_module_command(":CONF:SERIAL:ECHO")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":CONF:SERIAL:ECHO"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -253,9 +243,8 @@ class Module(BaseModule):
         Returns:
             float: The current voltage limit of the module.
         """
-        command = _get_mon_module_command(":READ:VOLT:LIM")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:VOLT:LIM"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -267,11 +256,10 @@ class Module(BaseModule):
         """Query the module's current limit in percent.
 
         Returns:
-            float: The current current limit of the module.
+            float: The current electrical current limit of the module.
         """
-        command = _get_mon_module_command(":READ:CURR:LIM")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:CURR:LIM"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -285,9 +273,8 @@ class Module(BaseModule):
         Returns:
             float: The current voltage ramp speed of the module.
         """
-        command = _get_mon_module_command(":READ:RAMP:VOLT")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:RAMP:VOLT"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -301,9 +288,8 @@ class Module(BaseModule):
         Returns:
             float: The current current ramp speed of the module.
         """
-        command = _get_mon_module_command(":READ:RAMP:CURR")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:RAMP:CURR"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -317,9 +303,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Control register.
         """
-        command = _get_mon_module_command(":READ:MODULE:CONTROL")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:CONTROL"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -333,9 +318,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:STATUS")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:STATUS"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -349,9 +333,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:STATUS")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:EVENT:STATUS"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -365,9 +348,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Mask register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:MASK")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:EVENT:MASK"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -381,9 +363,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:CHANSTAT")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:EVENT:CHANSTAT"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -397,9 +378,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Mask register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:CHANMASK")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:EVENT:CHANMASK"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -413,9 +393,8 @@ class Module(BaseModule):
         Returns:
             Tuple[str, str, str, str, str, str]: The module supply voltages.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY? (@0-6)")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:SUPPLY? (@0-6)"),
             expected_response_type=List[float],
         )
         if len(response) != 7:
@@ -430,9 +409,8 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +24 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P24V")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:SUPPLY:P24V"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -447,9 +425,8 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage -24 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:N24V")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:SUPPLY:N24V"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -464,9 +441,8 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +5 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P5V")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:SUPPLY:P5V"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -481,9 +457,8 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +3.3 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P3V")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:SUPPLY:P3V"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -498,9 +473,8 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +12 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P12V")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:SUPPLY:P12V"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -515,9 +489,8 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage -12 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:N12V")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:SUPPLY:N12V"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -532,9 +505,8 @@ class Module(BaseModule):
         Returns:
             float: The module temperature in degree Celsius.
         """
-        command = _get_mon_module_command(":READ:MODULE:TEMPERATURE")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:TEMPERATURE"),
             expected_response_type=float,
         )
         if len(response) != 1:
@@ -549,9 +521,8 @@ class Module(BaseModule):
         Returns:
             int: The setvalue changes counter.
         """
-        command = _get_mon_module_command(":READ:MODULE:SETVALUE")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:MODULE:SETVALUE"),
             expected_response_type=int,
         )
         if len(response) != 1:
@@ -565,9 +536,8 @@ class Module(BaseModule):
         Returns:
             str: The firmware name.
         """
-        command = _get_mon_module_command(":READ:FIRMWARE:NAME")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":READ:FIRMWARE:NAME"),
             expected_response_type=str,
         )
         if len(response) != 1:
@@ -581,9 +551,8 @@ class Module(BaseModule):
         Returns:
             bool: true if in configuration mode, otherwise false.
         """
-        command = _get_mon_module_command(":SYSTEM:USER:CONFIG")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_mon_module_command(":SYSTEM:USER:CONFIG"),
             expected_response_type=bool,
         )
         if len(response) != 1:
@@ -599,9 +568,8 @@ class Module(BaseModule):
         Args:
             baud_rate (int): The serial baud rate to set.
         """
-        command = _get_set_module_command(":CONF:SERIAL:BAUD", baud_rate)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:SERIAL:BAUD", baud_rate),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != baud_rate:
@@ -619,9 +587,8 @@ class Module(BaseModule):
                 "Invalid serial echo value. Please choose 1 for enabled or 0 for disabled."
             )
 
-        command = _get_set_module_command(":CONF:SERIAL:ECHO", enabled)
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:SERIAL:ECHO", enabled),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -643,9 +610,8 @@ class Module(BaseModule):
                 f"Invalid number of steps. Please choose from {valid_steps}."
             )
 
-        command = _get_set_module_command(":CONF:AVER", str(steps))
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:AVER", str(steps)),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -663,9 +629,8 @@ class Module(BaseModule):
                 "Invalid kill enable value. Please choose 1 for enable or 0 for disable."
             )
 
-        command = _get_set_module_command(":CONF:KILL", str(enable))
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:KILL", str(enable)),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -683,9 +648,8 @@ class Module(BaseModule):
                 "Invalid adjustment value. Please choose 1 for on or 0 for off."
             )
 
-        command = _get_set_module_command(":CONF:ADJUST", str(value))
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:ADJUST", str(value)),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -698,9 +662,8 @@ class Module(BaseModule):
         Args:
             mask (int): The value to set in the Module Event Mask register.
         """
-        command = _get_set_module_command(":CONF:EVENT:MASK", str(mask))
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:EVENT:MASK", str(mask)),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -713,9 +676,8 @@ class Module(BaseModule):
         Args:
             mask (int): The value to set in the Module Event Channel Mask register.
         """
-        command = _get_set_module_command(":CONF:EVENT:CHANMASK", str(mask))
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:EVENT:CHANMASK", str(mask)),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -733,9 +695,8 @@ class Module(BaseModule):
                 "Invalid CAN bus address. Please choose an address between 0 and 63."
             )
 
-        command = _get_set_module_command(":CONF:CAN:ADDR", str(address))
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:CAN:ADDR", str(address)),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -753,9 +714,8 @@ class Module(BaseModule):
                 "Invalid CAN bus bitrate. Please choose either 125000 or 250000."
             )
 
-        command = _get_set_module_command(":CONF:CAN:BITRATE", str(bitrate))
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:CAN:BITRATE", str(bitrate)),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -792,9 +752,8 @@ class Module(BaseModule):
 
     def reset_module_event_status(self) -> None:
         """Reset the Module Event Status register."""
-        command = _get_set_module_command(":CONF:EVENT CLEAR", "")
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:EVENT CLEAR", ""),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:
@@ -806,9 +765,8 @@ class Module(BaseModule):
         Args:
             bits (int): The bits to clear in the Module Event Status register.
         """
-        command = _get_set_module_command(":CONF:EVENT", str(bits))
         response = self._write_command_read_response(
-            command=command,
+            command=_get_set_module_command(":CONF:EVENT", str(bits)),
             expected_response_type=None,
         )
         if len(response) != 1 or int(response[0]) != 1:

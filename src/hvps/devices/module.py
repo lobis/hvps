@@ -12,8 +12,8 @@ class Module(ABC):
     def __init__(
         self,
         ser: serial.Serial,
-        logger: logging.Logger,
         lock: threading.Lock,
+        logger: logging.Logger,
         module: int,
     ):
         """Initialize the Module object.
