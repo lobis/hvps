@@ -1,9 +1,8 @@
 from typing import List
 
-import serial
 import logging
-import threading
 from abc import ABC, abstractmethod
+from typing import Callable
 
 from .channel import Channel
 
@@ -11,24 +10,22 @@ from .channel import Channel
 class Module(ABC):
     def __init__(
         self,
-        ser: serial.Serial,
-        lock: threading.Lock,
-        logger: logging.Logger,
         module: int,
+        write_command_read_response: Callable,
+        logger: logging.Logger,
     ):
         """Initialize the Module object.
 
         Args:
-            ser (serial.Serial): The serial.Serial object.
-            logger (logging.Logger): The logger.
-            lock (threading.Lock): The lock.
             module (int): The module number.
+            write_command_read_response (Callable): The function used to write a command and read the response.
+            logger (logging.Logger): The logger object used for logging.
 
         """
-        self._serial = ser
-        self._lock = lock
-        self._logger = logger
+
         self._module = module
+        self._write_command_read_response = write_command_read_response
+        self._logger = logger
         self._channels: List[Channel] = []
 
     @property

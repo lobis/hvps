@@ -1,16 +1,29 @@
 from __future__ import annotations
 
-from functools import cached_property
 from typing import List
+from serial import SerialException
 
 from ...commands.caen.module import _get_mon_module_command, _get_set_module_command
-from ...commands.caen import _write_command_read_response
 from ...utils.utils import string_number_to_bit_array
 from .channel import Channel
 from ..module import Module as BaseModule
 
 
 class Module(BaseModule):
+    def write_command_read_response_module_mon(self, command: str) -> str | None:
+        return self._write_command_read_response(
+            bd=self.bd,
+            command=_get_mon_module_command(bd=self.bd, command=command),
+        )
+
+    def write_command_read_response_module_set(
+        self, command: str, value: str | int | float | None
+    ) -> str | None:
+        return self._write_command_read_response(
+            bd=self.bd,
+            command=_get_set_module_command(bd=self.bd, command=command, value=value),
+        )
+
     @property
     def bd(self) -> int:
         """The bd value of the module.
@@ -20,37 +33,21 @@ class Module(BaseModule):
         """
         return self.module
 
-    def _write_command_read_response(self, command: bytes) -> str | None:
-        return _write_command_read_response(
-            ser=self._serial,
-            lock=self._lock,
-            logger=self._logger,
-            bd=self.bd,
-            command=command,
-        )
-
     def channel(self, channel: int) -> Channel:
         return super().channel(channel)
 
-    @cached_property
+    @property
     def number_of_channels(self) -> int:
         """The number of channels in the module.
 
         Returns:
             int: The number of channels.
         """
-        self._logger.debug("Getting number of channels")
-        if not self._serial.is_open:
-            # TODO: we should not cache the property if the serial port is not open
-            self._logger.warning(
-                "Serial port is not open. Returning 1 as number of channels."
-            )
+        try:
+            response = self.write_command_read_response_module_mon(command="BDNCH")
+            return int(response)
+        except SerialException:
             return 1
-
-        response = self._write_command_read_response(
-            command=_get_mon_module_command(self.bd, "BDNCH"),
-        )
-        return int(response)
 
     @property
     def channels(self) -> List[Channel]:
@@ -73,16 +70,14 @@ class Module(BaseModule):
                 )
         return self._channels
 
-    @cached_property
+    @property
     def name(self) -> str:
         """The name of the module.
 
         Returns:
             str: The name of the module.
         """
-        response = self._write_command_read_response(
-            command=_get_mon_module_command(self.bd, "BDNAME"),
-        )
+        response = self.write_command_read_response_module_mon(command="BDNAME")
         return str(response)
 
     @property
@@ -93,9 +88,7 @@ class Module(BaseModule):
         Returns:
             str: The firmware release.
         """
-        response = self._write_command_read_response(
-            command=_get_mon_module_command(self.bd, "BDFREL"),
-        )
+        response = self.write_command_read_response_module_mon(command="BDFREL")
         return response
 
     @property
@@ -106,9 +99,7 @@ class Module(BaseModule):
         Returns:
             str: The serial number.
         """
-        response = self._write_command_read_response(
-            command=_get_mon_module_command(self.bd, "BDSNUM"),
-        )
+        response = self.write_command_read_response_module_mon(command="BDSNUM")
         # TODO: check if can be casted to int
         return response
 
@@ -120,9 +111,7 @@ class Module(BaseModule):
         Returns:
             bool: Yes: True, No: False
         """
-        response = self._write_command_read_response(
-            command=_get_mon_module_command(self.bd, "BDILK"),
-        )
+        response = self.write_command_read_response_module_mon(command="BDILK")
         if response == "YES":
             return True
         elif response == "NO":
@@ -138,9 +127,7 @@ class Module(BaseModule):
         Returns:
             str: The interlock mode.
         """
-        response = self._write_command_read_response(
-            command=_get_mon_module_command(self.bd, "BDILKM"),
-        )
+        response = self.write_command_read_response_module_mon(command="BDILKM")
         if response not in ["OPEN", "CLOSED"]:
             raise ValueError(f"Invalid response for 'interlock_mode': {response}")
         return response
@@ -161,9 +148,7 @@ class Module(BaseModule):
         Returns:
             str: The control mode.
         """
-        response = self._write_command_read_response(
-            command=_get_mon_module_command(self.bd, "BDCTR"),
-        )
+        response = self.write_command_read_response_module_mon(command="BDCTR")
         if response not in ["LOCAL", "REMOTE"]:
             raise ValueError(f"Invalid response for 'control_mode': {response}")
         return response
@@ -196,12 +181,7 @@ class Module(BaseModule):
         if value not in ["LOCAL", "REMOTE"]:
             raise ValueError(f"Invalid value for 'control_mode': {value}")
 
-        _write_command_read_response(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_set_module_command(self.bd, "BDCTR", value),
-        )
+        self.write_command_read_response_module_set(command="BDCTR", value=value)
 
     def set_control_mode_local(self):
         """
@@ -223,9 +203,7 @@ class Module(BaseModule):
         Returns:
             str: The local bus termination status.
         """
-        response = self._write_command_read_response(
-            command=_get_mon_module_command(self.bd, "BDTERM"),
-        )
+        response = self.write_command_read_response_module_mon(command="BDTERM")
         if response not in ["ON", "OFF"]:
             raise ValueError(
                 f"Invalid response for 'local_bus_termination_status': {response}"
@@ -256,9 +234,7 @@ class Module(BaseModule):
         Returns:
             str: The board alarm status value.
         """
-        response = self._write_command_read_response(
-            command=_get_mon_module_command(self.bd, "BDALARM"),
-        )
+        response = self.write_command_read_response_module_mon(command="BDALARM")
 
         bit_array = string_number_to_bit_array(response)
 
@@ -284,12 +260,7 @@ class Module(BaseModule):
         if mode not in ["OPEN", "CLOSED"]:
             raise ValueError(f"Invalid value for 'interlock_mode': {mode}")
 
-        _write_command_read_response(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_set_module_command(self.bd, "BDILKM", mode),
-        )
+        self.write_command_read_response_module_set(command="BDILKM", value=mode)
 
     def close_interlock(self) -> None:
         """
@@ -307,9 +278,4 @@ class Module(BaseModule):
         """
         Clear alarm signal
         """
-        _write_command_read_response(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_set_module_command(self.bd, "BDCLR", None),
-        )
+        self.write_command_read_response_module_set(command="BDCLR", value=None)

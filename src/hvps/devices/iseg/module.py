@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from functools import cached_property
 from typing import List
+from serial import SerialException
 
 from ...commands.iseg.module import _get_mon_module_command, _get_set_module_command
-from ...commands.iseg import _write_command_read_response
 from ...utils.utils import string_number_to_bit_array
 from ..module import Module as BaseModule
 from .channel import Channel
@@ -14,18 +13,7 @@ class Module(BaseModule):
     def channel(self, channel: int) -> Channel:
         return super().channel(channel)
 
-    def _write_command_read_response(
-        self, command: bytes, expected_response_type: type | None
-    ) -> str | None:
-        return _write_command_read_response(
-            ser=self._serial,
-            lock=self._lock,
-            logger=self._logger,
-            command=command,
-            expected_response_type=expected_response_type,
-        )
-
-    @cached_property
+    @property
     def number_of_channels(self) -> int:
         """The number of channels in the module.
 
@@ -33,20 +21,20 @@ class Module(BaseModule):
             int: The number of channels.
         """
         self._logger.debug("Getting number of channels")
-        if not self._serial.is_open:
-            # TODO: we should not cache the property if the serial port is not open
-            self._logger.warning(
-                "Serial port is not open. Returning 1 as number of channels."
-            )
-            return 1
 
-        response = self._write_command_read_response(
-            command=_get_mon_module_command(":READ:MODULE:CHANNELNUMBER"),
-            expected_response_type=int,
-        )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        try:
+            response = self._write_command_read_response(
+                command=_get_mon_module_command(":READ:MODULE:CHANNELNUMBER"),
+                expected_response_type=int,
+            )
+            if len(response) != 1:
+                raise ValueError(
+                    "Wrong number of values were received, one value expected"
+                )
+            return int(response[0])
+
+        except SerialException:
+            return 1
 
     @property
     def channels(self) -> List[Channel]:
