@@ -13,7 +13,7 @@ class Channel(BaseChannel):
         super().__init__(*args, **kwargs)
         self._bd = bd
 
-    def write_command_read_response_channel_mon(self, command: str) -> str | None:
+    def _write_command_read_response_channel_mon(self, command: str) -> str | None:
         return self._write_command_read_response(
             bd=self.bd,
             command=_get_mon_channel_command(
@@ -21,7 +21,7 @@ class Channel(BaseChannel):
             ),
         )
 
-    def write_command_read_response_channel_set(
+    def _write_command_read_response_channel_set(
         self, command: str, value: str | int | float | None
     ) -> str | None:
         return self._write_command_read_response(
@@ -64,7 +64,7 @@ class Channel(BaseChannel):
     # Getters
     @property
     def vset(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="VSET")
+        response = self._write_command_read_response_channel_mon(command="VSET")
         return float(response)
 
     @property
@@ -73,149 +73,149 @@ class Channel(BaseChannel):
 
     @property
     def vmin(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="VMIN")
+        response = self._write_command_read_response_channel_mon(command="VMIN")
         return float(response)
 
     @property
     def vmax(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="VMAX")
+        response = self._write_command_read_response_channel_mon(command="VMAX")
         return float(response)
 
     @property
     def vdec(self) -> int:
-        response = self.write_command_read_response_channel_mon(command="VDEC")
+        response = self._write_command_read_response_channel_mon(command="VDEC")
         return int(response)
 
     @property
     def vmon(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="VMON")
+        response = self._write_command_read_response_channel_mon(command="VMON")
         return float(response)
 
     @property
     def iset(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="ISET")
+        response = self._write_command_read_response_channel_mon(command="ISET")
         return float(response)
 
     @property
     def imin(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="IMIN")
+        response = self._write_command_read_response_channel_mon(command="IMIN")
         return float(response)
 
     @property
     def imax(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="IMAX")
+        response = self._write_command_read_response_channel_mon(command="IMAX")
         return float(response)
 
     @property
     def isdec(self) -> int:
-        response = self.write_command_read_response_channel_mon(command="ISDEC")
+        response = self._write_command_read_response_channel_mon(command="ISDEC")
         return int(response)
 
     @property
     def imon(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="IMON")
+        response = self._write_command_read_response_channel_mon(command="IMON")
         return float(response)
 
     @property
     def imrange(self) -> str:
-        response = self.write_command_read_response_channel_mon(command="IMRANGE")
+        response = self._write_command_read_response_channel_mon(command="IMRANGE")
         if response not in ["HIGH", "LOW"]:
             raise ValueError(f"Unexpected response {response}")
         return response
 
     @property
     def imdec(self) -> int:
-        response = self.write_command_read_response_channel_mon(command="IMDEC")
+        response = self._write_command_read_response_channel_mon(command="IMDEC")
         return int(response)
 
     @property
     def maxv(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="MAXV")
+        response = self._write_command_read_response_channel_mon(command="MAXV")
         return float(response)
 
     @property
     def mvmin(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="MVMIN")
+        response = self._write_command_read_response_channel_mon(command="MVMIN")
         return float(response)
 
     @property
     def mvmax(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="MVMAX")
+        response = self._write_command_read_response_channel_mon(command="MVMAX")
         return float(response)
 
     @property
     def mvdec(self) -> int:
-        response = self.write_command_read_response_channel_mon(command="MVDEC")
+        response = self._write_command_read_response_channel_mon(command="MVDEC")
         return int(response)
 
     @property
     def rup(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="RUP")
+        response = self._write_command_read_response_channel_mon(command="RUP")
         return float(response)
 
     @property
     def rupmin(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="RUPMIN")
+        response = self._write_command_read_response_channel_mon(command="RUPMIN")
         return float(response)
 
     @property
     def rupmax(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="RUPMAX")
+        response = self._write_command_read_response_channel_mon(command="RUPMAX")
         return float(response)
 
     @property
     def rupdec(self) -> int:
-        response = self.write_command_read_response_channel_mon(command="RUPDEC")
+        response = self._write_command_read_response_channel_mon(command="RUPDEC")
         return int(response)
 
     @property
     def rdw(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="RDW")
+        response = self._write_command_read_response_channel_mon(command="RDW")
         return float(response)
 
     @property
     def rdwmin(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="RDWMIN")
+        response = self._write_command_read_response_channel_mon(command="RDWMIN")
         return float(response)
 
     @property
     def rdwmax(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="RDWMAX")
+        response = self._write_command_read_response_channel_mon(command="RDWMAX")
         return float(response)
 
     @property
     def rdwdec(self) -> int:
-        response = self.write_command_read_response_channel_mon(command="RDWDEC")
+        response = self._write_command_read_response_channel_mon(command="RDWDEC")
         return int(response)
 
     @property
     def trip(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="TRIP")
+        response = self._write_command_read_response_channel_mon(command="TRIP")
         return float(response)
 
     @property
     def tripmin(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="TRIPMIN")
+        response = self._write_command_read_response_channel_mon(command="TRIPMIN")
         return float(response)
 
     @property
     def tripmax(self) -> float:
-        response = self.write_command_read_response_channel_mon(command="TRIPMAX")
+        response = self._write_command_read_response_channel_mon(command="TRIPMAX")
         return float(response)
 
     @property
     def tripdec(self) -> int:
-        response = self.write_command_read_response_channel_mon(command="TRIPDEC")
+        response = self._write_command_read_response_channel_mon(command="TRIPDEC")
         return int(response)
 
     @property
     def pdwn(self) -> str:
-        response = self.write_command_read_response_channel_mon(command="PDWN")
+        response = self._write_command_read_response_channel_mon(command="PDWN")
         return str(response)
 
     @property
     def pol(self) -> str:
-        response = self.write_command_read_response_channel_mon(command="POL")
+        response = self._write_command_read_response_channel_mon(command="POL")
         if response not in ["+", "-"]:
             raise ValueError(f"Invalid polarity: {response}")
         return str(response)
@@ -228,7 +228,7 @@ class Channel(BaseChannel):
 
     @property
     def stat(self) -> dict:
-        response = self.write_command_read_response_channel_mon(command="STAT")
+        response = self._write_command_read_response_channel_mon(command="STAT")
         bit_array = string_number_to_bit_array(response)
 
         return {
@@ -271,57 +271,57 @@ class Channel(BaseChannel):
     # Setters
     @vset.setter
     def vset(self, value: float) -> None:
-        self.write_command_read_response_channel_set(command="VSET", value=value)
+        self._write_command_read_response_channel_set(command="VSET", value=value)
         if self.vset != value:
             raise ValueError(f"Could not set VSET to {value}")
 
     @iset.setter
     def iset(self, value: float) -> None:
-        self.write_command_read_response_channel_set(command="ISET", value=value)
+        self._write_command_read_response_channel_set(command="ISET", value=value)
         if self.iset != value:
             raise ValueError(f"Could not set ISET to {value}")
 
     @maxv.setter
     def maxv(self, value: float) -> None:
-        self.write_command_read_response_channel_set(command="MAXV", value=value)
+        self._write_command_read_response_channel_set(command="MAXV", value=value)
         if self.maxv != value:
             raise ValueError(f"Could not set MAXV to {value}")
 
     @rup.setter
     def rup(self, value: float) -> None:
-        self.write_command_read_response_channel_set(command="RUP", value=value)
+        self._write_command_read_response_channel_set(command="RUP", value=value)
         if self.rup != value:
             raise ValueError(f"Could not set RUP to {value}")
 
     @rdw.setter
     def rdw(self, value: float) -> None:
-        self.write_command_read_response_channel_set(command="RDW", value=value)
+        self._write_command_read_response_channel_set(command="RDW", value=value)
         if self.rdw != value:
             raise ValueError(f"Could not set RDW to {value}")
 
     @trip.setter
     def trip(self, value: float) -> None:
-        self.write_command_read_response_channel_set(command="TRIP", value=value)
+        self._write_command_read_response_channel_set(command="TRIP", value=value)
         if self.trip != value:
             raise ValueError(f"Could not set TRIP to {value}")
 
     @pdwn.setter
     def pdwn(self, value: float) -> None:
-        self.write_command_read_response_channel_set(command="PDWN", value=value)
+        self._write_command_read_response_channel_set(command="PDWN", value=value)
         if self.pdwn != value:
             raise ValueError(f"Could not set PDWN to {value}")
 
     @imrange.setter
     def imrange(self, value: str) -> None:
         """Set channel to "HIGH" or "LOW" current monitor mode"""
-        self.write_command_read_response_channel_set(command="IMRANGE", value=value)
+        self._write_command_read_response_channel_set(command="IMRANGE", value=value)
         if self.imrange != value:
             raise ValueError(f"Could not set IMRANGE to {value}")
 
     def turn_on(self) -> None:
         """Turn on the channel."""
-        self.write_command_read_response_channel_set(command="ON", value=None)
+        self._write_command_read_response_channel_set(command="ON", value=None)
 
     def turn_off(self) -> None:
         """Turn off the channel."""
-        self.write_command_read_response_channel_set(command="OFF", value=None)
+        self._write_command_read_response_channel_set(command="OFF", value=None)

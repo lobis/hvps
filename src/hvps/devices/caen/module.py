@@ -10,13 +10,13 @@ from ..module import Module as BaseModule
 
 
 class Module(BaseModule):
-    def write_command_read_response_module_mon(self, command: str) -> str | None:
+    def _write_command_read_response_module_mon(self, command: str) -> str | None:
         return self._write_command_read_response(
             bd=self.bd,
             command=_get_mon_module_command(bd=self.bd, command=command),
         )
 
-    def write_command_read_response_module_set(
+    def _write_command_read_response_module_set(
         self, command: str, value: str | int | float | None
     ) -> str | None:
         return self._write_command_read_response(
@@ -44,7 +44,7 @@ class Module(BaseModule):
             int: The number of channels.
         """
         try:
-            response = self.write_command_read_response_module_mon(command="BDNCH")
+            response = self._write_command_read_response_module_mon(command="BDNCH")
             return int(response)
         except SerialException:
             return 1
@@ -77,7 +77,7 @@ class Module(BaseModule):
         Returns:
             str: The name of the module.
         """
-        response = self.write_command_read_response_module_mon(command="BDNAME")
+        response = self._write_command_read_response_module_mon(command="BDNAME")
         return str(response)
 
     @property
@@ -88,7 +88,7 @@ class Module(BaseModule):
         Returns:
             str: The firmware release.
         """
-        response = self.write_command_read_response_module_mon(command="BDFREL")
+        response = self._write_command_read_response_module_mon(command="BDFREL")
         return response
 
     @property
@@ -99,7 +99,7 @@ class Module(BaseModule):
         Returns:
             str: The serial number.
         """
-        response = self.write_command_read_response_module_mon(command="BDSNUM")
+        response = self._write_command_read_response_module_mon(command="BDSNUM")
         # TODO: check if can be casted to int
         return response
 
@@ -111,7 +111,7 @@ class Module(BaseModule):
         Returns:
             bool: Yes: True, No: False
         """
-        response = self.write_command_read_response_module_mon(command="BDILK")
+        response = self._write_command_read_response_module_mon(command="BDILK")
         if response == "YES":
             return True
         elif response == "NO":
@@ -127,7 +127,7 @@ class Module(BaseModule):
         Returns:
             str: The interlock mode.
         """
-        response = self.write_command_read_response_module_mon(command="BDILKM")
+        response = self._write_command_read_response_module_mon(command="BDILKM")
         if response not in ["OPEN", "CLOSED"]:
             raise ValueError(f"Invalid response for 'interlock_mode': {response}")
         return response
@@ -148,7 +148,7 @@ class Module(BaseModule):
         Returns:
             str: The control mode.
         """
-        response = self.write_command_read_response_module_mon(command="BDCTR")
+        response = self._write_command_read_response_module_mon(command="BDCTR")
         if response not in ["LOCAL", "REMOTE"]:
             raise ValueError(f"Invalid response for 'control_mode': {response}")
         return response
@@ -181,7 +181,7 @@ class Module(BaseModule):
         if value not in ["LOCAL", "REMOTE"]:
             raise ValueError(f"Invalid value for 'control_mode': {value}")
 
-        self.write_command_read_response_module_set(command="BDCTR", value=value)
+        self._write_command_read_response_module_set(command="BDCTR", value=value)
 
     def set_control_mode_local(self):
         """
@@ -203,7 +203,7 @@ class Module(BaseModule):
         Returns:
             str: The local bus termination status.
         """
-        response = self.write_command_read_response_module_mon(command="BDTERM")
+        response = self._write_command_read_response_module_mon(command="BDTERM")
         if response not in ["ON", "OFF"]:
             raise ValueError(
                 f"Invalid response for 'local_bus_termination_status': {response}"
@@ -234,7 +234,7 @@ class Module(BaseModule):
         Returns:
             str: The board alarm status value.
         """
-        response = self.write_command_read_response_module_mon(command="BDALARM")
+        response = self._write_command_read_response_module_mon(command="BDALARM")
 
         bit_array = string_number_to_bit_array(response)
 
@@ -260,7 +260,7 @@ class Module(BaseModule):
         if mode not in ["OPEN", "CLOSED"]:
             raise ValueError(f"Invalid value for 'interlock_mode': {mode}")
 
-        self.write_command_read_response_module_set(command="BDILKM", value=mode)
+        self._write_command_read_response_module_set(command="BDILKM", value=mode)
 
     def close_interlock(self) -> None:
         """
@@ -278,4 +278,4 @@ class Module(BaseModule):
         """
         Clear alarm signal
         """
-        self.write_command_read_response_module_set(command="BDCLR", value=None)
+        self._write_command_read_response_module_set(command="BDCLR", value=None)
