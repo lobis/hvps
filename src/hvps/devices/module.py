@@ -1,24 +1,31 @@
 from typing import List
 
-import serial
+import logging
 from abc import ABC, abstractmethod
+from typing import Callable
 
 from .channel import Channel
-import logging
 
 
 class Module(ABC):
-    def __init__(self, _serial: serial.Serial, _logger: logging.Logger, module: int):
+    def __init__(
+        self,
+        module: int,
+        write_command_read_response: Callable,
+        logger: logging.Logger,
+    ):
         """Initialize the Module object.
 
         Args:
-            _serial (serial.Serial): The serial object used for communication.
             module (int): The module number.
+            write_command_read_response (Callable): The function used to write a command and read the response.
+            logger (logging.Logger): The logger object used for logging.
 
         """
-        self._serial = _serial
-        self._logger = _logger
+
         self._module = module
+        self._write_command_read_response = write_command_read_response
+        self._logger = logger
         self._channels: List[Channel] = []
 
     @property

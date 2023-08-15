@@ -3,36 +3,42 @@ import re
 
 import logging
 import serial
+import threading
 
 
-def _write_command(
+def _write_command_read_response(
     ser: serial.Serial,
+    lock: threading.Lock,
     logger: logging.Logger,
     bd: int,
     command: bytes,
     response: bool = True,
 ) -> str | None:
-    logger.debug(f"Sending command: {command}")
-    if not ser.is_open:
-        logger.error("Serial port is not open")
-        raise serial.SerialException("Serial port is not open")
+    """
+    Write a command to a device and read the response.
+    """
+    with lock:
+        logger.debug(f"Sending command: {command}")
+        if not ser.is_open:
+            logger.error("Serial port is not open")
+            raise serial.SerialException("Serial port is not open")
 
-    ser.write(command)
-    if not response:
-        logger.warning(
-            "Calling _write_command without expecting a response. Manual readout of the response is required."
-        )
-        return None
+        ser.write(command)
+        if not response:
+            logger.warning(
+                "Calling _write_command without expecting a response. Manual readout of the response is required."
+            )
+            return None
 
-    response = ser.readline()
-    logger.debug(f"Received response: {response}")
-    bd_from_response, response_value = _parse_response(response)
-    if bd_from_response != bd:
-        raise ValueError(
-            f"Invalid response: {response_value}. Expected board number {bd}, got {bd_from_response}"
-        )
+        response = ser.readline()
+        logger.debug(f"Received response: {response}")
+        bd_from_response, response_value = _parse_response(response)
+        if bd_from_response != bd:
+            raise ValueError(
+                f"Invalid response: {response_value}. Expected board number {bd}, got {bd_from_response}"
+            )
 
-    return response_value
+        return response_value
 
 
 def _parse_response(response: bytes) -> (int, str):

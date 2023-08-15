@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from ...commands.caen.channel import (
     _get_set_channel_command,
     _get_mon_channel_command,
 )
-from ...commands.caen import _write_command
 from ...utils import string_number_to_bit_array
 from ..channel import Channel as BaseChannel
 
@@ -13,6 +14,24 @@ class Channel(BaseChannel):
     def __init__(self, *args, bd: int, **kwargs):
         super().__init__(*args, **kwargs)
         self._bd = bd
+
+    def _write_command_read_response_channel_mon(self, command: str) -> str | None:
+        return self._write_command_read_response(
+            bd=self.bd,
+            command=_get_mon_channel_command(
+                bd=self.bd, channel=self.channel, command=command
+            ),
+        )
+
+    def _write_command_read_response_channel_set(
+        self, command: str, value: str | int | float | None
+    ) -> str | None:
+        return self._write_command_read_response(
+            bd=self.bd,
+            command=_get_set_channel_command(
+                bd=self.bd, channel=self.channel, command=command, value=value
+            ),
+        )
 
     @property
     def bd(self) -> int:
@@ -47,12 +66,7 @@ class Channel(BaseChannel):
     # Getters
     @property
     def vset(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "VSET"),
-        )
+        response = self._write_command_read_response_channel_mon(command="VSET")
         return float(response)
 
     @property
@@ -61,294 +75,149 @@ class Channel(BaseChannel):
 
     @property
     def vmin(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "VMIN"),
-        )
+        response = self._write_command_read_response_channel_mon(command="VMIN")
         return float(response)
 
     @property
     def vmax(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "VMAX"),
-        )
+        response = self._write_command_read_response_channel_mon(command="VMAX")
         return float(response)
 
     @property
     def vdec(self) -> int:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "VDEC"),
-        )
+        response = self._write_command_read_response_channel_mon(command="VDEC")
         return int(response)
 
     @property
     def vmon(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "VMON"),
-        )
+        response = self._write_command_read_response_channel_mon(command="VMON")
         return float(response)
 
     @property
     def iset(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "ISET"),
-        )
+        response = self._write_command_read_response_channel_mon(command="ISET")
         return float(response)
 
     @property
     def imin(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "IMIN"),
-        )
+        response = self._write_command_read_response_channel_mon(command="IMIN")
         return float(response)
 
     @property
     def imax(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "IMAX"),
-        )
+        response = self._write_command_read_response_channel_mon(command="IMAX")
         return float(response)
 
     @property
     def isdec(self) -> int:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "ISDEC"),
-        )
+        response = self._write_command_read_response_channel_mon(command="ISDEC")
         return int(response)
 
     @property
     def imon(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "IMON"),
-        )
+        response = self._write_command_read_response_channel_mon(command="IMON")
         return float(response)
 
     @property
     def imrange(self) -> str:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "IMRANGE"),
-        )
+        response = self._write_command_read_response_channel_mon(command="IMRANGE")
         if response not in ["HIGH", "LOW"]:
             raise ValueError(f"Unexpected response {response}")
         return response
 
     @property
     def imdec(self) -> int:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "IMDEC"),
-        )
+        response = self._write_command_read_response_channel_mon(command="IMDEC")
         return int(response)
 
     @property
     def maxv(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "MAXV"),
-        )
+        response = self._write_command_read_response_channel_mon(command="MAXV")
         return float(response)
 
     @property
     def mvmin(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "MVMIN"),
-        )
+        response = self._write_command_read_response_channel_mon(command="MVMIN")
         return float(response)
 
     @property
     def mvmax(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "MVMAX"),
-        )
+        response = self._write_command_read_response_channel_mon(command="MVMAX")
         return float(response)
 
     @property
     def mvdec(self) -> int:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "MVDEC"),
-        )
+        response = self._write_command_read_response_channel_mon(command="MVDEC")
         return int(response)
 
     @property
     def rup(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "RUP"),
-        )
+        response = self._write_command_read_response_channel_mon(command="RUP")
         return float(response)
 
     @property
     def rupmin(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "RUPMIN"),
-        )
+        response = self._write_command_read_response_channel_mon(command="RUPMIN")
         return float(response)
 
     @property
     def rupmax(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "RUPMAX"),
-        )
+        response = self._write_command_read_response_channel_mon(command="RUPMAX")
         return float(response)
 
     @property
     def rupdec(self) -> int:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "RUPDEC"),
-        )
+        response = self._write_command_read_response_channel_mon(command="RUPDEC")
         return int(response)
 
     @property
     def rdw(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "RDW"),
-        )
+        response = self._write_command_read_response_channel_mon(command="RDW")
         return float(response)
 
     @property
     def rdwmin(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "RDWMIN"),
-        )
+        response = self._write_command_read_response_channel_mon(command="RDWMIN")
         return float(response)
 
     @property
     def rdwmax(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "RDWMAX"),
-        )
+        response = self._write_command_read_response_channel_mon(command="RDWMAX")
         return float(response)
 
     @property
     def rdwdec(self) -> int:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "RDWDEC"),
-        )
+        response = self._write_command_read_response_channel_mon(command="RDWDEC")
         return int(response)
 
     @property
     def trip(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "TRIP"),
-        )
+        response = self._write_command_read_response_channel_mon(command="TRIP")
         return float(response)
 
     @property
     def tripmin(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "TRIPMIN"),
-        )
+        response = self._write_command_read_response_channel_mon(command="TRIPMIN")
         return float(response)
 
     @property
     def tripmax(self) -> float:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "TRIPMAX"),
-        )
+        response = self._write_command_read_response_channel_mon(command="TRIPMAX")
         return float(response)
 
     @property
     def tripdec(self) -> int:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "TRIPDEC"),
-        )
+        response = self._write_command_read_response_channel_mon(command="TRIPDEC")
         return int(response)
 
     @property
     def pdwn(self) -> str:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "PDWN"),
-        )
+        response = self._write_command_read_response_channel_mon(command="PDWN")
         return str(response)
 
     @property
     def pol(self) -> str:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "POL"),
-        )
+        response = self._write_command_read_response_channel_mon(command="POL")
         if response not in ["+", "-"]:
             raise ValueError(f"Invalid polarity: {response}")
         return str(response)
@@ -361,12 +230,7 @@ class Channel(BaseChannel):
 
     @property
     def stat(self) -> dict:
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_mon_channel_command(self._bd, self._channel, "STAT"),
-        )
+        response = self._write_command_read_response_channel_mon(command="STAT")
         bit_array = string_number_to_bit_array(response)
 
         return {
@@ -409,107 +273,57 @@ class Channel(BaseChannel):
     # Setters
     @vset.setter
     def vset(self, value: float) -> None:
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_set_channel_command(self._bd, self._channel, "VSET", value),
-        )
+        self._write_command_read_response_channel_set(command="VSET", value=value)
         if self.vset != value:
             raise ValueError(f"Could not set VSET to {value}")
 
     @iset.setter
     def iset(self, value: float) -> None:
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_set_channel_command(self._bd, self._channel, "ISET", value),
-        )
+        self._write_command_read_response_channel_set(command="ISET", value=value)
         if self.iset != value:
             raise ValueError(f"Could not set ISET to {value}")
 
     @maxv.setter
     def maxv(self, value: float) -> None:
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_set_channel_command(self._bd, self._channel, "MAXV", value),
-        )
+        self._write_command_read_response_channel_set(command="MAXV", value=value)
         if self.maxv != value:
             raise ValueError(f"Could not set MAXV to {value}")
 
     @rup.setter
     def rup(self, value: float) -> None:
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_set_channel_command(self._bd, self._channel, "RUP", value),
-        )
+        self._write_command_read_response_channel_set(command="RUP", value=value)
         if self.rup != value:
             raise ValueError(f"Could not set RUP to {value}")
 
     @rdw.setter
     def rdw(self, value: float) -> None:
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_set_channel_command(self._bd, self._channel, "RDW", value),
-        )
+        self._write_command_read_response_channel_set(command="RDW", value=value)
         if self.rdw != value:
             raise ValueError(f"Could not set RDW to {value}")
 
     @trip.setter
     def trip(self, value: float) -> None:
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_set_channel_command(self._bd, self._channel, "TRIP", value),
-        )
+        self._write_command_read_response_channel_set(command="TRIP", value=value)
         if self.trip != value:
             raise ValueError(f"Could not set TRIP to {value}")
 
     @pdwn.setter
     def pdwn(self, value: float) -> None:
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_set_channel_command(self._bd, self._channel, "PDWN", value),
-        )
+        self._write_command_read_response_channel_set(command="PDWN", value=value)
         if self.pdwn != value:
             raise ValueError(f"Could not set PDWN to {value}")
 
     @imrange.setter
     def imrange(self, value: str) -> None:
         """Set channel to "HIGH" or "LOW" current monitor mode"""
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_set_channel_command(self._bd, self._channel, "IMRANGE", value),
-        )
+        self._write_command_read_response_channel_set(command="IMRANGE", value=value)
         if self.imrange != value:
             raise ValueError(f"Could not set IMRANGE to {value}")
 
     def turn_on(self) -> None:
         """Turn on the channel."""
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_set_channel_command(self._bd, self._channel, "ON", None),
-        )
+        self._write_command_read_response_channel_set(command="ON", value=None)
 
     def turn_off(self) -> None:
         """Turn off the channel."""
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self._bd,
-            command=_get_set_channel_command(self._bd, self._channel, "OFF", None),
-        )
+        self._write_command_read_response_channel_set(command="OFF", value=None)
