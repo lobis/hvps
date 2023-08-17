@@ -35,6 +35,7 @@ def test_iseg_module_monitor():
         timeout=timeout,
         logging_level=logging.DEBUG,
     )
+    iseg.connect()
 
     print(
         f"Serial port status: connected: {iseg.connected}, port: {iseg.port}, baudrate: {iseg.baudrate}, timeout: {iseg.timeout}"
@@ -172,12 +173,14 @@ def test_iseg_module_monitor():
     module.reset_module_event_status()
     module.clear_module_event_status_bits(8)
 
+    iseg.disconnect()
+
 
 @serial_skip_decorator
 def test_iseg_channel_monitor():
     ser = serial.Serial(serial_port, serial_baud, timeout=timeout)
 
-    channel = Channel(ser, 0)
+    channel = Channel(ser, 0)  # TODO: what is this 0?
 
     trip_action = channel.trip_action
     print(f"trip_action: {trip_action}")

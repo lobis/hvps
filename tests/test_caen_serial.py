@@ -33,10 +33,11 @@ def test_caen_module_monitor():
     caen = Caen(
         port=serial_port,
         baudrate=serial_baud,
-        connect=True,
         timeout=timeout,
         logging_level=logging.DEBUG,
     )
+    caen.connect()
+
     print(
         f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"
     )
@@ -90,16 +91,19 @@ def test_caen_module_monitor():
     channels = module.channels
     print(f"Channels: {channels}")
 
+    caen.disconnect()
+
 
 @serial_skip_decorator
 def test_caen_channel_serial():
     caen = Caen(
         port=serial_port,
         baudrate=serial_baud,
-        connect=True,
         timeout=timeout,
         logging_level=logging.DEBUG,
     )
+    caen.connect()
+
     print(
         f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"
     )
@@ -201,3 +205,5 @@ def test_caen_channel_serial():
 
         stat = channel.stat
         print(f"stat: {stat}")
+
+    caen.disconnect()
