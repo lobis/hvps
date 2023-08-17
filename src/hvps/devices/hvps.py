@@ -17,7 +17,6 @@ class Hvps:
         baudrate: int = 115200,
         port: str | None = None,
         timeout: float | None = None,
-        connect: bool = True,
         logging_level=logging.WARNING,
     ):
         """Initialize the HVPS (High-Voltage Power Supply) object.
@@ -26,7 +25,6 @@ class Hvps:
             baudrate (int, optional): The baud rate for serial communication. Defaults to 115200.
             port (str | None, optional): The serial port to use. If None, it will try to detect one automatically. Defaults to None.
             timeout (float | None, optional): The timeout for serial communication. Defaults to None.
-            connect (bool, optional): Whether to connect to the serial port during initialization. Defaults to True.
             logging_level (int, optional): The logger level. Defaults to logger.WARNING.
 
         """
@@ -59,15 +57,11 @@ class Hvps:
                     )
 
         self._serial: serial.Serial = serial.Serial()
-        self._serial.port = port
-        self._logger.info(f"Using port {port}")
-        self._serial.baudrate = baudrate
-        self._logger.info(f"Using baud rate {self._serial.baudrate}")
-        self._serial.timeout = timeout
-        self._logger.debug(f"Using timeout {self._serial.timeout}")
 
-        if connect:
-            self.connect()
+        self._serial.port = port
+        self._serial.baudrate = baudrate
+        if timeout is not None:
+            self._serial.timeout = timeout
 
     def __del__(self):
         """Cleanup method to close the serial port when the HVPS object is deleted."""
@@ -79,6 +73,9 @@ class Hvps:
         """
 
         self._logger.debug("Connecting to serial port")
+        self._logger.info(f"Using port {self._serial.port}")
+        self._logger.info(f"Using baud rate {self._serial.baudrate}")
+        self._logger.debug(f"Using timeout {self._serial.timeout}")
 
         if not hasattr(self, "_serial"):
             return
