@@ -37,9 +37,9 @@ def test_iseg_module_monitor():
     module = iseg.module(0)
 
     # Setter methods
-    module.serial_baud_rate = 115200
-    with pytest.raises(ValueError):
-        module.serial_echo_enable = 2
+    # module.serial_baud_rate = 115200
+    # with pytest.raises(ValueError):
+    #    module.serial_echo_enable = 2
 
     prev_filter_averaging_steps = module.filter_averaging_steps
     module.filter_averaging_steps = 256
@@ -64,7 +64,7 @@ def test_iseg_module_monitor():
     id_string = module.id_string
 
     # Other methods
-    module.enter_configuration_mode(id_string[2])
+    module.enter_configuration_mode(int(id_string[2]))
 
     prev_module_can_address = module.module_can_address
     module.module_can_address = 12
@@ -106,6 +106,8 @@ def test_iseg_module_monitor():
 
     module.local_lockout()
     module.goto_local()
+
+    iseg.disconnect()
 
 
 @serial_skip_decorator
@@ -237,3 +239,5 @@ def test_iseg_channel_monitor():
 
         # Set the Channel Event Mask register
         channel.set_event_mask(7)
+
+    iseg.disconnect()

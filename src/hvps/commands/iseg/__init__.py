@@ -4,50 +4,36 @@ from typing import List
 import logging
 import serial
 import re
+import threading
 
 
-# TODO: change name to arg response
-def _write_command(
+def _write_command_read_response(
     ser: serial.Serial,
+    lock: threading.Lock,
     logger: logging.Logger,
     command: bytes,
     expected_response_type: type | None,
     response: bool = True,
-) -> str | List[str] | None:
-    """
-    Implements the protocol of the HVPS for sending a command and parses its response
+) -> List[str] | None:
+    with lock:
+        logger.debug(f"Send command: {command}")
+        ser.write(command)
+        if not response:
+            return None
 
-    Args:
-        ser: The serial port.
-        logger: The logger.
-        command: The command to send.
-        expected_response_type: The expected type of the response.
-        response: Whether to expect a response or not.
+        # echo reading
+        response = ser.readline()
+        logger.debug(f"Received response: {response}")
+        if response != command:
+            raise ValueError(
+                f"Invalid handshake echo response: {response}. expected {command}"
+            )
 
-    Throws:
-        ValueError: If the response is invalid, cannot be decoded, or does not match the expected pattern.
+        # response reading
+        response = ser.readline()
+        response = _parse_response(response, expected_response_type)
 
-    Returns:
-        str | List[str] | None: The parsed response.
-    """
-    logger.debug(f"Send command: {command}")
-    ser.write(command)
-    if not response:
-        return None
-
-    # echo reading
-    response = ser.readline()
-    logger.debug(f"Received response: {response}")
-    if response != command:
-        raise ValueError(
-            f"Invalid handshake echo response: {response}. expected {command}"
-        )
-
-    # response reading
-    response = ser.readline()
-    response = _parse_response(response, expected_response_type)
-
-    return response
+        return response
 
 
 def _parse_response(

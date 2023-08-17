@@ -20,7 +20,7 @@ def is_macos():
 
 
 serial_skip_decorator = pytest.mark.skipif(
-    caen_serial_port == "" or iseg_serial_port == "", reason="No serial ports set"
+    caen_serial_port == "", reason="No serial ports set"
 )
 
 

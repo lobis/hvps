@@ -90,6 +90,8 @@ def test_caen_module_monitor():
     channels = module.channels
     print(f"Channels: {channels}")
 
+    caen.disconnect()
+
 
 @serial_skip_decorator
 def test_caen_channel_serial():
@@ -201,3 +203,5 @@ def test_caen_channel_serial():
 
         stat = channel.stat
         print(f"stat: {stat}")
+
+    caen.disconnect()

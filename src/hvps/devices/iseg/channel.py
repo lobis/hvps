@@ -8,13 +8,33 @@ from ...commands.iseg.channel import (
     _get_mon_channel_command,
     _MON_CHANNEL_COMMANDS,
 )
-from ...commands.iseg import _write_command
 
 from ..channel import Channel as BaseChannel
 from ...utils.utils import check_command_output_and_convert
 
 
 class Channel(BaseChannel):
+    def _write_command_read_response_channel_mon(
+        self, command: str, expected_response_type: type | None
+    ) -> str | None:
+        return self._write_command_read_response(
+            command=_get_mon_channel_command(channel=self.channel, command=command),
+            expected_response_type=expected_response_type,
+        )
+
+    def _write_command_read_response_channel_set(
+        self,
+        command: str,
+        value: str | int | float | None,
+        expected_response_type: type | None,
+    ) -> str | None:
+        return self._write_command_read_response(
+            command=_get_set_channel_command(
+                channel=self.channel, command=command, value=value
+            ),
+            expected_response_type=expected_response_type,
+        )
+
     # Getters
     @property
     def trip_action(
@@ -28,12 +48,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=int
         )
 
         return check_command_output_and_convert(
@@ -52,12 +69,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=int
         )
 
         return check_command_output_and_convert(
@@ -76,12 +90,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -99,12 +110,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=int
         )
 
         if len(response) != 1:
@@ -125,12 +133,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=List[int],
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=List[int]
         )
 
         return check_command_output_and_convert(
@@ -151,12 +156,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=str,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=str
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -182,12 +184,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=List[str],
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=List[str]
         )
 
         return check_command_output_and_convert(
@@ -208,12 +207,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -233,12 +229,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -258,12 +251,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -283,12 +273,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -308,12 +295,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=List[float],
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=List[float]
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -333,12 +317,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -358,12 +339,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=int
         )
         return (
             check_command_output_and_convert(
@@ -386,12 +364,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=int
         )
         return (
             check_command_output_and_convert(
@@ -415,12 +390,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -441,12 +413,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -467,12 +436,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -493,12 +459,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -519,12 +482,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=List[float],
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=List[float]
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -545,12 +505,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -571,12 +528,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -597,12 +551,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -625,12 +576,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -653,12 +601,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -681,12 +626,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -709,12 +651,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -735,12 +674,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -761,12 +697,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -786,12 +719,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -811,12 +741,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -836,12 +763,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -863,12 +787,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -890,12 +811,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -915,12 +833,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -937,12 +852,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_channel_methods_to_commands[method_name]
-        command = _get_mon_channel_command(self._channel, command_name)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        _get_mon_channel_command(self._channel, command_name)
+        response = self._write_command_read_response_channel_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_CHANNEL_COMMANDS
@@ -967,12 +879,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, action)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, action)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=action, expected_response_type=None
         )
         if response != "1" or self.trip_action != action:
             raise ValueError("Last command haven't been processed.")
@@ -989,12 +898,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, timeout)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, timeout)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=timeout, expected_response_type=None
         )
         if response != "1" or self.trip_timeout != timeout:
             raise ValueError("Last command haven't been processed.")
@@ -1016,12 +922,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, action)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, action)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=action, expected_response_type=None
         )
         if response != "1":  # or self.external_inhibit_action != action:
             raise ValueError("Last command haven't been processed.")
@@ -1041,12 +944,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, mode)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, mode)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=mode, expected_response_type=None
         )
         if response != "1" or self.output_mode != mode:
             raise ValueError("Last command haven't been processed.")
@@ -1069,12 +969,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, polarity)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, polarity)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=polarity, expected_response_type=None
         )
         if response != "1" or self.output_polarity != polarity:
             raise ValueError("Last command haven't been processed.")
@@ -1089,12 +986,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, vset)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, vset)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=vset, expected_response_type=None
         )
         if response != "1" or not (
             self.voltage_set == round(vset, 1) or self.voltage_set == -round(vset, 1)
@@ -1111,12 +1005,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, vbounds)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, vbounds)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=vbounds, expected_response_type=None
         )
         if response != "1" or self.voltage_bounds != vbounds:
             raise ValueError("Last command haven't been processed.")
@@ -1131,12 +1022,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, iset)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, iset)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=iset, expected_response_type=None
         )
         if response != "1" or not (
             self.current_set == iset or self.current_set == -iset
@@ -1153,12 +1041,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, ibounds)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, ibounds)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=ibounds, expected_response_type=None
         )
         if response != "1" or self.current_bounds != ibounds:
             raise ValueError("Last command haven't been processed.")
@@ -1177,12 +1062,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, speed)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, speed)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=speed, expected_response_type=None
         )
         if (
             response != "1"
@@ -1206,12 +1088,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, speed)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, speed)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=speed, expected_response_type=None
         )
         if response != "1" or self.channel_voltage_ramp_up_speed != speed:
             raise ValueError("Last command haven't been processed.")
@@ -1231,12 +1110,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, speed)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, speed)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=speed, expected_response_type=None
         )
         if response != "1" or self.channel_voltage_ramp_down_speed != speed:
             raise ValueError("Last command haven't been processed.")
@@ -1255,12 +1131,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, speed)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, speed)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=speed, expected_response_type=None
         )
         if (
             response != "1"
@@ -1284,12 +1157,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, speed)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, speed)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=speed, expected_response_type=None
         )
         if response != "1" or self.channel_current_ramp_up_speed != speed:
             raise ValueError("Last command haven't been processed.")
@@ -1309,12 +1179,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, speed)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, speed)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=speed, expected_response_type=None
         )
         if response != "1" or self.channel_current_ramp_down_speed != speed:
             raise ValueError("Last command haven't been processed.")
@@ -1325,12 +1192,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, None)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, None)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=None, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command haven't been processed.")
@@ -1341,12 +1205,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, None)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, None)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=None, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command haven't been processed.")
@@ -1357,12 +1218,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, None)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, None)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=None, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command haven't been processed.")
@@ -1373,12 +1231,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, None)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, None)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=None, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command haven't been processed.")
@@ -1389,12 +1244,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, None)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, None)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=None, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command haven't been processed.")
@@ -1409,12 +1261,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, bits)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, bits)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=bits, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command haven't been processed.")
@@ -1428,12 +1277,9 @@ class Channel(BaseChannel):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_channel_methods_to_commands[method_name]
-        command = _get_set_channel_command(self._channel, command_name, mask)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        _get_set_channel_command(self._channel, command_name, mask)
+        response = self._write_command_read_response_channel_set(
+            command=command_name, value=mask, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command haven't been processed.")

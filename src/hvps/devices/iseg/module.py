@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import inspect
-from functools import cached_property
 from typing import List
+from serial import SerialException
 
 from ...commands.iseg.module import (
     _get_mon_module_command,
     _get_set_module_command,
     _MON_MODULE_COMMANDS,
 )
-from ...commands.iseg import _write_command
 from ...utils.utils import string_number_to_bit_array, check_command_output_and_convert
 
 from ..module import Module as BaseModule
@@ -17,10 +16,29 @@ from .channel import Channel
 
 
 class Module(BaseModule):
+    def _write_command_read_response_module_mon(
+        self, command: str, expected_response_type: type | None
+    ) -> str | None:
+        return self._write_command_read_response(
+            command=_get_mon_module_command(command=command),
+            expected_response_type=expected_response_type,
+        )
+
+    def _write_command_read_response_module_set(
+        self,
+        command: str,
+        value: str | int | float | None,
+        expected_response_type: type | None,
+    ) -> str | None:
+        return self._write_command_read_response(
+            command=_get_set_module_command(command=command, value=value),
+            expected_response_type=expected_response_type,
+        )
+
     def channel(self, channel: int) -> Channel:
         return super().channel(channel)
 
-    @cached_property
+    @property
     def number_of_channels(self) -> int:
         """The number of channels in the module.
 
@@ -28,26 +46,20 @@ class Module(BaseModule):
             int: The number of channels.
         """
         self._logger.debug("Getting number of channels")
-        if not self._serial.is_open:
-            # TODO: we should not cache the property if the serial port is not open
-            self._logger.warning(
-                "Serial port is not open. Returning 1 as number of channels."
+
+        try:
+            method_name = inspect.currentframe().f_code.co_name
+            command_name = _mon_module_methods_to_commands[method_name]
+
+            response = self._write_command_read_response_module_mon(
+                command=command_name, expected_response_type=int
             )
+            return check_command_output_and_convert(
+                command_name, None, response, _MON_MODULE_COMMANDS
+            )
+
+        except SerialException:
             return 1
-
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
-
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
-        )
 
     @property
     def channels(self) -> List[Channel]:
@@ -61,7 +73,11 @@ class Module(BaseModule):
             for channel in range(self.number_of_channels):
                 self._logger.debug(f"Creating channel {channel}")
                 self._channels.append(
-                    Channel(ser=self._serial, channel=channel, logger=self._logger)
+                    Channel(
+                        channel=channel,
+                        write_command_read_response=self._write_command_read_response,
+                        logger=self._logger,
+                    )
                 )
         return self._channels
 
@@ -75,13 +91,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=str,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=str
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -97,13 +110,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=str,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=str
         )
         register = check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -138,13 +148,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -159,13 +166,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -180,13 +184,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -201,13 +202,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -222,13 +220,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -247,13 +242,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -268,13 +260,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -297,13 +286,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -314,17 +300,14 @@ class Module(BaseModule):
         """Query the module's current limit in percent.
 
         Returns:
-            float: The current current limit of the module.
+            float: The current electrical current limit of the module.
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -339,13 +322,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -356,17 +336,14 @@ class Module(BaseModule):
         """Query the module's current ramp speed in percent/second.
 
         Returns:
-            float: The current current ramp speed of the module.
+            float: The current electrical current ramp speed of the module.
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -381,13 +358,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -402,13 +376,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -423,13 +394,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -444,13 +412,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -465,13 +430,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -486,13 +448,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -507,13 +466,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=List[float],
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=List[float]
         )
         if len(response) != 7:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -531,13 +487,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -552,13 +505,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -573,13 +523,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -594,13 +541,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -615,13 +559,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -636,13 +577,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -657,13 +595,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=float
         )
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -678,13 +613,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=int
         )
 
         return check_command_output_and_convert(
@@ -700,13 +632,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=str,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=str
         )
 
         return check_command_output_and_convert(
@@ -722,13 +651,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=str,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=str
         )
 
         return check_command_output_and_convert(
@@ -744,13 +670,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        command = _get_mon_module_command(command_name)
+        _get_mon_module_command(command_name)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=str,
+        response = self._write_command_read_response_module_mon(
+            command=command_name, expected_response_type=str
         )
 
         return check_command_output_and_convert(
@@ -768,13 +691,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, baud_rate)
+        _get_set_module_command(command_name, baud_rate)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=baud_rate, expected_response_type=None
         )
 
         if response != "1" or self.serial_baud_rate != baud_rate:
@@ -793,13 +713,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, enabled)
+        _get_set_module_command(command_name, enabled)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=enabled, expected_response_type=None
         )
         if response != "1" or self.serial_echo_enable != enabled:
             raise ValueError("Last command hasn't been processed.")
@@ -816,13 +733,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, steps)
+        _get_set_module_command(command_name, steps)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=steps, expected_response_type=None
         )
         if response != "1" or self.filter_averaging_steps != steps:
             raise ValueError("Last command hasn't been processed.")
@@ -836,13 +750,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, enable)
+        _get_set_module_command(command_name, enable)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=enable, expected_response_type=None
         )
         if response != "1" or self.kill_enable != enable:
             raise ValueError("Last command hasn't been processed.")
@@ -856,13 +767,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, value)
+        _get_set_module_command(command_name, value)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=value, expected_response_type=None
         )
         if response != "1" or self.adjustment != value:
             raise ValueError("Last command hasn't been processed.")
@@ -876,13 +784,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, mask)
+        _get_set_module_command(command_name, mask)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=mask, expected_response_type=None
         )
         # TODO: check if read value = mask, careful with reserved bits
         if response != "1":
@@ -897,13 +802,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, mask)
+        _get_set_module_command(command_name, mask)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=mask, expected_response_type=None
         )
         # TODO: check if read value = mask, careful with reserved bits
         if response != "1":
@@ -919,13 +821,10 @@ class Module(BaseModule):
 
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, address)
+        _get_set_module_command(command_name, address)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=address, expected_response_type=None
         )
         if response != "1" or self.module_can_address != address:
             raise ValueError("Last command hasn't been processed.")
@@ -940,13 +839,10 @@ class Module(BaseModule):
 
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, bitrate)
+        _get_set_module_command(command_name, bitrate)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=bitrate, expected_response_type=None
         )
         if response != "1" or self.module_can_bitrate != bitrate:
             raise ValueError("Last command hasn't been processed.")
@@ -960,13 +856,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, serial_number)
+        _get_set_module_command(command_name, serial_number)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=serial_number, expected_response_type=None
         )
 
         if response != "1":
@@ -976,13 +869,10 @@ class Module(BaseModule):
         """Set the device back to normal mode."""
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, 0)
+        _get_set_module_command(command_name, 0)
 
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        self._write_command_read_response_module_set(
+            command=command_name, value=0, expected_response_type=None
         )
 
     # Be careful when switching off the echo as there is no other possibilit to synchronize the HV device
@@ -1003,13 +893,10 @@ class Module(BaseModule):
         """Reset the Module Event Status register."""
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, None)
+        _get_set_module_command(command_name, None)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=None, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command hasn't been processed.")
@@ -1022,13 +909,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, bits)
+        _get_set_module_command(command_name, bits)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=bits, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command hasn't been processed.")
@@ -1038,13 +922,10 @@ class Module(BaseModule):
 
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, None)
+        _get_set_module_command(command_name, None)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=None, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command hasn't been processed.")
@@ -1053,13 +934,10 @@ class Module(BaseModule):
         """Reset the module to the saved values."""
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, None)
+        _get_set_module_command(command_name, None)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=None, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command hasn't been processed.")
@@ -1072,13 +950,10 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, command_set)
+        _get_set_module_command(command_name, command_set)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=command_set, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command hasn't been processed.")
@@ -1088,13 +963,10 @@ class Module(BaseModule):
 
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, None)
+        _get_set_module_command(command_name, None)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=None, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command hasn't been processed.")
@@ -1104,13 +976,10 @@ class Module(BaseModule):
 
         method_name = inspect.currentframe().f_code.co_name
         command_name = _set_module_methods_to_commands[method_name]
-        command = _get_set_module_command(command_name, None)
+        _get_set_module_command(command_name, None)
 
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=command_name, value=None, expected_response_type=None
         )
         if response != "1":
             raise ValueError("Last command hasn't been processed.")

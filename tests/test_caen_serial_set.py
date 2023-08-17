@@ -43,10 +43,16 @@ def test_caen_module_monitor():
     module = caen.module(0)
 
     prev_interlock_open = module.interlock_open
-    module.open_interlock()
-    module.close_interlock()
-    module.open_interlock() if prev_interlock_open else module.close_interlock()
+    prev_interlock_open = module.interlock_open
+    if prev_interlock_open:
+        module.close_interlock()
+        module.open_interlock()
+    else:
+        module.open_interlock()
+        module.close_interlock()
     module.clear_alarm_signal()
+
+    caen.disconnect()
 
 
 @serial_skip_decorator
@@ -103,3 +109,5 @@ def test_caen_channel_set():
         channel.turn_on()
         channel.turn_off()
         channel.turn_on() if prev_on else channel.turn_off()
+
+    caen.disconnect()

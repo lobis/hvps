@@ -140,6 +140,8 @@ def test_iseg_module_monitor():
     instruction_set = module.instruction_set
     print(f"instruction_set: {instruction_set}")
 
+    iseg.disconnect()
+
 
 @serial_skip_decorator
 def test_iseg_channel_monitor():
@@ -265,3 +267,5 @@ def test_iseg_channel_monitor():
 
         speed = channel.channel_current_ramp_down_speed
         print(f"speed: {speed}")
+
+    iseg.disconnect()

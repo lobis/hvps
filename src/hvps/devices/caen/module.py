@@ -1,19 +1,34 @@
+from __future__ import annotations
 import inspect
-from functools import cached_property
 from typing import List
+from serial import SerialException
 
 from ...commands.caen.module import (
     _get_mon_module_command,
     _get_set_module_command,
     _MON_MODULE_COMMANDS,
 )
-from ...commands.caen import _write_command
 from ...utils.utils import string_number_to_bit_array, check_command_output_and_convert
+from ...utils.utils import string_number_to_bit_array
 from .channel import Channel
 from ..module import Module as BaseModule
 
 
 class Module(BaseModule):
+    def _write_command_read_response_module_mon(self, command: str) -> str | None:
+        return self._write_command_read_response(
+            bd=self.bd,
+            command=_get_mon_module_command(bd=self.bd, command=command),
+        )
+
+    def _write_command_read_response_module_set(
+        self, command: str, value: str | int | float | None
+    ) -> str | None:
+        return self._write_command_read_response(
+            bd=self.bd,
+            command=_get_set_module_command(bd=self.bd, command=command, value=value),
+        )
+
     @property
     def bd(self) -> int:
         """The bd value of the module.
@@ -26,32 +41,22 @@ class Module(BaseModule):
     def channel(self, channel: int) -> Channel:
         return super().channel(channel)
 
-    @cached_property
+    @property
     def number_of_channels(self) -> int:
         """The number of channels in the module.
 
         Returns:
             int: The number of channels.
         """
-        self._logger.debug("Getting number of channels")
-        if not self._serial.is_open:
-            # TODO: we should not cache the property if the serial port is not open
-            self._logger.warning(
-                "Serial port is not open. Returning 1 as number of channels."
+        try:
+            method_name = inspect.currentframe().f_code.co_name
+            command_name = _mon_module_methods_to_commands[method_name]
+            response = self._write_command_read_response_module_mon(command_name)
+            return check_command_output_and_convert(
+                command_name, None, response, _MON_MODULE_COMMANDS
             )
+        except SerialException:
             return 1
-
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_mon_module_command(self.bd, command_name),
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
-        )
 
     @property
     def channels(self) -> List[Channel]:
@@ -66,15 +71,15 @@ class Module(BaseModule):
                 self._logger.debug(f"Creating channel {channel}")
                 self._channels.append(
                     Channel(
-                        ser=self._serial,
-                        logger=self._logger,
                         channel=channel,
                         bd=self.bd,
+                        write_command_read_response=self._write_command_read_response,
+                        logger=self._logger,
                     )
                 )
         return self._channels
 
-    @cached_property
+    @property
     def name(self) -> str:
         """The name of the module.
 
@@ -83,12 +88,7 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_mon_module_command(self.bd, command_name),
-        )
+        response = self._write_command_read_response_module_mon(command_name)
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
         )
@@ -103,12 +103,7 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_mon_module_command(self.bd, command_name),
-        )
+        response = self._write_command_read_response_module_mon(command_name)
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
         )
@@ -123,12 +118,7 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_mon_module_command(self.bd, command_name),
-        )
+        response = self._write_command_read_response_module_mon(command_name)
         # TODO: check if can be casted to int
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -144,12 +134,7 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_mon_module_command(self.bd, command_name),
-        )
+        response = self._write_command_read_response_module_mon(command_name)
         response = check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
         )
@@ -165,12 +150,7 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_mon_module_command(self.bd, command_name),
-        )
+        response = self._write_command_read_response_module_mon(command_name)
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
         )
@@ -193,12 +173,7 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_mon_module_command(self.bd, command_name),
-        )
+        response = self._write_command_read_response_module_mon(command_name)
         return check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
         )
@@ -229,12 +204,7 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_mon_module_command(self.bd, command_name),
-        )
+        response = self._write_command_read_response_module_mon(command_name)
         if response not in ["ON", "OFF"]:
             raise ValueError(
                 f"Invalid response for 'local_bus_termination_status': {response}"
@@ -269,12 +239,7 @@ class Module(BaseModule):
         """
         method_name = inspect.currentframe().f_code.co_name
         command_name = _mon_module_methods_to_commands[method_name]
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_mon_module_command(self.bd, command_name),
-        )
+        response = self._write_command_read_response_module_mon(command_name)
         check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
         )
@@ -300,13 +265,8 @@ class Module(BaseModule):
         """
 
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_set_module_command(self.bd, command_name, mode),
-        )
+        _set_module_methods_to_commands[method_name]
+        self._write_command_read_response_module_set(command="BDILKM", value=mode)
 
     def close_interlock(self) -> None:
         """
@@ -325,13 +285,8 @@ class Module(BaseModule):
         Clear alarm signal
         """
         method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            bd=self.bd,
-            command=_get_set_module_command(self.bd, command_name, None),
-        )
+        _set_module_methods_to_commands[method_name]
+        self._write_command_read_response_module_set(command="BDCLR", value=None)
 
 
 _mon_module_methods_to_commands = {

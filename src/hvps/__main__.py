@@ -128,7 +128,7 @@ def _call_setter_method(
                 setattr(o, method, value)
             else:
                 getattr(o, method)(value)
-    except serial.SerialException as e:
+    except (serial.SerialException, serial.serialutil.PortNotOpenError) as e:
         if testing:
             print(f"setter {method} called")
         else:
@@ -165,7 +165,7 @@ def _call_monitor_method(
         result = f"{method}: {getattr(o, method)}"
         print(result)
         logger.info(result)
-    except serial.SerialException as e:
+    except (serial.SerialException, serial.serialutil.PortNotOpenError) as e:
         if testing:
             print(f"monitor {method} called")
         else:
