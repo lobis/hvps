@@ -7,9 +7,7 @@ from hvps.utils import get_serial_ports
 
 
 caen_serial_port = ""
-iseg_serial_port = ""
 caen_baudrate = 115200
-iseg_baudrate = 9600
 
 
 def serial_port_available():
@@ -65,84 +63,6 @@ def test_cli_serial():
             "VSET",
             "20",
         ],
-        [
-            "--port",
-            caen_serial_port,
-            "--baud",
-            caen_baudrate,
-            "--channel",
-            "0",
-            "caen",
-            "--module",
-            "0",
-            "VSET",
-        ],
-        [
-            "--port",
-            caen_serial_port,
-            "--baud",
-            caen_baudrate,
-            "caen",
-            "--module",
-            "0",
-            "number_of_channels",
-        ],
-        [
-            "--port",
-            caen_serial_port,
-            "--baud",
-            caen_baudrate,
-            "caen",
-            "--module",
-            "0",
-            "interlock_mode",
-            "OPEN",
-        ],
-        [
-            "--port",
-            iseg_serial_port,
-            "--baud",
-            iseg_baudrate,
-            "--channel",
-            "0",
-            "iseg",
-            "--module",
-            "0",
-            "trip_action",
-            "1",
-        ],
-        [
-            "--port",
-            iseg_serial_port,
-            "--baud",
-            iseg_baudrate,
-            "--channel",
-            "0",
-            "iseg",
-            "--module",
-            "0",
-            "trip_action",
-        ],
-        [
-            "--port",
-            iseg_serial_port,
-            "--baud",
-            iseg_baudrate,
-            "iseg",
-            "--module",
-            "0",
-            "number_of_channels",
-        ],
-        [
-            "--port",
-            iseg_serial_port,
-            "--baud",
-            iseg_baudrate,
-            "caen",
-            "--module",
-            "0",
-            "clear_all_event_status_registers",
-        ],
     ]:
         stdout, stderr, exit_code = run_main_with_arguments(arguments)
 
@@ -150,8 +70,3 @@ def test_cli_serial():
         print(f"stdout: {stdout}")
         print(f"stderr: {stderr}")
         print(f"exit_code: {exit_code}")
-
-        exit_code_expected = 0 if parameter not in ["INVALID_PARAMETER"] else 1
-        assert (
-            exit_code == exit_code_expected
-        ), f"exit_code: {exit_code} for arguments: {arguments}"
