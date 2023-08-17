@@ -48,12 +48,15 @@ class Hvps:
 
         self._modules: Dict[int, Module] = {}
 
-        if port is None and connect:
+        if port is None:
             self._logger.info("No port specified, trying to detect one")
             ports = [port.device for port in list_ports.comports()]
-            if len(ports) == 0:
-                raise Exception("No ports available")
-            port = ports[0]
+            if len(ports) >= 1:
+                port = ports[0]
+                if len(ports) > 1:
+                    self._logger.warning(
+                        f"Multiple ports detected: {ports}, using the first one: {port}"
+                    )
 
         self._serial: serial.Serial = serial.Serial()
         self._serial.port = port
@@ -64,9 +67,7 @@ class Hvps:
         self._logger.debug(f"Using timeout {self._serial.timeout}")
 
         if connect:
-            self._logger.debug("Opening serial port")
-            self._serial.open()
-            self._logger.debug("Serial port opened")
+            self.connect()
 
     def __del__(self):
         """Cleanup method to close the serial port when the HVPS object is deleted."""
@@ -76,19 +77,31 @@ class Hvps:
         """
         Open the serial port.
         """
+
+        self._logger.debug("Connecting to serial port")
+
         if not hasattr(self, "_serial"):
             return
+        if self.port is None:
+            raise ValueError("No port specified")
         if not self._serial.is_open:
             self._serial.open()
+        else:
+            self._logger.warning("Serial port is already open")
 
     def disconnect(self):
         """
         Close the serial port.
         """
+
+        self._logger.debug("Disconnecting from serial port")
+
         if not hasattr(self, "_serial"):
             return
         if self._serial.is_open:
             self._serial.close()
+        else:
+            self._logger.warning("Serial port is already closed")
 
     def close(self):
         """
@@ -125,6 +138,16 @@ class Hvps:
             str: The serial port.
         """
         return self._serial.port
+
+    @port.setter
+    def port(self, port: str):
+        """
+        Set the serial port.
+
+        Args:
+            port (str): The serial port.
+        """
+        self._serial.port = port
 
     @property
     def baudrate(self) -> int:
