@@ -6,6 +6,7 @@ from typing import Dict
 import logging
 import uuid
 import threading
+from contextlib import contextmanager
 
 from .module import Module
 
@@ -69,17 +70,41 @@ class Hvps:
 
     def __del__(self):
         """Cleanup method to close the serial port when the HVPS object is deleted."""
-        if hasattr(self, "_serial"):
-            self._serial.close()
+        self.close()
+
+    def connect(self):
+        """
+        Open the serial port.
+        """
+        if not hasattr(self, "_serial"):
+            return
+        if not self._serial.is_open:
+            self._serial.open()
 
     def disconnect(self):
         """
-        Disconnect from the serial port.
+        Close the serial port.
         """
         if not hasattr(self, "_serial"):
             return
         if self._serial.is_open:
             self._serial.close()
+
+    def close(self):
+        """
+        Close the serial port.
+        """
+        self.disconnect()
+
+    @contextmanager
+    def open(self):
+        """
+        A context manager to automatically open and close the serial port.
+        """
+
+        self.connect()
+        yield
+        self.disconnect()
 
     @property
     def connected(self) -> bool:
@@ -149,12 +174,6 @@ class Hvps:
             level (int): The logging level.
         """
         self._logger.setLevel(level)
-
-    def connect(self):
-        """
-        Connect to the serial port.
-        """
-        self._serial.open()
 
     # modules
 
