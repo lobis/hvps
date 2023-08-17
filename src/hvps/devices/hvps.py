@@ -159,6 +159,16 @@ class Hvps:
         """
         return self._serial.baudrate
 
+    @baudrate.setter
+    def baudrate(self, baudrate: int):
+        """
+        Set the baud rate.
+
+        Args:
+            baudrate (int): The baud rate.
+        """
+        self._serial.baudrate = baudrate
+
     @property
     def timeout(self) -> float:
         """
@@ -168,6 +178,18 @@ class Hvps:
             float: The timeout.
         """
         return self._serial.timeout
+
+    @timeout.setter
+    def timeout(self, timeout: float):
+        """
+        Set the timeout.
+
+        Args:
+            timeout (float): The timeout.
+        """
+        if timeout < 0:
+            raise ValueError("Timeout must be positive")
+        self._serial.timeout = timeout
 
     @property
     def serial(self):
