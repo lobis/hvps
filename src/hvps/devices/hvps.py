@@ -6,7 +6,6 @@ from typing import Dict
 import logging
 import uuid
 import threading
-from contextlib import contextmanager
 
 from .module import Module
 
@@ -86,6 +85,13 @@ class Hvps:
         else:
             self._logger.warning("Serial port is already open")
 
+    def open(self):
+        """
+        Open the serial port. (Alias for connect).
+        """
+
+        self.connect()
+
     def disconnect(self):
         """
         Close the serial port.
@@ -102,18 +108,21 @@ class Hvps:
 
     def close(self):
         """
-        Close the serial port.
+        Close the serial port. (Alias for disconnect).
         """
         self.disconnect()
 
-    @contextmanager
-    def open(self):
+    def __enter__(self) -> Hvps:
         """
-        A context manager to automatically open and close the serial port.
+        Context manager enter method.
         """
-
         self.connect()
-        yield
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Context manager exit method.
+        """
         self.disconnect()
 
     @property
