@@ -39,7 +39,7 @@ To install the package from source, including development dependencies, clone th
 pip install .[dev]
 ```
 
-## 👨‍💻 Usage
+## Usage 👨‍💻
 
 There is a hierarchy of objects that represent the HVPS and its components:
 
