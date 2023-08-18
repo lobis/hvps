@@ -1,19 +1,38 @@
 from __future__ import annotations
-from functools import cached_property
+
 from typing import List
+from serial import SerialException
 
 from ...commands.iseg.module import _get_mon_module_command, _get_set_module_command
-from ...commands.iseg import _write_command
 from ...utils.utils import string_number_to_bit_array
 from ..module import Module as BaseModule
 from .channel import Channel
 
 
 class Module(BaseModule):
+    def _write_command_read_response_module_mon(
+        self, command: str, expected_response_type: type | None
+    ) -> str | None:
+        return self._write_command_read_response(
+            command=_get_mon_module_command(command=command),
+            expected_response_type=expected_response_type,
+        )
+
+    def _write_command_read_response_module_set(
+        self,
+        command: str,
+        value: str | int | float | None,
+        expected_response_type: type | None,
+    ) -> str | None:
+        return self._write_command_read_response(
+            command=_get_set_module_command(command=command, value=value),
+            expected_response_type=expected_response_type,
+        )
+
     def channel(self, channel: int) -> Channel:
         return super().channel(channel)
 
-    @cached_property
+    @property
     def number_of_channels(self) -> int:
         """The number of channels in the module.
 
@@ -21,23 +40,19 @@ class Module(BaseModule):
             int: The number of channels.
         """
         self._logger.debug("Getting number of channels")
-        if not self._serial.is_open:
-            # TODO: we should not cache the property if the serial port is not open
-            self._logger.warning(
-                "Serial port is not open. Returning 1 as number of channels."
-            )
-            return 1
 
-        command = _get_mon_module_command(":READ:MODULE:CHANNELNUMBER")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
-        )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
+        try:
+            response = self._write_command_read_response_module_mon(
+                command=":READ:MODULE:CHANNELNUMBER", expected_response_type=int
+            )
+            if len(response) != 1:
+                raise ValueError(
+                    "Wrong number of values were received, one value expected"
+                )
+            return int(response[0])
+
+        except SerialException:
+            return 1
 
     @property
     def channels(self) -> List[Channel]:
@@ -51,7 +66,11 @@ class Module(BaseModule):
             for channel in range(self.number_of_channels):
                 self._logger.debug(f"Creating channel {channel}")
                 self._channels.append(
-                    Channel(ser=self._serial, channel=channel, logger=self._logger)
+                    Channel(
+                        channel=channel,
+                        write_command_read_response=self._write_command_read_response,
+                        logger=self._logger,
+                    )
                 )
         return self._channels
 
@@ -63,12 +82,8 @@ class Module(BaseModule):
         Returns:
             str: The firmware release.
         """
-        command = _get_mon_module_command(":READ:FIRMWARE:RELEASE")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=str,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:FIRMWARE:RELEASE", expected_response_type=str
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -82,12 +97,8 @@ class Module(BaseModule):
         Returns:
             str: The board alarm status value.
         """
-        command = _get_mon_module_command(":READ:MODULE:STATUS")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=dict,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:STATUS", expected_response_type=dict
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -120,12 +131,8 @@ class Module(BaseModule):
         Returns:
             int: The number of steps for filtering.
         """
-        command = _get_mon_module_command(":CONF:AVER")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":CONF:AVER", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -138,12 +145,8 @@ class Module(BaseModule):
         Returns:
             int: The current kill enable value. 1 for enable, 0 for disable.
         """
-        command = _get_mon_module_command(":CONF:KILL")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":CONF:KILL", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -156,12 +159,8 @@ class Module(BaseModule):
         Returns:
             int: The current fine adjustment state. 1 for on, 0 for off.
         """
-        command = _get_mon_module_command(":CONF:ADJUST")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":CONF:ADJUST", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -174,12 +173,8 @@ class Module(BaseModule):
         Returns:
             int: The current CAN bus address of the module.
         """
-        command = _get_mon_module_command(":CONF:CAN:ADDR")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":CONF:CAN:ADDR", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -192,12 +187,8 @@ class Module(BaseModule):
         Returns:
             int: The current CAN bus bit rate of the module.
         """
-        command = _get_mon_module_command(":CONF:CAN:BITRATE")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":CONF:CAN:BITRATE", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -214,12 +205,8 @@ class Module(BaseModule):
         Returns:
             int: The current serial baud rate of the device.
         """
-        command = _get_mon_module_command(":CONF:SERIAL:BAUD")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":CONF:SERIAL:BAUD", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -232,12 +219,8 @@ class Module(BaseModule):
         Returns:
             int: 1 if serial echo is enabled, 0 if disabled.
         """
-        command = _get_mon_module_command(":CONF:SERIAL:ECHO")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":CONF:SERIAL:ECHO", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -258,12 +241,8 @@ class Module(BaseModule):
         Returns:
             float: The current voltage limit of the module.
         """
-        command = _get_mon_module_command(":READ:VOLT:LIM")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:VOLT:LIM", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -274,14 +253,10 @@ class Module(BaseModule):
         """Query the module's current limit in percent.
 
         Returns:
-            float: The current current limit of the module.
+            float: The current electrical current limit of the module.
         """
-        command = _get_mon_module_command(":READ:CURR:LIM")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:CURR:LIM", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -294,12 +269,8 @@ class Module(BaseModule):
         Returns:
             float: The current voltage ramp speed of the module.
         """
-        command = _get_mon_module_command(":READ:RAMP:VOLT")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:RAMP:VOLT", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -310,14 +281,10 @@ class Module(BaseModule):
         """Query the module's current ramp speed in percent/second.
 
         Returns:
-            float: The current current ramp speed of the module.
+            float: The current electrical current ramp speed of the module.
         """
-        command = _get_mon_module_command(":READ:RAMP:CURR")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:RAMP:CURR", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -330,12 +297,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Control register.
         """
-        command = _get_mon_module_command(":READ:MODULE:CONTROL")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:CONTROL", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -348,12 +311,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:STATUS")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:STATUS", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -366,12 +325,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:STATUS")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:EVENT:STATUS", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -384,12 +339,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Mask register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:MASK")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:EVENT:MASK", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -402,12 +353,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Status register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:CHANSTAT")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:EVENT:CHANSTAT", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -420,12 +367,8 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Mask register.
         """
-        command = _get_mon_module_command(":READ:MODULE:EVENT:CHANMASK")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:EVENT:CHANMASK", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -438,12 +381,8 @@ class Module(BaseModule):
         Returns:
             Tuple[str, str, str, str, str, str]: The module supply voltages.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY? (@0-6)")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=List[float],
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:SUPPLY? (@0-6)", expected_response_type=List[float]
         )
         if len(response) != 7:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -457,12 +396,8 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +24 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P24V")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:SUPPLY:P24V", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -476,12 +411,8 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage -24 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:N24V")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:SUPPLY:N24V", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -495,12 +426,8 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +5 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P5V")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:SUPPLY:P5V", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -514,12 +441,8 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +3.3 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P3V")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:SUPPLY:P3V", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -533,12 +456,8 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +12 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:P12V")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:SUPPLY:P12V", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -552,12 +471,8 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage -12 Volt.
         """
-        command = _get_mon_module_command(":READ:MODULE:SUPPLY:N12V")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:SUPPLY:N12V", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -571,12 +486,8 @@ class Module(BaseModule):
         Returns:
             float: The module temperature in degree Celsius.
         """
-        command = _get_mon_module_command(":READ:MODULE:TEMPERATURE")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=float,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:TEMPERATURE", expected_response_type=float
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -590,12 +501,8 @@ class Module(BaseModule):
         Returns:
             int: The setvalue changes counter.
         """
-        command = _get_mon_module_command(":READ:MODULE:SETVALUE")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=int,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:MODULE:SETVALUE", expected_response_type=int
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -608,12 +515,8 @@ class Module(BaseModule):
         Returns:
             str: The firmware name.
         """
-        command = _get_mon_module_command(":READ:FIRMWARE:NAME")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=str,
+        response = self._write_command_read_response_module_mon(
+            command=":READ:FIRMWARE:NAME", expected_response_type=str
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -626,12 +529,8 @@ class Module(BaseModule):
         Returns:
             bool: true if in configuration mode, otherwise false.
         """
-        command = _get_mon_module_command(":SYSTEM:USER:CONFIG")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=bool,
+        response = self._write_command_read_response_module_mon(
+            command=":SYSTEM:USER:CONFIG", expected_response_type=bool
         )
         if len(response) != 1:
             raise ValueError("Wrong number of values were received, one value expected")
@@ -646,12 +545,8 @@ class Module(BaseModule):
         Args:
             baud_rate (int): The serial baud rate to set.
         """
-        command = _get_set_module_command(":CONF:SERIAL:BAUD", baud_rate)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:SERIAL:BAUD", value=baud_rate, expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != baud_rate:
             raise ValueError("Last command hasn't been processed.")
@@ -668,12 +563,8 @@ class Module(BaseModule):
                 "Invalid serial echo value. Please choose 1 for enabled or 0 for disabled."
             )
 
-        command = _get_set_module_command(":CONF:SERIAL:ECHO", enabled)
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:SERIAL:ECHO", value=enabled, expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
@@ -694,12 +585,8 @@ class Module(BaseModule):
                 f"Invalid number of steps. Please choose from {valid_steps}."
             )
 
-        command = _get_set_module_command(":CONF:AVER", str(steps))
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:AVER", value=str(steps), expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
@@ -716,12 +603,8 @@ class Module(BaseModule):
                 "Invalid kill enable value. Please choose 1 for enable or 0 for disable."
             )
 
-        command = _get_set_module_command(":CONF:KILL", str(enable))
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:KILL", value=str(enable), expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
@@ -738,12 +621,8 @@ class Module(BaseModule):
                 "Invalid adjustment value. Please choose 1 for on or 0 for off."
             )
 
-        command = _get_set_module_command(":CONF:ADJUST", str(value))
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:ADJUST", value=str(value), expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
@@ -755,12 +634,8 @@ class Module(BaseModule):
         Args:
             mask (int): The value to set in the Module Event Mask register.
         """
-        command = _get_set_module_command(":CONF:EVENT:MASK", str(mask))
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:EVENT:MASK", value=str(mask), expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
@@ -772,12 +647,8 @@ class Module(BaseModule):
         Args:
             mask (int): The value to set in the Module Event Channel Mask register.
         """
-        command = _get_set_module_command(":CONF:EVENT:CHANMASK", str(mask))
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:EVENT:CHANMASK", value=str(mask), expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
@@ -794,12 +665,8 @@ class Module(BaseModule):
                 "Invalid CAN bus address. Please choose an address between 0 and 63."
             )
 
-        command = _get_set_module_command(":CONF:CAN:ADDR", str(address))
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:CAN:ADDR", value=str(address), expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
@@ -816,12 +683,8 @@ class Module(BaseModule):
                 "Invalid CAN bus bitrate. Please choose either 125000 or 250000."
             )
 
-        command = _get_set_module_command(":CONF:CAN:BITRATE", str(bitrate))
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:CAN:BITRATE", value=str(bitrate), expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
@@ -834,9 +697,7 @@ class Module(BaseModule):
 
         """
         command = _get_set_module_command(":SYSTEM:USER:CONFIG", str(serial_number))
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
+        self._write_command_read_response(
             command=command,
             expected_response_type=None,
         )
@@ -844,9 +705,7 @@ class Module(BaseModule):
     def exit_configuration_mode(self):
         """Set the device back to normal mode."""
         command = _get_set_module_command(":SYSTEM:USER:CONFIG", "0")
-        _write_command(
-            ser=self._serial,
-            logger=self._logger,
+        self._write_command_read_response(
             command=command,
             expected_response_type=None,
         )
@@ -861,12 +720,8 @@ class Module(BaseModule):
 
     def reset_module_event_status(self) -> None:
         """Reset the Module Event Status register."""
-        command = _get_set_module_command(":CONF:EVENT CLEAR", "")
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:EVENT CLEAR", value="", expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")
@@ -877,12 +732,8 @@ class Module(BaseModule):
         Args:
             bits (int): The bits to clear in the Module Event Status register.
         """
-        command = _get_set_module_command(":CONF:EVENT", str(bits))
-        response = _write_command(
-            ser=self._serial,
-            logger=self._logger,
-            command=command,
-            expected_response_type=None,
+        response = self._write_command_read_response_module_set(
+            command=":CONF:EVENT", value=str(bits), expected_response_type=None
         )
         if len(response) != 1 or int(response[0]) != 1:
             raise ValueError("Last command hasn't been processed.")

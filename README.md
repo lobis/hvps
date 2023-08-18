@@ -1,4 +1,7 @@
 # HVPS
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![PyPI version](https://badge.fury.io/py/hvps.svg)](https://badge.fury.io/py/hvps)
 [![node.js bindings](https://badge.fury.io/js/hvps.svg)](https://badge.fury.io/js/hvps)
@@ -107,3 +110,27 @@ If you use this package, it is very possible you find a bug or some oversight.
 You are encouraged to make a [pull request](https://github.com/lobis/hvps/pulls) or to create
 an [issue](https://github.com/lobis/hvps/issues) to report a bug, to request additional features or to suggest
 improvements.
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/lobis"><img src="https://avatars.githubusercontent.com/u/35803280?v=4?s=100" width="100px;" alt="Luis Antonio Obis Aparicio"/><br /><sub><b>Luis Antonio Obis Aparicio</b></sub></a><br /><a href="https://github.com/lobis/hvps/commits?author=lobis" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AlonsoDRDLV"><img src="https://avatars.githubusercontent.com/u/71894461?v=4?s=100" width="100px;" alt="AlonsoDRDLV"/><br /><sub><b>AlonsoDRDLV</b></sub></a><br /><a href="https://github.com/lobis/hvps/commits?author=AlonsoDRDLV" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jherkenhoff"><img src="https://avatars.githubusercontent.com/u/22686781?v=4?s=100" width="100px;" alt="jherkenhoff"/><br /><sub><b>jherkenhoff</b></sub></a><br /><a href="https://github.com/lobis/hvps/commits?author=jherkenhoff" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
