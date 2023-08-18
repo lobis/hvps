@@ -1,6 +1,6 @@
 # HVPS
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![PyPI version](https://badge.fury.io/py/hvps.svg)](https://badge.fury.io/py/hvps)
@@ -122,6 +122,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/lobis"><img src="https://avatars.githubusercontent.com/u/35803280?v=4?s=100" width="100px;" alt="Luis Antonio Obis Aparicio"/><br /><sub><b>Luis Antonio Obis Aparicio</b></sub></a><br /><a href="https://github.com/lobis/hvps/commits?author=lobis" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AlonsoDRDLV"><img src="https://avatars.githubusercontent.com/u/71894461?v=4?s=100" width="100px;" alt="AlonsoDRDLV"/><br /><sub><b>AlonsoDRDLV</b></sub></a><br /><a href="https://github.com/lobis/hvps/commits?author=AlonsoDRDLV" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
