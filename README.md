@@ -1,4 +1,5 @@
-# HVPS
+# [HVPS](https://github.com/lobis/hvps)
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
@@ -13,7 +14,7 @@
 [![Build and Test](https://github.com/lobis/hvps/actions/workflows/build-test.yml/badge.svg)](https://github.com/lobis/hvps/actions/workflows/build-test.yml)
 [![Upload Python Package to PyPI and nodejs bindings to npm](https://github.com/lobis/hvps/actions/workflows/publish.yml/badge.svg)](https://github.com/lobis/hvps/actions/workflows/publish.yml)
 
-## 🤔 What is this?
+## What is this? 🤔
 
 This is a Python package for controlling high voltage power supplies (HVPS) over serial port.
 The aim is to provide a unified pythonic interface for different HVPS models.
@@ -23,7 +24,7 @@ They both rely on the Python package to be installed in order to work.
 
 Currently only **CAEN** and **iseg** brands are supported.
 
-## ⚙️ Installation
+## Installation ⚙️
 
 Installation via `pip` is supported.
 To install the latest [published version](https://github.com/lobis/hvps/releases), run:
@@ -42,7 +43,8 @@ pip install .[dev]
 
 There is a hierarchy of objects that represent the HVPS and its components:
 
-- `HVPS`: represents the HVPS itself and handles the connection to the serial port
+- `HVPS`: represents the HVPS itself and handles the connection to the serial port. The classes `Caen` and `Iseg` are
+  available for the respective brands.
 - `Module`: represents a module of the HVPS. Some HVPS support multiple modules over the same connection
 - `Channel`: represents a channel of the HVPS
 
@@ -102,7 +104,7 @@ channel.turn_on()
 channel.vset = 300.0  # 300 V
 ```
 
-## ⚠️ Disclaimer
+## Disclaimer ⚠️
 
 The development of this package is mostly based on documentation with access to only a few models of HVPS.
 
@@ -133,4 +135,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
+Contributions of any kind welcome!
