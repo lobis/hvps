@@ -536,6 +536,8 @@ class Channel(BaseChannel):
             command_name, None, response, _MON_CHANNEL_COMMANDS
         )
 
+        return new_method("current_ramp_speed")
+
     @property
     def voltage_ramp_speed(self) -> float:  # Instruction for EHS, NHR or SHR only
         """

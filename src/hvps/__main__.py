@@ -37,6 +37,7 @@ from hvps.devices.caen.channel import (
     _set_channel_methods_to_commands as caen_set_channel_methods,
 )
 
+
 # TODO: command help in cli
 # TODO: methods without command not in method to command dic (add the command of the method that calls them?)
 # TODO: test consistency of method to command dictionary
@@ -44,7 +45,7 @@ from hvps.devices.caen.channel import (
 # TODO: name of parameter in function calls
 # TODO: modularity who?
 # TODO: add more logging messages
-# TODO: upedate docstrings
+# TODO: update docstrings
 # TODO: abstract methods
 # TODO: main only needs to know about argument order. It should call an hvps method called
 #       call_command passing name of method and value. method inference should happen there, so do checking.
@@ -89,7 +90,7 @@ def _call_setter_method(
     o: object,
     methods_to_commands: Dict[str, str],
     commands: Dict[str, Dict],
-    testing: bool = False,
+    dry_run: bool = False,
     logger: logging.Logger = None,
 ) -> None:
     """
@@ -101,7 +102,7 @@ def _call_setter_method(
         o: object to call command on
         methods_to_commands: dictionary of methods to commands
         commands: dictionary of commands
-        testing: if True, commands will not be run
+        dry_run: if True, commands will not be run
 
     Throws:
         Exception if command is not a valid setter command
@@ -129,7 +130,7 @@ def _call_setter_method(
             else:
                 getattr(o, method)(value)
     except (serial.SerialException, serial.serialutil.PortNotOpenError) as e:
-        if testing:
+        if dry_run:
             print(f"setter {method} called")
         else:
             raise e
@@ -142,8 +143,7 @@ def _call_setter_method(
 def _call_monitor_method(
     method: str,
     o: object,
-    methods_to_commands: Dict[str, str],
-    testing: bool = False,
+    dry_run: bool = False,
     logger: logging.Logger = None,
 ) -> None:
     """
@@ -152,8 +152,7 @@ def _call_monitor_method(
     Args:
         method: method to call (must be a monitor method)
         o: object to call command on
-        methods_to_commands: dictionary of methods to commands
-        testing: if True, commands will not be run
+        dry_run: if True, commands will not be run
 
     Throws:
         Exception if command is not a valid monitor command
@@ -166,7 +165,7 @@ def _call_monitor_method(
         print(result)
         logger.info(result)
     except (serial.SerialException, serial.serialutil.PortNotOpenError) as e:
-        if testing:
+        if dry_run:
             print(f"monitor {method} called")
         else:
             raise e
@@ -201,7 +200,7 @@ def main():
         "--channel", default=None, type=int, help="HV PS channel"
     )  # Required argument
     parser.add_argument(
-        "--test", action="store_true", help="Testing mode. Do not run commands"
+        "--dry-run", action="store_true", help="Dry run mode. Do not run commands"
     )
 
     # Subparsers
@@ -231,7 +230,7 @@ def main():
     # validate args
     args = parser.parse_args()
     logging.basicConfig(level=args.log.upper())
-    testing = True if args.test else False
+    dry_run = True if args.test else False
 
     if args.ports:
         ports = [port.device for port in list_ports.comports()]
@@ -244,14 +243,13 @@ def main():
     method = str(args.method[0]).lower() if args.method else None
     value = args.value
     channel = args.channel
-    is_caen = args.brand == "caen"  # True if caen, False if iseg
     is_channel_mode = channel is not None  # True if channel is specified, False if not
 
     setter_mode = None  # True if method is a setter method, False if monitor method
 
-    if is_caen:
+    if args.brand == "caen":
         module = args.module
-        caen = Caen(port=args.port, baudrate=args.baud, connect=not testing)
+        caen = Caen(port=args.port, baudrate=args.baud, connect=not dry_run)
         module = caen.module(module)
 
         if not is_channel_mode:
@@ -270,12 +268,12 @@ def main():
                     module,
                     caen_set_module_methods,
                     CAEN_SET_MODULE_COMMANDS,
-                    testing,
+                    dry_run,
                     caen._logger,
                 )
             else:
                 _call_monitor_method(
-                    method, module, caen_mon_module_methods, testing, caen._logger
+                    method, module, caen_mon_module_methods, dry_run, caen._logger
                 )
         else:
             # method is caen at channel level
@@ -294,16 +292,16 @@ def main():
                     channel,
                     caen_set_channel_methods,
                     CAEN_SET_CHANNEL_COMMANDS,
-                    testing,
+                    dry_run,
                     caen._logger,
                 )
             else:
                 _call_monitor_method(
-                    method, channel, caen_mon_channel_methods, testing, caen._logger
+                    method, channel, caen_mon_channel_methods, dry_run, caen._logger
                 )
 
-    elif not is_caen:
-        iseg = Iseg(port=args.port, baudrate=args.baud, connect=not testing)
+    elif args.brand == "iseg":
+        iseg = Iseg(port=args.port, baudrate=args.baud, connect=not dry_run)
         module = iseg.module()
 
         if not is_channel_mode:
@@ -321,12 +319,12 @@ def main():
                     module,
                     iseg_set_module_methods,
                     ISEG_SET_MODULE_COMMANDS,
-                    testing,
-                    caen._logger,
+                    dry_run,
+                    iseg._logger,
                 )
             else:
                 _call_monitor_method(
-                    method, module, iseg_mon_module_methods, testing, iseg._logger
+                    method, module, iseg_mon_module_methods, dry_run, iseg._logger
                 )
         else:
             # method is iseg at channel level
@@ -344,13 +342,15 @@ def main():
                     channel,
                     iseg_set_channel_methods,
                     ISEG_SET_CHANNEL_COMMANDS,
-                    testing,
-                    caen._logger,
+                    dry_run,
+                    iseg._logger,
                 )
             else:
                 _call_monitor_method(
-                    method, channel, iseg_mon_channel_methods, testing, iseg._logger
+                    method, channel, iseg_mon_channel_methods, dry_run, iseg._logger
                 )
+    else:
+        raise ValueError(f"Brand {args.brand} not supported")
 
 
 if __name__ == "__main__":
