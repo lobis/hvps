@@ -2,23 +2,8 @@ from hvps import Iseg
 import pytest
 
 
-def test_iseg_init(caplog):
-    caplog.set_level("DEBUG")
-
-    Iseg(connect=False)
-
-    assert caplog.text == ""
-
-    iseg = Iseg(connect=False, logging_level="DEBUG")
-
-    assert iseg.baudrate == 115200
-    assert "Using baud rate 115200" in caplog.text
-    assert "Using port " in caplog.text
-    assert "Using timeout " in caplog.text
-
-
 def test_iseg_module(caplog):
-    iseg = Iseg(connect=False)
+    iseg = Iseg()
 
     # for ISEG only one module exists
     iseg.module()
@@ -35,7 +20,7 @@ def test_iseg_module(caplog):
 def test_iseg_channel(caplog):
     caplog.set_level("DEBUG")
 
-    iseg = Iseg(connect=False, logging_level="DEBUG")
+    iseg = Iseg(logging_level="DEBUG")
 
     module = iseg.module()
 

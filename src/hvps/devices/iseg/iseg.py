@@ -27,3 +27,10 @@ class Iseg(Hvps):
             )
             for i in [0]
         }
+
+    def module(self, module: int = 0) -> Module:
+        self._logger.debug(f"Getting module {module}")
+        if module in self._modules.keys():
+            return self._modules[module]
+        else:
+            raise ValueError(f"Module {module} does not exist")
