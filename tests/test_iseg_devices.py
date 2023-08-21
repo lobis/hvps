@@ -5,16 +5,11 @@ import pytest
 def test_iseg_init(caplog):
     caplog.set_level("DEBUG")
 
-    Iseg()
-
-    assert caplog.text == ""
-
-    iseg = Iseg(logging_level="DEBUG")
-
-    assert iseg.baudrate == 115200
-    assert "Using baud rate 115200" in caplog.text
-    assert "Using port " in caplog.text
-    assert "Using timeout " in caplog.text
+    with Iseg(logging_level="DEBUG") as iseg:
+        assert iseg.baudrate == 115200
+        assert "Using baud rate 115200" in caplog.text
+        assert "Using port " in caplog.text
+        assert "Using timeout " in caplog.text
 
 
 def test_iseg_module(caplog):

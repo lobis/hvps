@@ -46,20 +46,13 @@ class Hvps(ABC):
 
         self._modules: Dict[int, Module] = {}
 
-        if port is None:
-            self._logger.info("No port specified, trying to detect one")
-            ports = [port.device for port in list_ports.comports()]
-            if len(ports) >= 1:
-                port = ports[0]
-                if len(ports) > 1:
-                    self._logger.warning(
-                        f"Multiple ports detected: {ports}, using the first one: {port}"
-                    )
-
         self._serial: serial.Serial = serial.Serial()
 
-        self._serial.port = port
         self._serial.baudrate = baudrate
+
+        if port is not None:
+            self._serial.port = port
+
         if timeout is not None:
             self._serial.timeout = timeout
 
@@ -73,6 +66,17 @@ class Hvps(ABC):
         """
 
         self._logger.debug("Connecting to serial port")
+
+        if self.port is None:
+            self._logger.info("No port specified, trying to detect one")
+            ports = [port.device for port in list_ports.comports()]
+            if len(ports) >= 1:
+                self._serial.port = ports[0]
+                if len(ports) > 1:
+                    self._logger.warning(
+                        f"Multiple ports detected: {ports}, using the first one: {self._serial.port}"
+                    )
+
         self._logger.info(f"Using port {self._serial.port}")
         self._logger.info(f"Using baud rate {self._serial.baudrate}")
         self._logger.debug(f"Using timeout {self._serial.timeout}")
