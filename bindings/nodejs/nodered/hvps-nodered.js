@@ -14,27 +14,27 @@ module.exports = function (RED) {
 
         RED.nodes.createNode(this, config);
         const node = this;
-        context = new hvps.ExecutionContext("/usr/bin/python");
+        let context = new hvps.ExecutionContext("/usr/bin/python");
 
         node.on('input', function (msg) {
 
-            // Command builduing
-            if (config.ports){
-                command = "--ports"
-            }
-            else {
-                command = "--port " + config.port + " --baud " + config.baudrate
-                if (config.channel){
-                    command = command + " --channel " + config.channel
+            // Command building
+            let command;
+            if (config.ports) {
+                command = "--ports";
+            } else {
+                command = `--port ${config.port} --baud ${config.baudrate}`;
+                if (config.channel) {
+                    command += ` --channel ${config.channel}`;
                 }
-                if (config.test){
-                    command = command + " --test "
+                if (config.test) {
+                    command += " --test";
                 }
-                command = command + config.hvps + " "
-                if (config.hvps == "caen"){
-                    command = command + "--module " + config.module
+                command += ` ${config.hvps}`;
+                if (config.hvps === "caen") {
+                    command += ` --module ${config.module}`;
                 }
-                command = command + " " + config.command
+                command += ` ${config.command}`;
             }
 
             this.warn(command)
