@@ -27,6 +27,17 @@ serial_skip_decorator = pytest.mark.skipif(
 
 
 @serial_skip_decorator
+def test_iseg_init(caplog):
+    caplog.set_level("DEBUG")
+
+    with Iseg(logging_level="DEBUG") as iseg:
+        assert iseg.baudrate == 115200
+        assert "Using baud rate 115200" in caplog.text
+        assert "Using port " in caplog.text
+        assert "Using timeout " in caplog.text
+
+
+@serial_skip_decorator
 def test_iseg_module_monitor():
     iseg = Iseg(
         port=serial_port,

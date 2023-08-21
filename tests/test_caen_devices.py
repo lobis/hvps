@@ -2,16 +2,6 @@ from hvps import Caen
 import pytest
 
 
-def test_caen_init(caplog):
-    caplog.set_level("DEBUG")
-
-    with Caen(logging_level="DEBUG") as caen:
-        assert caen.baudrate == 115200
-        assert "Using baud rate 115200" in caplog.text
-        assert "Using port " in caplog.text
-        assert "Using timeout " in caplog.text
-
-
 def test_caen_module(caplog):
     caplog.set_level("DEBUG")
 

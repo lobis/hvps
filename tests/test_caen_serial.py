@@ -28,6 +28,17 @@ serial_skip_decorator = pytest.mark.skipif(
 
 
 @serial_skip_decorator
+def test_caen_init(caplog):
+    caplog.set_level("DEBUG")
+
+    with Caen(logging_level="DEBUG") as caen:
+        assert caen.baudrate == 115200
+        assert "Using baud rate 115200" in caplog.text
+        assert "Using port " in caplog.text
+        assert "Using timeout " in caplog.text
+
+
+@serial_skip_decorator
 def test_caen_module_monitor():
     # no ports available
     caen = Caen(
