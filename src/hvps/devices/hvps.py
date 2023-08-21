@@ -6,11 +6,12 @@ from typing import Dict
 import logging
 import uuid
 import threading
+from abc import ABC, abstractmethod
 
 from .module import Module
 
 
-class Hvps:
+class Hvps(ABC):
     def __init__(
         self,
         baudrate: int = 115200,
@@ -83,7 +84,7 @@ class Hvps:
         if not self._serial.is_open:
             self._serial.open()
         else:
-            self._logger.warning("Serial port is already open")
+            self._logger.debug("Serial port is already open")
 
     def open(self):
         """
@@ -104,7 +105,7 @@ class Hvps:
         if self._serial.is_open:
             self._serial.close()
         else:
-            self._logger.warning("Serial port is already closed")
+            self._logger.debug("Serial port is already closed")
 
     def close(self):
         """
@@ -238,6 +239,7 @@ class Hvps:
         """
         return self._modules
 
+    @abstractmethod
     def module(self, module: int = 0) -> Module:
         """Get the specified module.
 
@@ -250,6 +252,4 @@ class Hvps:
         Raises:
             KeyError: If the module number is invalid.
         """
-        if module not in self._modules:
-            raise KeyError(f"Invalid module {module}")
-        return self._modules[module]
+        pass
