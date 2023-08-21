@@ -1,26 +1,129 @@
 <script type="text/javascript">
+
     RED.nodes.registerType('hvps', {
         category: 'function',
         color: '#a6bbcf',
         defaults: {
-            name: {value: ""}
+            ports: {value: false},
+            port: {value: "COM5"},
+            baudrate: {value: "9600"},
+            hvps: {value: ""},
+            module: {value: "0"},
+            channel_mode: {value: false},
+            channel: {value: ""},
+            test: {value: true},
+            command: {value: "vset 120"},
+            //console: {value: false},
+            //hidder: {value:}
         },
         inputs: 1,
         outputs: 1,
         icon: "file.png",
         label: function () {
             return this.name || "hvps";
-        }
-    });
+        },
+        oneditprepare: function() {
+            var that = this
+            $("#node-input-hvps").typedInput({
+                types: [
+                    {
+                        value: "hvps",
+                        options: [
+                            { value: "caen", label: "CAEN"},
+                            { value: "iseg", label: "ISEG"},
+                        ]
+                    }
+                ]
+            });
+            $("#node-input-ports").on('change',function() {
+                if ($(this).is(":checked")) {
+                    $("#port").hide();
+                    $("#baudrate").hide();
+                    $("#hvps").hide();
+                    $("#module").hide();
+                    $("#channel_mode").hide();
+                    $("#channel").hide();
+                    $("#test").hide();
+                    $("#command").hide();
+                }
+                else {
+                    $("#port").show();
+                    $("#baudrate").show();
+                    $("#hvps").show();
+                    if ($("#node-input-hvps").typedInput('value') == "caen"){
+                        $("#module").show();
+                    }
+                    $("#channel_mode").show();
+                    if($("#node-input-channel_mode").is(":checked")){
+                        $("#channel").show();
+                    }
+                    $("#test").show();
+                    $("#command").show();
+                }
+
+            });
+            $("#node-input-hvps").on('change',function() {
+                if ($(this).typedInput('value') == "caen" && !$("#node-input-ports").is(":checked")) {
+                    $("#module").show();
+                }
+                else {
+                    $("#module").hide();
+                }
+            });
+            $("#node-input-channel_mode").on('change',function() {
+                if ($(this).is(":checked") && !$("#node-input-ports").is(":checked")) {
+                    $("#channel").show();
+                }
+                else {
+                    $("#channel").hide();
+                }
+            });
+        },
+    })
+
+
+
+
+
+
 </script>
 
-<script type="text/html" data-template-name="lower-case">
+<script type="text/html" data-template-name="hvps">
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <label for="node-input-ports"><i class="fa fa-random"></i> Ports</label>
+        <input type="checkbox" " id="node-input-ports">
     </div>
-</script>
+    <div id="port" class="form-row">
+        <label for="node-input-port"><i class="fa fa-tag"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="COM5">
+    </div>
+    <div id="baudrate" class="form-row">
+        <label for="node-input-baudrate"><i class="fa fa-tag"></i> Baudrate</label>
+        <input type="text" id="node-input-baudrate" placeholder="9600">
+    </div>
+    <div id="hvps" class="form-row">
+        <label for="node-input-hvps"><i class="fa fa-tag"></i> hvps</label>
+        <input type="text" id="node-input-hvps">
+    </div>
+    <div id="module" class="form-row">
+        <label for="node-input-module"><i class="fa fa-tag"></i> Module</label>
+        <input type="text" id="node-input-module" placeholder="0">
+    </div>
+    <div id="channel_mode" class="form-row">
+        <label for="node-input-channel_mode"><i class="fa fa-random"></i> Channel</label>
+        <input type="checkbox" " id="node-input-channel_mode">
+    </div>
+    <div id="channel" class="form-row">
+        <label for="node-input-channel"><i class="fa fa-tag"></i> Channel</label>
+        <input type="text" id="node-input-channel" placeholder="0">
+    </div>
+    <div id="test" class="form-row">
+        <label for="node-input-test"><i class="fa fa-random"></i> Test</label>
+        <input type="checkbox" " id="node-input-test">
+    </div>
+    <div id="command" class="form-row">
+        <label for="node-input-command"><i class="fa fa-tag"></i> Command</label>
+        <input type="text" id="node-input-command">
+    </div>
 
-<script type="text/html" data-help-name="lower-case">
-    <p>TODO</p>
 </script>
