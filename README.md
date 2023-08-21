@@ -104,6 +104,19 @@ channel.turn_on()
 channel.vset = 300.0  # 300 V
 ```
 
+## CLI 🖥️
+
+A CLI is provided to interact with the HVPS from the command line.
+
+TODO @AlonsoDRDLV
+
+#### Show available serial ports
+
+```bash
+python -m hvps --ports
+```
+Output: `command output`
+
 ## Disclaimer ⚠️
 
 The development of this package is mostly based on documentation with access to only a few models of HVPS.
