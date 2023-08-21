@@ -57,13 +57,13 @@ import logging
 # connection interface is common to all HVPS
 # if no serial port is specified, the first available port will be used
 # if no baudrate is specified, the default baudrate will be used
-# if connect=False, the connection will not be established (useful for testing)
 # if logging_level is specified, the logger will be configured accordingly
-hvps = Caen(port="/dev/ttyUSB0", baudrate=115200, connect=True, logging_level=logging.DEBUG)
-
-# connection settings can be accessed
-print(f"port: {hvps.port}")
-print(f"baudrate: {hvps.baudrate}")
+with Caen(port="/dev/ttyUSB0", baudrate=115200, logging_level=logging.DEBUG) as hvps:
+    # using context manager (with) is recommended, but not required.
+    # If not used, the connection must be opened and closed manually (hvps.open() and hvps.close())
+    # connection settings can be accessed
+    print(f"port: {hvps.port}")
+    print(f"baudrate: {hvps.baudrate}")
 ```
 
 ### Module
@@ -72,13 +72,12 @@ print(f"baudrate: {hvps.baudrate}")
 from hvps import Caen
 
 # default connection settings
-caen = Caen()
+with Caen() as caen:
+    module = caen.module()  # get the first module (module 0)
+    # if multiple modules are present, they can be accessed by index e.g. caen.module(1)
 
-module = caen.module()  # get the first module (module 0)
-# if multiple modules are present, they can be accessed by index e.g. caen.module(1)
-
-# get the module's name
-print(f"module name: {module.name}")
+    # get the module's name
+    print(f"module name: {module.name}")
 ```
 
 ### Channel
@@ -86,22 +85,22 @@ print(f"module name: {module.name}")
 ```python
 from hvps import Caen
 
-caen = Caen()
-module = caen.module(0)
+with Caen() as caen:
+    module = caen.module(0)
 
-print(f"number of channels: {module.number_of_channels}")
+    print(f"number of channels: {module.number_of_channels}")
 
-channel = module.channel(2)  # get channel number 2
+    channel = module.channel(2)  # get channel number 2
 
-# get monitoring parameters
-print(f"vmon: {channel.vmon}")
-print(f"vset: {channel.vset}")
+    # get monitoring parameters
+    print(f"vmon: {channel.vmon}")
+    print(f"vset: {channel.vset}")
 
-# set values (remote mode must be enabled)
-# turn on channel
-channel.turn_on()
+    # set values (remote mode must be enabled)
+    # turn on channel
+    channel.turn_on()
 
-channel.vset = 300.0  # 300 V
+    channel.vset = 300.0  # 300 V
 ```
 
 ## CLI 🖥️

@@ -39,6 +39,8 @@ def test_iseg_module_monitor():
     )
     module = iseg.module(0)
 
+    # TODO: check outputs are not None
+
     number_of_channels = module.number_of_channels
     print(f"number_of_channels: {number_of_channels}")
 

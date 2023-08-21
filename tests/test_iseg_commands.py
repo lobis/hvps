@@ -1,13 +1,3 @@
-"""
-trip_action: 4
-output_mode: 1
-output_polarity: p
-available_output_polarities: ['p', 'n']
-voltage_set: 210.0
-voltage_limit: 1955.292
-voltage_nominal: 2000.0
-available_output_modes: [1]
-"""
 import pytest
 from typing import List, Set
 

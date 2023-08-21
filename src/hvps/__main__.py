@@ -245,11 +245,12 @@ def main():
     channel = args.channel
     is_channel_mode = channel is not None  # True if channel is specified, False if not
 
-    setter_mode = None  # True if method is a setter method, False if monitor method
-
     if args.brand == "caen":
         module = args.module
-        caen = Caen(port=args.port, baudrate=args.baud, connect=not dry_run)
+        caen = Caen(port=args.port, baudrate=args.baud)
+        if not dry_run:
+            caen.open()
+
         module = caen.module(module)
 
         if not is_channel_mode:
@@ -300,8 +301,12 @@ def main():
                     method, channel, caen_mon_channel_methods, dry_run, caen._logger
                 )
 
+        caen.close()
+
     elif args.brand == "iseg":
         iseg = Iseg(port=args.port, baudrate=args.baud, connect=not dry_run)
+        if not dry_run:
+            iseg.open()
         module = iseg.module()
 
         if not is_channel_mode:
@@ -349,6 +354,7 @@ def main():
                 _call_monitor_method(
                     method, channel, iseg_mon_channel_methods, dry_run, iseg._logger
                 )
+        iseg.close()
     else:
         raise ValueError(f"Brand {args.brand} not supported")
 

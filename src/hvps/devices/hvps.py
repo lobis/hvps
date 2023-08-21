@@ -6,17 +6,17 @@ from typing import Dict
 import logging
 import uuid
 import threading
+from abc import ABC, abstractmethod
 
 from .module import Module
 
 
-class Hvps:
+class Hvps(ABC):
     def __init__(
         self,
         baudrate: int = 115200,
         port: str | None = None,
         timeout: float | None = None,
-        connect: bool = True,
         logging_level=logging.WARNING,
     ):
         """Initialize the HVPS (High-Voltage Power Supply) object.
@@ -25,7 +25,6 @@ class Hvps:
             baudrate (int, optional): The baud rate for serial communication. Defaults to 115200.
             port (str | None, optional): The serial port to use. If None, it will try to detect one automatically. Defaults to None.
             timeout (float | None, optional): The timeout for serial communication. Defaults to None.
-            connect (bool, optional): Whether to connect to the serial port during initialization. Defaults to True.
             logging_level (int, optional): The logger level. Defaults to logger.WARNING.
 
         """
@@ -47,39 +46,89 @@ class Hvps:
 
         self._modules: Dict[int, Module] = {}
 
-        if port is None and connect:
-            self._logger.info("No port specified, trying to detect one")
-            ports = [port.device for port in list_ports.comports()]
-            if len(ports) == 0:
-                raise Exception("No ports available")
-            port = ports[0]
-
         self._serial: serial.Serial = serial.Serial()
-        self._serial.port = port
-        self._logger.info(f"Using port {port}")
-        self._serial.baudrate = baudrate
-        self._logger.info(f"Using baud rate {self._serial.baudrate}")
-        self._serial.timeout = timeout
-        self._logger.debug(f"Using timeout {self._serial.timeout}")
 
-        if connect:
-            self._logger.debug("Opening serial port")
-            self._serial.open()
-            self._logger.debug("Serial port opened")
+        self._serial.baudrate = baudrate
+
+        if port is not None:
+            self._serial.port = port
+
+        if timeout is not None:
+            self._serial.timeout = timeout
 
     def __del__(self):
         """Cleanup method to close the serial port when the HVPS object is deleted."""
-        if hasattr(self, "_serial"):
-            self._serial.close()
+        self.close()
+
+    def connect(self):
+        """
+        Open the serial port.
+        """
+
+        self._logger.debug("Connecting to serial port")
+
+        if self.port is None:
+            self._logger.info("No port specified, trying to detect one")
+            ports = [port.device for port in list_ports.comports()]
+            if len(ports) >= 1:
+                self._serial.port = ports[0]
+                if len(ports) > 1:
+                    self._logger.warning(
+                        f"Multiple ports detected: {ports}, using the first one: {self._serial.port}"
+                    )
+
+        self._logger.info(f"Using port {self._serial.port}")
+        self._logger.info(f"Using baud rate {self._serial.baudrate}")
+        self._logger.debug(f"Using timeout {self._serial.timeout}")
+
+        if not hasattr(self, "_serial"):
+            return
+        if self.port is None:
+            raise ValueError("No port specified")
+        if not self._serial.is_open:
+            self._serial.open()
+        else:
+            self._logger.debug("Serial port is already open")
+
+    def open(self):
+        """
+        Open the serial port. (Alias for connect).
+        """
+
+        self.connect()
 
     def disconnect(self):
         """
-        Disconnect from the serial port.
+        Close the serial port.
         """
+
+        self._logger.debug("Disconnecting from serial port")
+
         if not hasattr(self, "_serial"):
             return
         if self._serial.is_open:
             self._serial.close()
+        else:
+            self._logger.debug("Serial port is already closed")
+
+    def close(self):
+        """
+        Close the serial port. (Alias for disconnect).
+        """
+        self.disconnect()
+
+    def __enter__(self) -> Hvps:
+        """
+        Context manager enter method.
+        """
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Context manager exit method.
+        """
+        self.disconnect()
 
     @property
     def connected(self) -> bool:
@@ -101,6 +150,16 @@ class Hvps:
         """
         return self._serial.port
 
+    @port.setter
+    def port(self, port: str):
+        """
+        Set the serial port.
+
+        Args:
+            port (str): The serial port.
+        """
+        self._serial.port = port
+
     @property
     def baudrate(self) -> int:
         """
@@ -111,6 +170,16 @@ class Hvps:
         """
         return self._serial.baudrate
 
+    @baudrate.setter
+    def baudrate(self, baudrate: int):
+        """
+        Set the baud rate.
+
+        Args:
+            baudrate (int): The baud rate.
+        """
+        self._serial.baudrate = baudrate
+
     @property
     def timeout(self) -> float:
         """
@@ -120,6 +189,18 @@ class Hvps:
             float: The timeout.
         """
         return self._serial.timeout
+
+    @timeout.setter
+    def timeout(self, timeout: float):
+        """
+        Set the timeout.
+
+        Args:
+            timeout (float): The timeout.
+        """
+        if timeout < 0:
+            raise ValueError("Timeout must be positive")
+        self._serial.timeout = timeout
 
     @property
     def serial(self):
@@ -150,12 +231,6 @@ class Hvps:
         """
         self._logger.setLevel(level)
 
-    def connect(self):
-        """
-        Connect to the serial port.
-        """
-        self._serial.open()
-
     # modules
 
     @property
@@ -168,6 +243,7 @@ class Hvps:
         """
         return self._modules
 
+    @abstractmethod
     def module(self, module: int = 0) -> Module:
         """Get the specified module.
 
@@ -180,6 +256,4 @@ class Hvps:
         Raises:
             KeyError: If the module number is invalid.
         """
-        if module not in self._modules:
-            raise KeyError(f"Invalid module {module}")
-        return self._modules[module]
+        pass

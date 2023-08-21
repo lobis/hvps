@@ -34,6 +34,8 @@ def test_iseg_module_monitor():
         logging_level=logging.DEBUG,
     )
 
+    iseg.open()
+
     module = iseg.module(0)
 
     # Setter methods
@@ -107,7 +109,7 @@ def test_iseg_module_monitor():
     module.local_lockout()
     module.goto_local()
 
-    iseg.disconnect()
+    iseg.close()
 
 
 @serial_skip_decorator

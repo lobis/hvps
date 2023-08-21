@@ -28,15 +28,27 @@ serial_skip_decorator = pytest.mark.skipif(
 
 
 @serial_skip_decorator
+def test_caen_init(caplog):
+    caplog.set_level("DEBUG")
+
+    with Caen(logging_level="DEBUG") as caen:
+        assert caen.baudrate == 115200
+        assert "Using baud rate 115200" in caplog.text
+        assert "Using port " in caplog.text
+        assert "Using timeout " in caplog.text
+
+
+@serial_skip_decorator
 def test_caen_module_monitor():
     # no ports available
     caen = Caen(
         port=serial_port,
         baudrate=serial_baud,
-        connect=True,
         timeout=timeout,
         logging_level=logging.DEBUG,
     )
+    caen.open()
+
     print(
         f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"
     )
@@ -90,7 +102,7 @@ def test_caen_module_monitor():
     channels = module.channels
     print(f"Channels: {channels}")
 
-    caen.disconnect()
+    caen.close()
 
 
 @serial_skip_decorator
@@ -98,10 +110,11 @@ def test_caen_channel_serial():
     caen = Caen(
         port=serial_port,
         baudrate=serial_baud,
-        connect=True,
         timeout=timeout,
         logging_level=logging.DEBUG,
     )
+    caen.open()
+
     print(
         f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"
     )
@@ -204,4 +217,4 @@ def test_caen_channel_serial():
         stat = channel.stat
         print(f"stat: {stat}")
 
-    caen.disconnect()
+    caen.close()
