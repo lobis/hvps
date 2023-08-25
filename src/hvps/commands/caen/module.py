@@ -87,6 +87,22 @@ _SET_MODULE_COMMANDS = {
         "possible_output_values": [],
         "description": "Set Interlock Mode",
     },
+    "open_interlock": {
+        "command": "",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set INTERLOCK mode to OPEN)",
+    },
+    "close_interlock": {
+        "command": "",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set INTERLOCK mode to CLOSE)",
+    },
     "clear_alarm_signal": {
         "command": "BDCLR",
         "input_type": None,

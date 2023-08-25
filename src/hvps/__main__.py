@@ -9,15 +9,19 @@ import logging
 from hvps import __version__ as hvps_version
 from hvps import Caen, Iseg
 from hvps.commands.caen.module import (
+    _MON_MODULE_COMMANDS as CAEN_MON_MODULE_COMMANDS,
     _SET_MODULE_COMMANDS as CAEN_SET_MODULE_COMMANDS,
 )
 from hvps.commands.caen.channel import (
+    _MON_CHANNEL_COMMANDS as CAEN_MON_CHANNEL_COMMANDS,
     _SET_CHANNEL_COMMANDS as CAEN_SET_CHANNEL_COMMANDS,
 )
 from hvps.commands.iseg.module import (
+    _MON_MODULE_COMMANDS as ISEG_MON_MODULE_COMMANDS,
     _SET_MODULE_COMMANDS as ISEG_SET_MODULE_COMMANDS,
 )
 from hvps.commands.iseg.channel import (
+    _MON_CHANNEL_COMMANDS as ISEG_MON_CHANNEL_COMMANDS,
     _SET_CHANNEL_COMMANDS as ISEG_SET_CHANNEL_COMMANDS,
 )
 
@@ -106,12 +110,11 @@ def _call_setter_method(
                 getattr(o, method)(value)
     except (serial.SerialException, serial.serialutil.PortNotOpenError) as e:
         if dry_run:
-            print(f"setter {method} called")
+            logger.info(f"setter {method} called")
         else:
             raise e
 
     result = f"{method} {value}: ok"
-    print(result)
     logger.info(result)
 
 
@@ -137,11 +140,10 @@ def _call_monitor_method(
     """
     try:
         result = f"{method}: {getattr(o, method)}"
-        print(result)
         logger.info(result)
     except (serial.SerialException, serial.serialutil.PortNotOpenError) as e:
         if dry_run:
-            print(f"monitor {method} called")
+            logger.info(f"monitor {method} called")
         else:
             raise e
 
@@ -175,7 +177,10 @@ def main():
         "--channel", default=None, type=int, help="HV PS channel"
     )  # Required argument
     parser.add_argument(
-        "--dry-run", action="store_true", help="Dry run mode. Do not run commands"
+        "--dry-run",
+        dest="dry_run",
+        action="store_true",
+        help="Dry run mode. Do not run commands",
     )
 
     # Subparsers
@@ -205,7 +210,7 @@ def main():
     # validate args
     args = parser.parse_args()
     logging.basicConfig(level=args.log.upper())
-    dry_run = True if args.test else False
+    dry_run = True if args.dry_run else False
 
     if args.ports:
         ports = [port.device for port in list_ports.comports()]
@@ -233,8 +238,8 @@ def main():
             setter_mode = _is_setter_mode(
                 method,
                 value,
-                caen_mon_module_methods.keys(),
-                caen_set_module_methods.keys(),
+                CAEN_MON_MODULE_COMMANDS.keys(),
+                CAEN_SET_MODULE_COMMANDS.keys(),
             )
 
             if setter_mode:
@@ -247,17 +252,15 @@ def main():
                     caen._logger,
                 )
             else:
-                _call_monitor_method(
-                    method, module, caen_mon_module_methods, dry_run, caen._logger
-                )
+                _call_monitor_method(method, module, dry_run, caen._logger)
         else:
             # method is caen at channel level
             channel = module.channel(args.channel)
             setter_mode = _is_setter_mode(
                 method,
                 value,
-                caen_mon_channel_methods.keys(),
-                caen_set_channel_methods.keys(),
+                CAEN_MON_CHANNEL_COMMANDS.keys(),
+                CAEN_SET_CHANNEL_COMMANDS.keys(),
             )
 
             if setter_mode:
@@ -270,14 +273,12 @@ def main():
                     caen._logger,
                 )
             else:
-                _call_monitor_method(
-                    method, channel, caen_mon_channel_methods, dry_run, caen._logger
-                )
+                _call_monitor_method(method, channel, dry_run, caen._logger)
 
         caen.close()
 
     elif args.brand == "iseg":
-        iseg = Iseg(port=args.port, baudrate=args.baud, connect=not dry_run)
+        iseg = Iseg(port=args.port, baudrate=args.baud)
         if not dry_run:
             iseg.open()
         module = iseg.module()
@@ -287,8 +288,8 @@ def main():
             setter_mode = _is_setter_mode(
                 method,
                 value,
-                iseg_mon_module_methods.keys(),
-                iseg_set_module_methods.keys(),
+                ISEG_MON_MODULE_COMMANDS.keys(),
+                ISEG_SET_MODULE_COMMANDS.keys(),
             )
             if setter_mode:
                 _call_setter_method(
@@ -300,17 +301,15 @@ def main():
                     iseg._logger,
                 )
             else:
-                _call_monitor_method(
-                    method, module, iseg_mon_module_methods, dry_run, iseg._logger
-                )
+                _call_monitor_method(method, module, dry_run, iseg._logger)
         else:
             # method is iseg at channel level
             channel = module.channel(args.channel)
             setter_mode = _is_setter_mode(
                 method,
                 value,
-                iseg_mon_channel_methods.keys(),
-                iseg_set_channel_methods.keys(),
+                ISEG_MON_CHANNEL_COMMANDS.keys(),
+                ISEG_SET_CHANNEL_COMMANDS.keys(),
             )
             if setter_mode:
                 _call_setter_method(
@@ -322,9 +321,7 @@ def main():
                     iseg._logger,
                 )
             else:
-                _call_monitor_method(
-                    method, channel, iseg_mon_channel_methods, dry_run, iseg._logger
-                )
+                _call_monitor_method(method, channel, dry_run, iseg._logger)
         iseg.close()
     else:
         raise ValueError(f"Brand {args.brand} not supported")

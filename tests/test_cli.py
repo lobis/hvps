@@ -302,7 +302,6 @@ def test_cli_iseg_module_mon():
     for parameter in [
         "number_of_channels",
         "firmware_release",
-        "module_status",
         "filter_averaging_steps",
         "kill_enable",
         "adjustment",

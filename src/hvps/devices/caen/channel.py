@@ -33,7 +33,7 @@ class Channel(BaseChannel):
             ),
         )
         return check_command_output_and_convert(
-            command, None, response, _MON_CHANNEL_COMMANDS
+            method_name, None, response, _MON_CHANNEL_COMMANDS
         )
 
     def _write_command_read_response_channel_set(
@@ -277,7 +277,9 @@ class Channel(BaseChannel):
 
     @property
     def stat(self) -> dict:
-        command = _MON_CHANNEL_COMMANDS[inspect.currentframe().f_code.co_name]
+        command = _MON_CHANNEL_COMMANDS[inspect.currentframe().f_code.co_name][
+            "command"
+        ]
         response = self._write_command_read_response(
             bd=self.bd,
             command=_get_mon_channel_command(

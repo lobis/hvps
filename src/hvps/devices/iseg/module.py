@@ -29,7 +29,7 @@ class Module(BaseModule):
             expected_response_type=expected_response_type,
         )
         return check_command_output_and_convert(
-            command, None, response, _MON_MODULE_COMMANDS
+            method_name, None, response, _MON_MODULE_COMMANDS
         )
 
     def _write_command_read_response_module_set(

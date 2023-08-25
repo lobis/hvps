@@ -59,7 +59,7 @@ def check_command_input(
         method (str): The method.
         input_value (int | float | str | None): The input value.
         command_dict (Dict): The command dictionary, Must be of the form:
-            "method_name": {"command": command associated,
+            "method_name": {"command": associated command,
                                 "input_type": input_type,
                                 "allowed_input_values": allowed_input_values,
                                 "output_type": output_type,
@@ -70,20 +70,10 @@ def check_command_input(
         ValueError: If the input value is not of the correct type, is not in the allowed values list or
                     if the command is not in the command dictionary.
     """
-    try:
-        command = command_dict[method]["command"].upper()
-    except KeyError:
-        command = None
-    valid_commands = [
-        entry_value["command"]
-        for entry_key, entry_value in command_dict.items()
-        if "command" in entry_value
-    ]
-    print(valid_commands)
-    if command is None or command not in valid_commands:
-        valid_commands_string = ", ".join(valid_commands)
+    if method not in command_dict.keys():
+        valid_methods_string = ", ".join(command_dict.keys())
         raise ValueError(
-            f"Invalid command '{command}'. Valid commands are: {valid_commands_string}"
+            f"Invalid method '{method}'. Valid methods are: {valid_methods_string}"
         )
 
     input_type = command_dict[method]["input_type"]
@@ -91,7 +81,7 @@ def check_command_input(
 
     if input_type is None:
         if input_value is not None:
-            raise ValueError(f"Command {command} does not take an input value.")
+            raise ValueError(f"Method {method} does not take an input value.")
         else:
             return
     if input_type == str:
@@ -112,7 +102,7 @@ def check_command_input(
 
 
 def check_command_output_and_convert(
-    command: str,
+    method: str,
     input_value: int | float | str | None | List[int] | List[float] | List[str],
     response: str | List[str] | None,
     command_dict: Dict,
@@ -121,7 +111,7 @@ def check_command_output_and_convert(
     Check output types and convert the response if necessary.
 
     Args:
-        command (str): The command.
+        method (str): The method's name.
         input_value (int | float | str | None | List[int] | List[float] | List[str]): The input value.
         response (str | List[str] | None): The response.
         command_dict (Dict): The command dictionary, Must be of the form:
@@ -138,8 +128,8 @@ def check_command_output_and_convert(
     Returns:
 
     """
-    output_type = command_dict[command]["output_type"]
-    possible_output_values = command_dict[command]["possible_output_values"]
+    output_type = command_dict[method]["output_type"]
+    possible_output_values = command_dict[method]["possible_output_values"]
 
     if output_type is None:
         if response is not None:
