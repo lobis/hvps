@@ -3,10 +3,13 @@ from __future__ import annotations
 import inspect
 from typing import List
 
+from hvps.utils import check_command_input
+
 from ...commands.iseg.channel import (
     _get_set_channel_command,
     _get_mon_channel_command,
     _MON_CHANNEL_COMMANDS,
+    _SET_CHANNEL_COMMANDS,
 )
 
 from ..channel import Channel as BaseChannel
@@ -15,25 +18,35 @@ from ...utils.utils import check_command_output_and_convert
 
 class Channel(BaseChannel):
     def _write_command_read_response_channel_mon(
-        self, command: str, expected_response_type: type | None
-    ) -> str | None:
-        return self._write_command_read_response(
+        self, method_name: str, expected_response_type: type | None
+    ) -> str | int | float | List | None:
+        command = _MON_CHANNEL_COMMANDS[method_name]["command"]
+        check_command_input(_MON_CHANNEL_COMMANDS, method_name)
+        response = self._write_command_read_response(
             command=_get_mon_channel_command(channel=self.channel, command=command),
             expected_response_type=expected_response_type,
+        )
+        return check_command_output_and_convert(
+            command, None, response, _MON_CHANNEL_COMMANDS
         )
 
     def _write_command_read_response_channel_set(
         self,
-        command: str,
+        method_name: str,
         value: str | int | float | None,
         expected_response_type: type | None,
     ) -> str | None:
-        return self._write_command_read_response(
+        command = _SET_CHANNEL_COMMANDS[method_name]["command"]
+        check_command_input(_SET_CHANNEL_COMMANDS, method_name, value)
+        response = self._write_command_read_response(
             command=_get_set_channel_command(
                 channel=self.channel, command=command, value=value
             ),
             expected_response_type=expected_response_type,
         )
+        if response != "1":
+            raise ValueError("Last command haven't been processed.")
+        return response
 
     # Getters
     @property
@@ -46,15 +59,9 @@ class Channel(BaseChannel):
         Returns:
             The current action value.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=int
-        )
-
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -67,15 +74,9 @@ class Channel(BaseChannel):
         Returns:
             The current action value.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=int
-        )
-
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -88,14 +89,9 @@ class Channel(BaseChannel):
         Returns:
             The current action value.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -108,18 +104,9 @@ class Channel(BaseChannel):
 
         Output Mode allowed values: 1, 2, 3.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=int
-        )
-
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -131,15 +118,9 @@ class Channel(BaseChannel):
             The list of available output mode values.
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=List[int]
-        )
-
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=List[int],
         )
 
     @property
@@ -154,14 +135,9 @@ class Channel(BaseChannel):
             polarity = channel.output_polarity
             print(polarity)  # Example output: "n"
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=str
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=str,
         )
 
     @property
@@ -182,15 +158,9 @@ class Channel(BaseChannel):
             polarities = channel.available_output_polarities
             print(polarities)  # Example output: ["p", "n"]
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=List[str]
-        )
-
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=List[str],
         )
 
     @property
@@ -205,14 +175,9 @@ class Channel(BaseChannel):
             voltage = channel.voltage_set
             print(voltage)  # Example output: 1234.0
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -227,14 +192,9 @@ class Channel(BaseChannel):
             limit = channel.voltage_limit
             print(limit)  # Example output: 3000.0
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -249,14 +209,9 @@ class Channel(BaseChannel):
             nominal = channel.voltage_nominal
             print(nominal)  # Example output: 6000.0
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -271,14 +226,9 @@ class Channel(BaseChannel):
             mode = channel.voltage_mode
             print(mode)  # Example output: 6.0
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -293,14 +243,9 @@ class Channel(BaseChannel):
             mode_list = channel.voltage_mode_list
             print(mode_list)  # Example output: [2.0E3, 4.0E3, 6.0E3]
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=List[float]
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=List[float],
         )
 
     @property
@@ -315,14 +260,9 @@ class Channel(BaseChannel):
             bounds = channel.voltage_bounds
             print(bounds)  # Example output: 0.00000E3
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -337,15 +277,10 @@ class Channel(BaseChannel):
             is_on = channel.set_on
             print(is_on)  # Example output: True
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=int
-        )
         return (
-            check_command_output_and_convert(
-                command_name, None, response, _MON_CHANNEL_COMMANDS
+            self._write_command_read_response_channel_mon(
+                method_name=inspect.currentframe().f_code.co_name,
+                expected_response_type=int,
             )
             == 1
         )
@@ -362,15 +297,10 @@ class Channel(BaseChannel):
             is_emergency_off = channel.emergency_off
             print(is_emergency_off)  # Example output: False
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=int
-        )
         return (
-            check_command_output_and_convert(
-                command_name, None, response, _MON_CHANNEL_COMMANDS
+            self._write_command_read_response_channel_mon(
+                method_name=inspect.currentframe().f_code.co_name,
+                expected_response_type=int,
             )
             == 1
         )
@@ -388,14 +318,9 @@ class Channel(BaseChannel):
             print(current)  # Example output: 50.000E-6
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -411,14 +336,9 @@ class Channel(BaseChannel):
             print(limit)  # Example output: 5.00000E-3
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -434,14 +354,9 @@ class Channel(BaseChannel):
             print(nominal)  # Example output: 6.00000E-3
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -457,14 +372,9 @@ class Channel(BaseChannel):
             print(mode)  # Example output: 2.00000E-3
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -480,14 +390,9 @@ class Channel(BaseChannel):
             print(modes)  # Example output: [6.0E-3, 4.0E-3, 2.0E-3]
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=List[float]
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=List[float],
         )
 
     @property
@@ -503,14 +408,9 @@ class Channel(BaseChannel):
             print(bounds)  # Example output: 0.00000E-3
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -526,17 +426,10 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 2.0000E-3
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
-        )
-
-        return new_method("current_ramp_speed")
 
     @property
     def voltage_ramp_speed(self) -> float:  # Instruction for EHS, NHR or SHR only
@@ -551,14 +444,9 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 0.25000E3
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -576,14 +464,9 @@ class Channel(BaseChannel):
             print(speed_min)  # Example output: 0.00005E3
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -601,14 +484,9 @@ class Channel(BaseChannel):
             print(speed_max)  # Example output: 1.20000E3
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -626,14 +504,9 @@ class Channel(BaseChannel):
             print(speed_min)  # Example output: 1.0000E-3
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -651,14 +524,9 @@ class Channel(BaseChannel):
             print(speed_max)  # Example output: 6.0000E-3
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -674,14 +542,9 @@ class Channel(BaseChannel):
             print(control)  # Example output: 8
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -697,14 +560,9 @@ class Channel(BaseChannel):
             print(status)  # Example output: 132
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -719,14 +577,9 @@ class Channel(BaseChannel):
             mask = channel.channel_event_mask
             print(mask)  # Example output: 0
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -741,14 +594,9 @@ class Channel(BaseChannel):
             voltage = channel.measured_voltage
             print(voltage)  # Example output: 1234.56
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -763,14 +611,9 @@ class Channel(BaseChannel):
             current = channel.measured_current
             print(current)  # Example output: 0.00123456
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -787,14 +630,9 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_up_speed
             print(speed)  # Example output: 0.250E3
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -811,14 +649,9 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_down_speed
             print(speed)  # Example output: 0.12500E3
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -833,14 +666,9 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_down_speed
             print(speed)  # Example output: 0.12500E3
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -852,14 +680,9 @@ class Channel(BaseChannel):
             float: The channel current ramp down speed in Ampere/second.
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_channel_methods_to_commands[method_name]
-        _get_mon_channel_command(self._channel, command_name)
-        response = self._write_command_read_response_channel_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_CHANNEL_COMMANDS
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     # Setters
@@ -879,13 +702,12 @@ class Channel(BaseChannel):
                     - 3: Shut down the whole module without ramp
                     - 4: Disable the Delayed Trip function
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, action)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=action, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=action,
+            expected_response_type=None,
         )
-        if response != "1" or self.trip_action != action:
+        if self.trip_action != action:
             raise ValueError("Last command haven't been processed.")
 
     @trip_timeout.setter
@@ -898,13 +720,12 @@ class Channel(BaseChannel):
         Args:
             timeout: The timeout value to set in milliseconds. Must be in the range 1 to 4095 ms.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, timeout)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=timeout, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=timeout,
+            expected_response_type=None,
         )
-        if response != "1" or self.trip_timeout != timeout:
+        if self.trip_timeout != timeout:
             raise ValueError("Last command haven't been processed.")
 
     @external_inhibit_action.setter
@@ -922,14 +743,13 @@ class Channel(BaseChannel):
                     - 3: Shut down the whole module without ramp
                     - 4: Disable the External Inhibit function
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, action)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=action, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=action,
+            expected_response_type=None,
         )
-        if response != "1":  # or self.external_inhibit_action != action:
-            raise ValueError("Last command haven't been processed.")
+        # if self.external_inhibit_action != action:
+        #    raise ValueError("Last command haven't been processed.")
 
     @output_mode.setter
     def output_mode(self, mode: int) -> None:  # Instruction for NHR or SHR only.
@@ -944,13 +764,12 @@ class Channel(BaseChannel):
 
         Output Mode allowed values: 1, 2, 3.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, mode)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=mode, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=mode,
+            expected_response_type=None,
         )
-        if response != "1" or self.output_mode != mode:
+        if self.output_mode != mode:
             raise ValueError("Last command haven't been processed.")
 
     @output_polarity.setter
@@ -969,13 +788,12 @@ class Channel(BaseChannel):
         Example:
             channel.output_polarity("n")
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, polarity)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=polarity, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=polarity,
+            expected_response_type=None,
         )
-        if response != "1" or self.output_polarity != polarity:
+        if self.output_polarity != polarity:
             raise ValueError("Last command haven't been processed.")
 
     @voltage_set.setter
@@ -986,13 +804,12 @@ class Channel(BaseChannel):
         Args:
             vset (float): The voltage set value to set in Volt.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, vset)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=vset, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=vset,
+            expected_response_type=None,
         )
-        if response != "1" or not (
+        if not (
             self.voltage_set == round(vset, 1) or self.voltage_set == -round(vset, 1)
         ):
             raise ValueError("Last command haven't been processed.")
@@ -1005,13 +822,12 @@ class Channel(BaseChannel):
         Args:
             vbounds (float): The voltage bounds value to set in Volt.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, vbounds)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=vbounds, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=vbounds,
+            expected_response_type=None,
         )
-        if response != "1" or self.voltage_bounds != vbounds:
+        if self.voltage_bounds != vbounds:
             raise ValueError("Last command haven't been processed.")
 
     @current_set.setter
@@ -1022,15 +838,12 @@ class Channel(BaseChannel):
         Args:
             iset (float): The current set value to set in Ampere.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, iset)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=iset, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=iset,
+            expected_response_type=None,
         )
-        if response != "1" or not (
-            self.current_set == iset or self.current_set == -iset
-        ):
+        if not (self.current_set == iset or self.current_set == -iset):
             raise ValueError("Last command haven't been processed.")
 
     @current_bounds.setter
@@ -1041,13 +854,12 @@ class Channel(BaseChannel):
         Args:
             ibounds (float): The current bounds value to set in Ampere.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, ibounds)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=ibounds, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=ibounds,
+            expected_response_type=None,
         )
-        if response != "1" or self.current_bounds != ibounds:
+        if self.current_bounds != ibounds:
             raise ValueError("Last command haven't been processed.")
 
     def set_channel_voltage_ramp_up_down_speed(
@@ -1062,15 +874,13 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_up_down_speed(250)
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, speed)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=speed, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
+            expected_response_type=None,
         )
         if (
-            response != "1"
-            or self.channel_voltage_ramp_up_speed != speed
+            self.channel_voltage_ramp_up_speed != speed
             or self.channel_voltage_ramp_down_speed != speed
         ):
             raise ValueError("Last command haven't been processed.")
@@ -1088,13 +898,12 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_up_speed(250)
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, speed)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=speed, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
+            expected_response_type=None,
         )
-        if response != "1" or self.channel_voltage_ramp_up_speed != speed:
+        if self.channel_voltage_ramp_up_speed != speed:
             raise ValueError("Last command haven't been processed.")
 
     @channel_voltage_ramp_down_speed.setter
@@ -1110,13 +919,12 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_down_speed(125.0)
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, speed)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=speed, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
+            expected_response_type=None,
         )
-        if response != "1" or self.channel_voltage_ramp_down_speed != speed:
+        if self.channel_voltage_ramp_down_speed != speed:
             raise ValueError("Last command haven't been processed.")
 
     def set_channel_current_ramp_up_down_speed(
@@ -1131,15 +939,13 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_up_down_speed(125.0)
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, speed)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=speed, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
+            expected_response_type=None,
         )
         if (
-            response != "1"
-            or self.channel_current_ramp_up_speed != speed
+            self.channel_current_ramp_up_speed != speed
             or self.channel_current_ramp_down_speed != speed
         ):
             raise ValueError("Last command haven't been processed.")
@@ -1157,13 +963,12 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_up_speed(125.0)
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, speed)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=speed, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
+            expected_response_type=None,
         )
-        if response != "1" or self.channel_current_ramp_up_speed != speed:
+        if self.channel_current_ramp_up_speed != speed:
             raise ValueError("Last command haven't been processed.")
 
     @channel_current_ramp_down_speed.setter
@@ -1179,79 +984,63 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_down_speed(125.0)
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, speed)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=speed, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
+            expected_response_type=None,
         )
-        if response != "1" or self.channel_current_ramp_down_speed != speed:
+        if self.channel_current_ramp_down_speed != speed:
             raise ValueError("Last command haven't been processed.")
 
     def switch_on_high_voltage(self) -> None:
         """
         Switch on the high voltage with the configured ramp speed.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, None)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=None, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command haven't been processed.")
 
     def switch_off_high_voltage(self) -> None:
         """
         Switch off the high voltage with the configured ramp speed.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, None)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=None, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command haven't been processed.")
 
     def shutdown_channel_high_voltage(self) -> None:
         """
         Shut down the channel high voltage (without ramp). The channel stays in Emergency Off until the command EMCY CLR is given.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, None)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=None, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command haven't been processed.")
 
     def clear_channel_emergency_off(self) -> None:
         """
         Clear the channel from state emergency off. The channel goes to state off.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, None)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=None, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command haven't been processed.")
 
     def clear_event_status(self) -> None:
         """
         Clear the Channel Event Status register.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, None)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=None, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command haven't been processed.")
 
     def clear_event_bits(self, bits: int) -> None:
         """
@@ -1261,14 +1050,11 @@ class Channel(BaseChannel):
         Args:
             bits: The bits or bit combinations to clear. Should be provided as an integer.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, bits)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=bits, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=bits,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command haven't been processed.")
 
     def set_event_mask(self, mask: int) -> None:
         """
@@ -1277,76 +1063,8 @@ class Channel(BaseChannel):
         Args:
             mask: new mask value
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_channel_methods_to_commands[method_name]
-        _get_set_channel_command(self._channel, command_name, mask)
-        response = self._write_command_read_response_channel_set(
-            command=command_name, value=mask, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=mask,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command haven't been processed.")
-
-
-# TODO: test consistency
-_mon_channel_methods_to_commands = {
-    "trip_action": ":CONF:TRIP:ACTION",
-    "trip_timeout": ":CONF:TRIP:TIME",
-    "external_inhibit_action": ":CONF:INHP:ACTION",
-    "output_mode": ":CONF:OUTPUT:MODE",
-    "available_output_modes": ":CONF:OUTPUT:MODE:LIST",
-    "output_polarity": ":CONF:OUTPUT:POL",
-    "available_output_polarities": ":CONF:OUTPUT:POL:LIST",
-    "voltage_set": ":READ:VOLT",
-    "voltage_limit": ":READ:VOLT:LIM",
-    "voltage_nominal": ":READ:VOLT:NOM",
-    "voltage_mode": ":READ:VOLT:MODE",
-    "voltage_mode_list": ":READ:VOLT:MODE:LIST",
-    "voltage_bounds": ":READ:VOLT:BOUNDS",
-    "set_on": ":READ:VOLT:ON",
-    "emergency_off": ":READ:VOLT:EMCY",
-    "current_set": ":READ:CURR",
-    "current_limit": ":READ:CURR:LIM",
-    "current_nominal": ":READ:CURR:NOM",
-    "current_mode": ":READ:CURR:MODE",
-    "current_mode_list": ":READ:CURR:MODE:LIST",
-    "current_bounds": ":READ:CURR:BOUNDS",
-    "current_ramp_speed": ":READ:RAMP:CURR",
-    "voltage_ramp_speed": ":READ:RAMP:VOLT",
-    "voltage_ramp_speed_minimum": ":READ:RAMP:VOLT:MIN",
-    "voltage_ramp_speed_maximum": ":READ:RAMP:VOLT:MAX",
-    "current_ramp_speed_minimum": ":READ:RAMP:CURR:MIN",
-    "current_ramp_speed_maximum": ":READ:RAMP:CURR:MAX",
-    "channel_control": ":READ:CHAN:CONTROL",
-    "channel_status": ":READ:CHAN:STATUS",
-    "channel_event_mask": "READ:CHAN:EVENT:MASK",
-    "measured_voltage": ":MEAS:VOLT",
-    "measured_current": ":MEAS:CURR",
-    "channel_voltage_ramp_up_speed": ":CONF:RAMP:VOLT:UP",
-    "channel_voltage_ramp_down_speed": ":CONF:RAMP:VOLT:DOWN",
-    "channel_current_ramp_up_speed": ":CONF:RAMP:CURR:UP",
-    "channel_current_ramp_down_speed": ":CONF:RAMP:CURR:DOWN",
-}
-_set_channel_methods_to_commands = {
-    "trip_action": ":CONF:TRIP:ACTION",
-    "trip_timeout": ":CONF:TRIP:TIME",
-    "external_inhibit_action": ":CONF:INHP:ACTION",
-    "output_mode": ":CONF:OUTPUT:MODE",
-    "output_polarity": ":CONF:OUTPUT:POL",
-    "voltage_set": ":VOLT",
-    "voltage_bounds": ":VOLT:BOUNDS",
-    "current_set": ":CURR",
-    "current_bounds": ":CURR:BOUNDS",
-    "set_channel_voltage_ramp_up_down_speed": ":CONF:RAMP:VOLT",
-    "channel_voltage_ramp_up_speed": ":CONF:RAMP:VOLT:UP",
-    "channel_voltage_ramp_down_speed": ":CONF:RAMP:VOLT:DOWN",
-    "set_channel_current_ramp_up_down_speed": ":CONF:RAMP:CURR",
-    "channel_current_ramp_up_speed": ":CONF:RAMP:CURR:UP",
-    "channel_current_ramp_down_speed": ":CONF:RAMP:CURR:DOWN",
-    "switch_on_high_voltage": ":VOLT ON",
-    "switch_off_high_voltage": ":VOLT OFF",
-    "shutdown_channel_high_voltage": ":VOLT EMCY OFF",
-    "clear_channel_emergency_off": ":VOLT EMCY CLR",
-    "clear_event_status": ":EVENT CLEAR",
-    "clear_event_bits": ":EVENT",
-    "set_event_mask": ":EVENT:MASK",
-}

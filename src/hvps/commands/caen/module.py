@@ -1,66 +1,74 @@
 from __future__ import annotations
 
-from ...utils import check_command_input
 
 # Dictionary mapping monitor module commands to their descriptions
 _MON_MODULE_COMMANDS = {
-    "BDNAME": {
+    "name": {
+        "command": "BDNAME",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": [],
         "description": "Read out module name (N1471)",
     },
-    "BDNCH": {
+    "number_of_channels": {
+        "command": "BDNCH",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Read out number of Channels present",
     },
-    "BDFREL": {
+    "firmware_release": {
+        "command": "BDFREL",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": [],
         "description": "Read out Firmware Release (XX.X)",
     },
-    "BDSNUM": {
+    "serial_number": {
+        "command": "BDSNUM",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": [],
         "description": "Read out value serial number (XXXXX)",
     },
-    "BDILK": {
+    "interlock_status": {
+        "command": "BDILK",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": ["YES", "NO"],
         "description": "Read out INTERLOCK status (YES/NO)",
     },
-    "BDILKM": {
+    "interlock_mode": {
+        "command": "BDILKM",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": ["OPEN", "CLOSED"],
         "description": "Read out INTERLOCK mode (OPEN/CLOSED)",
     },
-    "BDCTR": {
+    "control_mode": {
+        "command": "BDCTR",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": ["LOCAL", "REMOTE"],
         "description": "Read out Control Mode (LOCAL/REMOTE)",
     },
-    "BDTERM": {
+    "local_bus_termination_status": {
+        "command": "BDTERM",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": ["ON", "OFF"],
         "description": "Read out LOCAL BUS Termination status (ON/OFF)",
     },
-    "BDALARM": {
+    "board_alarm_status": {
+        "command": "BDALARM",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
@@ -71,14 +79,16 @@ _MON_MODULE_COMMANDS = {
 
 # Dictionary mapping set module commands to their descriptions
 _SET_MODULE_COMMANDS = {
-    "BDILKM": {
+    "interlock_mode": {
+        "command": "BDILKM",
         "input_type": str,
         "allowed_input_values": ["OPEN", "CLOSED"],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set Interlock Mode",
     },
-    "BDCLR": {
+    "clear_alarm_signal": {
+        "command": "BDCLR",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": None,
@@ -105,13 +115,16 @@ def _get_mon_module_command(bd: int, command: str) -> bytes:
     if not 0 <= bd <= 31:
         raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
 
-    check_command_input(_MON_MODULE_COMMANDS, command)
-
     command = command.upper()
-    if command not in _MON_MODULE_COMMANDS:
-        valid_commands = ", ".join(_MON_MODULE_COMMANDS.keys())
+    valid_commands = [
+        entry_value["command"]
+        for entry_key, entry_value in _MON_MODULE_COMMANDS.items()
+        if "command" in entry_value
+    ]
+    if command not in valid_commands:
+        valid_commands_string = ", ".join(valid_commands)
         raise ValueError(
-            f"Invalid command '{command}'. Valid commands are: {valid_commands}"
+            f"Invalid command '{command}'. Valid commands are: {valid_commands_string}"
         )
     return f"$BD:{bd:02d},CMD:MON,PAR:{command}\r\n".encode("utf-8")
 
@@ -135,8 +148,6 @@ def _get_set_module_command(
     """
     if not 0 <= bd <= 31:
         raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
-
-    check_command_input(_SET_MODULE_COMMANDS, command, value)
 
     command = command.upper()
 

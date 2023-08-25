@@ -50,16 +50,17 @@ def remove_units(value: str) -> str:
 
 
 def check_command_input(
-    command_dict: Dict, command: str, input_value: int | float | str | None = None
+    command_dict: Dict, method: str, input_value: int | float | str | None = None
 ) -> None:
     """
     Check the input type and value of a command.
 
     Args:
-        command (str): The command.
+        method (str): The method.
         input_value (int | float | str | None): The input value.
         command_dict (Dict): The command dictionary, Must be of the form:
-            "command_name": {"input_type": input_type,
+            "method_name": {"command": command associated,
+                                "input_type": input_type,
                                 "allowed_input_values": allowed_input_values,
                                 "output_type": output_type,
                                 "possible_output_values": possible_output_values}
@@ -69,15 +70,24 @@ def check_command_input(
         ValueError: If the input value is not of the correct type, is not in the allowed values list or
                     if the command is not in the command dictionary.
     """
-    command = command.upper()
-    if command not in command_dict:
-        valid_commands = ", ".join(command_dict.keys())
+    try:
+        command = command_dict[method]["command"].upper()
+    except KeyError:
+        command = None
+    valid_commands = [
+        entry_value["command"]
+        for entry_key, entry_value in command_dict.items()
+        if "command" in entry_value
+    ]
+    print(valid_commands)
+    if command is None or command not in valid_commands:
+        valid_commands_string = ", ".join(valid_commands)
         raise ValueError(
-            f"Invalid command '{command}'. Valid commands are: {valid_commands}"
+            f"Invalid command '{command}'. Valid commands are: {valid_commands_string}"
         )
 
-    input_type = command_dict[command]["input_type"]
-    allowed_input_values = command_dict[command]["allowed_input_values"]
+    input_type = command_dict[method]["input_type"]
+    allowed_input_values = command_dict[method]["allowed_input_values"]
 
     if input_type is None:
         if input_value is not None:

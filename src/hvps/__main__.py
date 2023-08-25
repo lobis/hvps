@@ -20,35 +20,12 @@ from hvps.commands.iseg.module import (
 from hvps.commands.iseg.channel import (
     _SET_CHANNEL_COMMANDS as ISEG_SET_CHANNEL_COMMANDS,
 )
-from hvps.devices.iseg.module import (
-    _mon_module_methods_to_commands as iseg_mon_module_methods,
-    _set_module_methods_to_commands as iseg_set_module_methods,
-)
-from hvps.devices.iseg.channel import (
-    _mon_channel_methods_to_commands as iseg_mon_channel_methods,
-    _set_channel_methods_to_commands as iseg_set_channel_methods,
-)
-from hvps.devices.caen.module import (
-    _mon_module_methods_to_commands as caen_mon_module_methods,
-    _set_module_methods_to_commands as caen_set_module_methods,
-)
-from hvps.devices.caen.channel import (
-    _mon_channel_methods_to_commands as caen_mon_channel_methods,
-    _set_channel_methods_to_commands as caen_set_channel_methods,
-)
 
 
 # TODO: command help in cli
-# TODO: methods without command not in method to command dic (add the command of the method that calls them?)
-# TODO: test consistency of method to command dictionary
-# TODO: call commands methods in cli
 # TODO: name of parameter in function calls
-# TODO: modularity who?
-# TODO: add more logging messages
 # TODO: update docstrings
 # TODO: abstract methods
-# TODO: main only needs to know about argument order. It should call an hvps method called
-#       call_command passing name of method and value. method inference should happen there, so do checking.
 
 
 def _is_setter_mode(
@@ -88,7 +65,6 @@ def _call_setter_method(
     method: str,
     value: str | None,
     o: object,
-    methods_to_commands: Dict[str, str],
     commands: Dict[str, Dict],
     dry_run: bool = False,
     logger: logging.Logger = None,
@@ -100,7 +76,6 @@ def _call_setter_method(
         method: command to call (must be a setter)
         value: value to set command to, if applicable
         o: object to call command on
-        methods_to_commands: dictionary of methods to commands
         commands: dictionary of commands
         dry_run: if True, commands will not be run
 
@@ -111,7 +86,7 @@ def _call_setter_method(
         None
     """
 
-    command_input_type = commands[methods_to_commands[method]]["input_type"]
+    command_input_type = commands[method]["input_type"]
     # True if sets a property, False if setter just sets non-readable state in the hvps
     sets_property = isinstance(getattr(type(o), method), property)
 
@@ -267,7 +242,6 @@ def main():
                     method,
                     value,
                     module,
-                    caen_set_module_methods,
                     CAEN_SET_MODULE_COMMANDS,
                     dry_run,
                     caen._logger,
@@ -291,7 +265,6 @@ def main():
                     method,
                     value,
                     channel,
-                    caen_set_channel_methods,
                     CAEN_SET_CHANNEL_COMMANDS,
                     dry_run,
                     caen._logger,
@@ -322,7 +295,6 @@ def main():
                     method,
                     value,
                     module,
-                    iseg_set_module_methods,
                     ISEG_SET_MODULE_COMMANDS,
                     dry_run,
                     iseg._logger,
@@ -345,7 +317,6 @@ def main():
                     method,
                     value,
                     channel,
-                    iseg_set_channel_methods,
                     ISEG_SET_CHANNEL_COMMANDS,
                     dry_run,
                     iseg._logger,

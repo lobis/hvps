@@ -14,19 +14,11 @@ from hvps.commands.iseg.module import (
 
 
 def test_iseg_module_get_commands():
-    with pytest.raises(ValueError):
-        # invalid parameter name
-        _get_mon_module_command("TEST")
-
     command = _get_mon_module_command(":READ:MODULE:EVENT:MASK")
     assert command == b":READ:MODULE:EVENT:MASK?\r\n"
 
 
 def test_iseg_channel_get_commands():
-    with pytest.raises(ValueError):
-        # invalid parameter name
-        _get_mon_channel_command(0, "TEST")
-
     with pytest.raises(ValueError):
         # invalid channel number
         _get_mon_channel_command(-1, ":CONF:OUTPUT:POL:LIST")
@@ -36,19 +28,11 @@ def test_iseg_channel_get_commands():
 
 
 def test_iseg_module_set_commands():
-    with pytest.raises(ValueError):
-        # invalid parameter name
-        _get_set_module_command("TEST", 16)
-
     command = _get_set_module_command(":CONF:AVER", 16)
     assert command == b":CONF:AVER 16;*OPC?\r\n"
 
 
 def test_iseg_channel_set_commands():
-    with pytest.raises(ValueError):
-        # invalid parameter name
-        _get_set_channel_command(0, "TEST", 0)
-
     with pytest.raises(ValueError):
         # invalid channel number
         _get_set_channel_command(-1, ":VOLT:BOUNDS", 10.0)

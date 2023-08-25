@@ -1,235 +1,250 @@
 from __future__ import annotations
 
-from ...utils import check_command_input
-
 
 # TODO: change values for dictionary with possible values and description
 _MON_MODULE_COMMANDS = {
-    ":READ:MODULE:CHANNELNUMBER": {
+    "number_of_channels": {
+        "command": ":READ:MODULE:CHANNELNUMBER",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "The number of channels in the module.",
     },
-    ":READ:FIRMWARE:RELEASE": {
+    "firmware_release": {
+        "command": ":READ:FIRMWARE:RELEASE",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": [],
         "description": "Read out Firmware Release (XX.X)",
     },
-    ":READ:MODULE:STATUS": {
-        "input_type": None,
-        "allowed_input_values": [],
-        "output_type": int,
-        "possible_output_values": [],
-        "description": "Read out module status register",
-    },
-    ":CONF:AVER": {
+    "filter_averaging_steps": {
+        "command": ":CONF:AVER",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Query the digital filter averaging steps.",
     },
-    ":CONF:KILL": {
+    "kill_enable": {
+        "command": ":CONF:KILL",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Get the current value for the kill enable function.",
     },
-    ":CONF:ADJUST": {
+    "adjustment": {
+        "command": ":CONF:ADJUST",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Get the fine adjustment state.",
     },
-    ":CONF:CAN:ADDR": {
+    "module_can_address": {
+        "command": ":CONF:CAN:ADDR",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Query the module's CAN bus address.",
     },
-    ":CONF:CAN:BITRATE": {
+    "module_can_bitrate": {
+        "command": ":CONF:CAN:BITRATE",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Query the module's CAN bus bit rate.",
     },
-    ":CONF:SERIAL:BAUD": {
+    "serial_baud_rate": {
+        "command": ":CONF:SERIAL:BAUD",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Query the device's serial baud rate.",
     },
-    ":CONF:SERIAL:ECHO": {
+    "serial_echo_enable": {
+        "command": ":CONF:SERIAL:ECHO",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Check if serial echo is enabled or disabled.",
     },
-    ":READ:VOLT:LIM": {
-        "input_type": None,
-        "allowed_input_values": [],
-        "output_type": float,
-        "possible_output_values": [],
-        "description": "Query the module's voltage limit in percent.",
-    },
-    ":READ:CURR:LIM": {
+    "module_current_limit": {
+        "command": ":READ:CURR:LIM",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the module's current limit in percent.",
     },
-    ":READ:RAMP:VOLT": {
+    "module_voltage_limit": {
+        "command": ":READ:VOLT:LIM",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Query the module's voltage limit in percent.",
+    },
+    "module_voltage_ramp_speed": {
+        "command": ":READ:RAMP:VOLT",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the module's voltage ramp speed in percent/second.",
     },
-    ":READ:RAMP:CURR": {
+    "module_current_ramp_speed": {
+        "command": ":READ:RAMP:CURR",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the module's current ramp speed in percent/second.",
     },
-    ":READ:MODULE:CONTROL": {
+    "module_control_register": {
+        "command": ":READ:MODULE:CONTROL",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Query the Module Control register",
     },
-    ":READ:MODULE:EVENT:STATUS": {
+    "module_status_register": {
+        "command": ":READ:MODULE:STATUS",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Query the Module Status register",
+    },
+    "module_event_status_register": {
+        "command": ":READ:MODULE:EVENT:STATUS",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Query the Module Event Status register",
     },
-    ":READ:MODULE:EVENT:MASK": {
+    "module_event_mask_register": {
+        "command": ":READ:MODULE:EVENT:MASK",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Query the Module Event Mask register",
     },
-    ":READ:MODULE:EVENT:CHANSTAT": {
+    "module_event_channel_status_register": {
+        "command": ":READ:MODULE:EVENT:CHANSTAT",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Query the Module Event Channel Status register",
     },
-    ":READ:MODULE:EVENT:CHANMASK": {
+    "module_event_channel_mask_register": {
+        "command": ":READ:MODULE:EVENT:CHANMASK",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Query the Module Event Channel Mask register",
     },
-    ":READ:MODULE:SUPPLY? (@0-6)": {
+    "module_supply_voltage": {
+        "command": ":READ:MODULE:SUPPLY? (@0-6)",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": [],
         "description": "Query the module supply voltages",
     },
-    ":READ:MODULE:SUPPLY:P24V": {
+    "module_supply_voltage_p24v": {
+        "command": ":READ:MODULE:SUPPLY:P24V",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the module supply voltage +24 Volt",
     },
-    ":READ:MODULE:SUPPLY:N24V": {
+    "module_supply_voltage_n24v": {
+        "command": ":READ:MODULE:SUPPLY:N24V",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the module supply voltage -24 Volt",
     },
-    ":READ:MODULE:SUPPLY:P5V": {
+    "module_supply_voltage_p5v": {
+        "command": ":READ:MODULE:SUPPLY:P5V",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the module supply voltage +5 Volt",
     },
-    ":READ:MODULE:SUPPLY:P3V": {
+    "module_supply_voltage_p3v": {
+        "command": ":READ:MODULE:SUPPLY:P3V",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the module internal supply voltage +3.3 Volt",
     },
-    ":READ:MODULE:SUPPLY:P12V": {
+    "module_supply_voltage_p12v": {
+        "command": ":READ:MODULE:SUPPLY:P12V",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the module internal supply voltage +12 Volt",
     },
-    ":READ:MODULE:SUPPLY:N12V": {
+    "module_supply_voltage_n12v": {
+        "command": ":READ:MODULE:SUPPLY:N12V",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the module internal supply voltage -12 Volt",
     },
-    ":READ:MODULE:TEMPERATURE": {
+    "module_temperature": {
+        "command": ":READ:MODULE:TEMPERATURE",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": float,
         "possible_output_values": [],
         "description": "Query the module temperature in degree Celsius",
     },
-    ":READ:MODULE:SETVALUE": {
+    "setvalue_changes_counter": {
+        "command": ":READ:MODULE:SETVALUE",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": int,
         "possible_output_values": [],
         "description": "Query the setvalue changes counter",
     },
-    ":READ:FIRMWARE:NAME": {
+    "firmware_name": {
+        "command": ":READ:FIRMWARE:NAME",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": [],
         "description": "Query the module's firmware name",
     },
-    ":CONF:EVENT:MASK": {
-        "input_type": None,
-        "allowed_input_values": [],
-        "output_type": int,
-        "possible_output_values": [],
-        "description": "Query the Module Event Mask register",
-    },
-    ":CONF:EVENT:CHANMASK": {
-        "input_type": None,
-        "allowed_input_values": [],
-        "output_type": int,
-        "possible_output_values": [],
-        "description": "Query the Module Event Channel Mask register",
-    },
-    "*IDN": {
+    "id_string": {
+        "command": "*IDN",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
         "possible_output_values": [],
         "description": "Query the module's identification string",
     },
-    "*INSTR": {
+    "instruction_set": {
+        "command": "*INSTR",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": str,
@@ -239,98 +254,112 @@ _MON_MODULE_COMMANDS = {
 }
 
 _SET_MODULE_COMMANDS = {
-    ":CONF:AVER": {
+    "filter_averaging_steps": {
+        "command": ":CONF:AVER",
         "input_type": int,
         "allowed_input_values": [1, 16, 64, 256, 512, 1024],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set the number of digital filter averaging steps.",
     },
-    ":CONF:KILL": {
+    "kill_enable": {
+        "command": ":CONF:KILL",
         "input_type": int,
         "allowed_input_values": [0, 1],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set function kill enable (1) or kill disable (0).",
     },
-    ":CONF:ADJUST": {
+    "adjustment": {
+        "command": ":CONF:ADJUST",
         "input_type": int,
         "allowed_input_values": [0, 1],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set the fine adjustment function on (1) or off (0).",
     },
-    ":CONF:CAN:ADDR": {
+    "module_can_address": {
+        "command": ":CONF:CAN:ADDR",
         "input_type": int,
         "allowed_input_values": [*range(64)],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set the module's CAN bus address.",
     },
-    ":CONF:CAN:BITRATE": {
+    "module_can_bitrate": {
+        "command": ":CONF:CAN:BITRATE",
         "input_type": int,
         "allowed_input_values": [125000, 250000],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set the module's CAN bus bit rate.",
     },
-    ":CONF:SERIAL:BAUD": {
+    "serial_baud_rate": {
+        "command": ":CONF:SERIAL:BAUD",
         "input_type": int,
         "allowed_input_values": [115200],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set the device's serial baud rate.",
     },
-    ":CONF:SERIAL:ECHO": {
+    "serial_echo_enable": {
+        "command": ":CONF:SERIAL:ECHO",
         "input_type": int,
         "allowed_input_values": [0, 1],
         "output_type": None,
         "possible_output_values": [],
         "description": "Enable or disable serial echo.",
     },
-    ":CONF:EVENT:MASK": {
+    "module_event_mask_register": {
+        "command": ":CONF:EVENT:MASK",
         "input_type": int,
         "allowed_input_values": [],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set the Module Event Mask register.",
     },
-    ":CONF:EVENT:CHANMASK": {
+    "module_event_channel_mask_register": {
+        "command": ":CONF:EVENT:CHANMASK",
         "input_type": int,
         "allowed_input_values": [],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set the Module Event Channel Mask register.",
     },
-    ":SYSTEM:USER:CONFIG": {
+    "enter_configuration_mode": {
+        "command": ":SYSTEM:USER:CONFIG",
         "input_type": int,
         "allowed_input_values": [],
         "output_type": None,
         "possible_output_values": [],
-        "description": "Set the device to configuration mode to change the CAN bitrate or address.",
+        "description": "Set the device to configuration mode to change settings.",
     },
-    ":CONF:EVENT CLEAR": {
+    "reset_module_event_status": {
+        "command": ":CONF:EVENT CLEAR",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": None,
         "possible_output_values": [],
         "description": "Reset the Module Event Status register.",
     },
-    ":CONF:EVENT": {
+    "clear_module_event_status_bits": {
+        "command": ":CONF:EVENT",
         "input_type": int,
         "allowed_input_values": [],
         "output_type": None,
         "possible_output_values": [],
         "description": "Clear single bits or bit combinations in the Module Event Status register.",
     },
-    "*CLS": {
+    "clear_all_event_status_registers": {
+        "command": "*CLS",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": None,
         "possible_output_values": [],
-        "description": "Clear the Module Event Status and all Channel Event Status registers",
+        "description": "Clear the Module Event Status and all Channel Event Status registers.",
     },
-    "*RST": {
+    "reset_to_save_values": {
+        "command": "*RST",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": None,
@@ -340,21 +369,24 @@ _SET_MODULE_COMMANDS = {
                         - set voltage set Vset to zero for all channels \n\
                         - set current set Iset to the current nominal for all channels",
     },
-    "*INSTR": {
+    "set_command_set": {
+        "command": "*INSTR",
         "input_type": str,
         "allowed_input_values": ["EDCP"],
         "output_type": None,
         "possible_output_values": [],
         "description": "Switch the device to the EDCP command set. Only for devices that support other command sets beside EDCP. For HPS and EHQ with other command sets, refer to the devices manual. This setting is permanent.",
     },
-    "*LLO": {
+    "local_lockout": {
+        "command": "*LLO",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": None,
         "possible_output_values": [],
         "description": "Local Lockout: Front panel buttons and rotary encoders are disabled. The device can only be controlled remotely.",
     },
-    "*GTL": {
+    "goto_local": {
+        "command": "*GTL",
         "input_type": None,
         "allowed_input_values": [],
         "output_type": None,
@@ -384,7 +416,6 @@ def _get_mon_module_command(command: str) -> bytes:
         b':MEAS:CURR?\r\n'
     """
     command = command.upper()
-    check_command_input(_MON_MODULE_COMMANDS, command)
     return f"{command.strip()}?\r\n".encode("ascii")
 
 
@@ -410,7 +441,6 @@ def _get_set_module_command(command: str, value: str | int | float | None) -> by
         b':VOLT 200;*OPC?\r\n'
     """
     command = command.upper()
-    check_command_input(_SET_MODULE_COMMANDS, command, value)
 
     if isinstance(value, float):
         value = f"{value:.3E}"

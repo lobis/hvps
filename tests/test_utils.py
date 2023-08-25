@@ -12,19 +12,22 @@ from hvps.utils import (
 
 def test_check_command_input():
     command_dict = {
-        "CMD1": {
+        "MTH1": {
+            "command": "CMD1",
             "input_type": int,
             "allowed_input_values": None,
             "output_type": int,
             "possible_output_values": None,
         },
-        "CMD2": {
+        "MTH2": {
+            "command": "CMD2",
             "input_type": float,
             "allowed_input_values": [4.0, 5.0],
             "output_type": int,
             "possible_output_values": None,
         },
-        "CMD3": {
+        "MTH3": {
+            "command": "CMD3",
             "input_type": str,
             "allowed_input_values": ["VALUE"],
             "output_type": int,
@@ -37,7 +40,7 @@ def test_check_command_input():
         check_command_input(command_dict, "INVALID", 5)
     assert (
         str(exc_info.value)
-        == "Invalid command 'INVALID'. Valid commands are: CMD1, CMD2, CMD3"
+        == "Invalid command 'None'. Valid commands are: CMD1, CMD2, CMD3"
     )
 
     # Test case 2: invalid input type
@@ -70,19 +73,22 @@ def test_remove_units():
 def test_check_command_output_and_convert():
     # Test case 1: Valid input and output types
     command_dict = {
-        "command_name": {
+        "method_name": {
+            "command": "command_name",
             "input_type": str,
             "allowed_input_values": ["INPUT1", "INPUT2"],
             "output_type": int,
             "possible_output_values": [1, 2, 3],
         },
-        "command_name_2": {
+        "method_name_2": {
+            "command": "command_name_2",
             "input_type": str,
             "allowed_input_values": ["INPUT1", "INPUT2"],
             "output_type": None,
             "possible_output_values": None,
         },
-        "command_name_3": {
+        "method_name_3": {
+            "command": "command_name_3",
             "input_type": str,
             "allowed_input_values": ["INPUT1", "INPUT2"],
             "output_type": List[float],
@@ -91,7 +97,7 @@ def test_check_command_output_and_convert():
     }
 
     # Test case 1: Valid output type
-    command = "command_name"
+    command = "method_name"
     input_value = "INPUT1"
     response = "2"
     result = check_command_output_and_convert(
@@ -100,7 +106,7 @@ def test_check_command_output_and_convert():
     assert result == 2
 
     # Test case 2: Valid output type
-    command = "command_name_3"
+    command = "method_name_3"
     input_value = "INPUT1"
     response = "2.00,3E-6,4"
     result = check_command_output_and_convert(
@@ -109,14 +115,14 @@ def test_check_command_output_and_convert():
     assert result == [2.0, 0.000003, 4.0]
 
     # Test case 4: No response expected but got a response
-    command = "command_name_2"
+    command = "method_name_2"
     input_value = "INPUT1"
     response = "2"
     with pytest.raises(ValueError, match=r"No response expected but got: '2'."):
         check_command_output_and_convert(command, input_value, response, command_dict)
 
     # Test case 5: Invalid output value
-    command = "command_name"
+    command = "method_name"
     input_value = "INPUT1"
     response = "4"  # Invalid output value (not in possible_output_values)
     with pytest.raises(

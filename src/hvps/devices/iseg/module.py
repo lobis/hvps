@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import inspect
 from typing import List
+
+from hvps.utils import check_command_input
 from serial import SerialException
 
 from ...commands.iseg.module import (
     _get_mon_module_command,
     _get_set_module_command,
     _MON_MODULE_COMMANDS,
+    _SET_MODULE_COMMANDS,
 )
 from ...utils.utils import string_number_to_bit_array, check_command_output_and_convert
 
@@ -17,23 +20,33 @@ from .channel import Channel
 
 class Module(BaseModule):
     def _write_command_read_response_module_mon(
-        self, command: str, expected_response_type: type | None
-    ) -> str | None:
-        return self._write_command_read_response(
+        self, method_name: str, expected_response_type: type | None
+    ) -> str | int | float | List | None:
+        command = _MON_MODULE_COMMANDS[method_name]["command"]
+        check_command_input(_MON_MODULE_COMMANDS, method_name)
+        response = self._write_command_read_response(
             command=_get_mon_module_command(command=command),
             expected_response_type=expected_response_type,
+        )
+        return check_command_output_and_convert(
+            command, None, response, _MON_MODULE_COMMANDS
         )
 
     def _write_command_read_response_module_set(
         self,
-        command: str,
+        method_name: str,
         value: str | int | float | None,
         expected_response_type: type | None,
     ) -> str | None:
-        return self._write_command_read_response(
+        command = _SET_MODULE_COMMANDS[method_name]["command"]
+        check_command_input(_SET_MODULE_COMMANDS, method_name, value)
+        response = self._write_command_read_response(
             command=_get_set_module_command(command=command, value=value),
             expected_response_type=expected_response_type,
         )
+        if response != "1":
+            raise ValueError("Last command haven't been processed.")
+        return response
 
     def channel(self, channel: int) -> Channel:
         return super().channel(channel)
@@ -48,14 +61,9 @@ class Module(BaseModule):
         self._logger.debug("Getting number of channels")
 
         try:
-            method_name = inspect.currentframe().f_code.co_name
-            command_name = _mon_module_methods_to_commands[method_name]
-
-            response = self._write_command_read_response_module_mon(
-                command=command_name, expected_response_type=int
-            )
-            return check_command_output_and_convert(
-                command_name, None, response, _MON_MODULE_COMMANDS
+            return self._write_command_read_response_module_mon(
+                method_name=inspect.currentframe().f_code.co_name,
+                expected_response_type=int,
             )
 
         except SerialException:
@@ -89,15 +97,9 @@ class Module(BaseModule):
         Returns:
             str: The firmware release.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=str
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=str,
         )
 
     @property
@@ -108,12 +110,9 @@ class Module(BaseModule):
         Returns:
             str: The board alarm status value.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
+        command_name = inspect.currentframe().f_code.co_name
         response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=str
+            method_name=command_name, expected_response_type=str
         )
         register = check_command_output_and_convert(
             command_name, None, response, _MON_MODULE_COMMANDS
@@ -121,7 +120,6 @@ class Module(BaseModule):
         bit_array = string_number_to_bit_array(register)
         bit_array = list(reversed(bit_array))
 
-        # TODO: review this
         return {
             "Is Voltage Ramp Speed Limited": bit_array[21],
             "Is Fast Ramp Down": bit_array[16],
@@ -146,15 +144,9 @@ class Module(BaseModule):
         Returns:
             int: The number of steps for filtering.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -164,15 +156,9 @@ class Module(BaseModule):
         Returns:
             int: The current kill enable value. 1 for enable, 0 for disable.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -182,15 +168,9 @@ class Module(BaseModule):
         Returns:
             int: The current fine adjustment state. 1 for on, 0 for off.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -200,15 +180,9 @@ class Module(BaseModule):
         Returns:
             int: The current CAN bus address of the module.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -218,15 +192,9 @@ class Module(BaseModule):
         Returns:
             int: The current CAN bus bit rate of the module.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -240,15 +208,9 @@ class Module(BaseModule):
         Returns:
             int: The current serial baud rate of the device.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -258,15 +220,9 @@ class Module(BaseModule):
         Returns:
             int: 1 if serial echo is enabled, 0 if disabled.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -284,15 +240,9 @@ class Module(BaseModule):
         Returns:
             float: The current voltage limit of the module.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -302,15 +252,9 @@ class Module(BaseModule):
         Returns:
             float: The current electrical current limit of the module.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -320,15 +264,9 @@ class Module(BaseModule):
         Returns:
             float: The current voltage ramp speed of the module.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -338,15 +276,9 @@ class Module(BaseModule):
         Returns:
             float: The current electrical current ramp speed of the module.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -356,15 +288,9 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Control register.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -374,15 +300,9 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Status register.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -392,15 +312,9 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Status register.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -410,15 +324,9 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Mask register.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -428,15 +336,9 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Status register.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -446,15 +348,9 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Mask register.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -464,19 +360,16 @@ class Module(BaseModule):
         Returns:
             List[float, float, float, float, float, float, float]: The module supply voltages.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
         response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=List[float]
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=List[float],
         )
         if len(response) != 7:
-            raise ValueError("Wrong number of values were received, one value expected")
+            raise ValueError(
+                "Wrong number of values were received, seven values expected"
+            )
 
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
-        )
+        return response
 
     @property
     def module_supply_voltage_p24v(self) -> float:
@@ -485,15 +378,9 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +24 Volt.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -503,15 +390,9 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage -24 Volt.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -521,15 +402,9 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +5 Volt.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -539,15 +414,9 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +3.3 Volt.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -557,15 +426,9 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +12 Volt.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -575,15 +438,9 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage -12 Volt.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -593,15 +450,9 @@ class Module(BaseModule):
         Returns:
             float: The module temperature in degree Celsius.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=float
-        )
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
 
     @property
@@ -611,16 +462,9 @@ class Module(BaseModule):
         Returns:
             int: The setvalue changes counter.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=int
-        )
-
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
 
     @property
@@ -630,16 +474,9 @@ class Module(BaseModule):
         Returns:
             str: The firmware name.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=str
-        )
-
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=str,
         )
 
     @property
@@ -649,16 +486,9 @@ class Module(BaseModule):
         Returns:
             str: The ID string.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=str
-        )
-
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=str,
         )
 
     @property
@@ -668,16 +498,9 @@ class Module(BaseModule):
         Returns:
             str: The instruction set.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _mon_module_methods_to_commands[method_name]
-        _get_mon_module_command(command_name)
-
-        response = self._write_command_read_response_module_mon(
-            command=command_name, expected_response_type=str
-        )
-
-        return check_command_output_and_convert(
-            command_name, None, response, _MON_MODULE_COMMANDS
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=str,
         )
 
     # Setters
@@ -689,16 +512,13 @@ class Module(BaseModule):
         Args:
             baud_rate (int): The serial baud rate to set.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, baud_rate)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=baud_rate, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=baud_rate,
+            expected_response_type=None,
         )
-
-        if response != "1" or self.serial_baud_rate != baud_rate:
-            raise ValueError("Last command hasn't been processed.")
+        if self.serial_baud_rate != baud_rate:
+            raise ValueError("Last command haven't been processed.")
 
     # Be careful when switching off the echo as there is no other possibilit to synchronize the HV device
     # with the computer (no hardware/software handshake). This mode is only available
@@ -711,15 +531,13 @@ class Module(BaseModule):
         Args:
             enabled (int): 1 to enable serial echo, 0 to disable.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, enabled)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=enabled, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=enabled,
+            expected_response_type=None,
         )
-        if response != "1" or self.serial_echo_enable != enabled:
-            raise ValueError("Last command hasn't been processed.")
+        if self.serial_echo_enable != enabled:
+            raise ValueError("Last command haven't been processed.")
 
     @filter_averaging_steps.setter
     def filter_averaging_steps(self, steps: int) -> None:
@@ -731,15 +549,13 @@ class Module(BaseModule):
         Raises:
             ValueError: If an invalid number of steps is provided.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, steps)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=steps, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=steps,
+            expected_response_type=None,
         )
-        if response != "1" or self.filter_averaging_steps != steps:
-            raise ValueError("Last command hasn't been processed.")
+        if self.filter_averaging_steps != steps:
+            raise ValueError("Last command haven't been processed.")
 
     @kill_enable.setter
     def kill_enable(self, enable: int) -> None:
@@ -748,15 +564,13 @@ class Module(BaseModule):
         Args:
             enable (int): The kill enable value to set. Accepts 1 for enable or 0 for disable.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, enable)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=enable, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=enable,
+            expected_response_type=None,
         )
-        if response != "1" or self.kill_enable != enable:
-            raise ValueError("Last command hasn't been processed.")
+        if self.kill_enable != enable:
+            raise ValueError("Last command haven't been processed.")
 
     @adjustment.setter
     def adjustment(self, value: int) -> None:
@@ -765,15 +579,13 @@ class Module(BaseModule):
         Args:
             value (int): The adjustment value to set. Accepts 1 for on or 0 for off.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, value)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=value, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=value,
+            expected_response_type=None,
         )
-        if response != "1" or self.adjustment != value:
-            raise ValueError("Last command hasn't been processed.")
+        if self.adjustment != value:
+            raise ValueError("Last command haven't been processed.")
 
     @module_event_mask_register.setter
     def module_event_mask_register(self, mask: int) -> None:
@@ -782,16 +594,12 @@ class Module(BaseModule):
         Args:
             mask (int): The value to set in the Module Event Mask register.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, mask)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=mask, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=mask,
+            expected_response_type=None,
         )
         # TODO: check if read value = mask, careful with reserved bits
-        if response != "1":
-            raise ValueError("Last command hasn't been processed.")
 
     @module_event_channel_mask_register.setter
     def module_event_channel_mask_register(self, mask: int) -> None:
@@ -800,16 +608,12 @@ class Module(BaseModule):
         Args:
             mask (int): The value to set in the Module Event Channel Mask register.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, mask)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=mask, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=mask,
+            expected_response_type=None,
         )
         # TODO: check if read value = mask, careful with reserved bits
-        if response != "1":
-            raise ValueError("Last command hasn't been processed.")
 
     @module_can_address.setter
     def module_can_address(self, address: int) -> None:
@@ -819,15 +623,13 @@ class Module(BaseModule):
             address (int): The CAN bus address to set (0-63).
         """
 
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, address)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=address, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=address,
+            expected_response_type=None,
         )
-        if response != "1" or self.module_can_address != address:
-            raise ValueError("Last command hasn't been processed.")
+        if self.module_can_address != address:
+            raise ValueError("Last command haven't been processed.")
 
     @module_can_bitrate.setter
     def module_can_bitrate(self, bitrate: int) -> None:
@@ -837,15 +639,13 @@ class Module(BaseModule):
             bitrate (int): The CAN bus bit rate to set. Accepts 125000 or 250000.
         """
 
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, bitrate)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=bitrate, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=bitrate,
+            expected_response_type=None,
         )
-        if response != "1" or self.module_can_bitrate != bitrate:
-            raise ValueError("Last command hasn't been processed.")
+        if self.module_can_bitrate != bitrate:
+            raise ValueError("Last command haven't been processed.")
 
     def enter_configuration_mode(self, serial_number: int):
         """Set the device to configuration mode to change the CAN bitrate or address.
@@ -854,25 +654,18 @@ class Module(BaseModule):
             serial_number (int): The device serial number.
 
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, serial_number)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=serial_number, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=serial_number,
+            expected_response_type=None,
         )
-
-        if response != "1":
-            raise ValueError("Last command hasn't been processed.")
 
     def exit_configuration_mode(self):
         """Set the device back to normal mode."""
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, 0)
-
         self._write_command_read_response_module_set(
-            command=command_name, value=0, expected_response_type=None
+            method_name=inspect.currentframe().f_code.co_name,
+            value=0,
+            expected_response_type=None,
         )
 
     # Be careful when switching off the echo as there is no other possibilit to synchronize the HV device
@@ -891,15 +684,11 @@ class Module(BaseModule):
 
     def reset_module_event_status(self) -> None:
         """Reset the Module Event Status register."""
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, None)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=None, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command hasn't been processed.")
 
     def clear_module_event_status_bits(self, bits: int) -> None:
         """Clear single bits or bit combinations in the Module Event Status register.
@@ -907,40 +696,28 @@ class Module(BaseModule):
         Args:
             bits (int): The bits to clear in the Module Event Status register.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, bits)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=bits, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=bits,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command hasn't been processed.")
 
     def clear_all_event_status_registers(self) -> None:
         """Clear all event status registers (module and channels)."""
 
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, None)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=None, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command hasn't been processed.")
 
     def reset_to_save_values(self) -> None:
         """Reset the module to the saved values."""
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, None)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=None, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command hasn't been processed.")
 
     def set_command_set(self, command_set: str) -> None:
         """Set the command set to use for the module.
@@ -948,99 +725,26 @@ class Module(BaseModule):
         Args:
             command_set (str): The command set to use for the module.
         """
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, command_set)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=command_set, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=command_set,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command hasn't been processed.")
 
     def local_lockout(self) -> None:
         """Lockout the module from the local interface."""
 
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, None)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=None, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command hasn't been processed.")
 
     def goto_local(self) -> None:
         """Go to local mode."""
 
-        method_name = inspect.currentframe().f_code.co_name
-        command_name = _set_module_methods_to_commands[method_name]
-        _get_set_module_command(command_name, None)
-
-        response = self._write_command_read_response_module_set(
-            command=command_name, value=None, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if response != "1":
-            raise ValueError("Last command hasn't been processed.")
-
-
-# TODO: test consistency with methods and commands
-_mon_module_methods_to_commands = {
-    "number_of_channels": ":READ:MODULE:CHANNELNUMBER",
-    "firmware_release": ":READ:FIRMWARE:RELEASE",
-    "module_status": ":READ:MODULE:STATUS",
-    "filter_averaging_steps": ":CONF:AVER",
-    "kill_enable": ":CONF:KILL",
-    "adjustment": ":CONF:ADJUST",
-    "module_can_address": ":CONF:CAN:ADDR",
-    "module_can_bitrate": ":CONF:CAN:BITRATE",
-    "serial_baud_rate": ":CONF:SERIAL:BAUD",
-    "serial_echo_enable": ":CONF:SERIAL:ECHO",
-    "serial_echo_enabled": ":CONF:SERIAL:ECHO",
-    "serial_echo_disabled": ":CONF:SERIAL:ECHO",
-    "module_current_limit": ":READ:CURR:LIM",
-    "module_voltage_limit": ":READ:VOLT:LIM",
-    "module_voltage_ramp_speed": ":READ:RAMP:VOLT",
-    "module_current_ramp_speed": ":READ:RAMP:CURR",
-    "module_control_register": ":READ:MODULE:CONTROL",
-    "module_status_register": ":READ:MODULE:STATUS",
-    "module_event_status_register": ":READ:MODULE:EVENT:STATUS",
-    "module_event_mask_register": ":READ:MODULE:EVENT:MASK",
-    "module_event_channel_status_register": ":READ:MODULE:EVENT:CHANSTAT",
-    "module_event_channel_mask_register": ":READ:MODULE:EVENT:CHANMASK",
-    "module_supply_voltage": ":READ:MODULE:SUPPLY? (@0-6)",
-    "module_supply_voltage_p24v": ":READ:MODULE:SUPPLY:P24V",
-    "module_supply_voltage_n24v": ":READ:MODULE:SUPPLY:N24V",
-    "module_supply_voltage_p5v": ":READ:MODULE:SUPPLY:P5V",
-    "module_supply_voltage_p3v": ":READ:MODULE:SUPPLY:P3V",
-    "module_supply_voltage_p12v": ":READ:MODULE:SUPPLY:P12V",
-    "module_supply_voltage_n12v": ":READ:MODULE:SUPPLY:N12V",
-    "module_temperature": ":READ:MODULE:TEMPERATURE",
-    "setvalue_changes_counter": ":READ:MODULE:SETVALUE",
-    "firmware_name": ":READ:FIRMWARE:NAME",
-    "id_string": "*IDN",
-    "instruction_set": "*INSTR",
-}
-_set_module_methods_to_commands = {
-    "serial_baud_rate": ":CONF:SERIAL:BAUD",
-    "serial_echo_enable": ":CONF:SERIAL:ECHO",
-    "set_serial_echo_enabled": ":CONF:SERIAL:ECHO",
-    "set_serial_echo_disabled": ":CONF:SERIAL:ECHO",
-    "filter_averaging_steps": ":CONF:AVER",
-    "kill_enable": ":CONF:KILL",
-    "adjustment": ":CONF:ADJUST",
-    "module_event_mask_register": ":CONF:EVENT:MASK",
-    "module_event_channel_mask_register": ":CONF:EVENT:CHANMASK",
-    "module_can_address": ":CONF:CAN:ADDR",
-    "module_can_bitrate": ":CONF:CAN:BITRATE",
-    "enter_configuration_mode": ":SYSTEM:USER:CONFIG",
-    "exit_configuration_mode": ":SYSTEM:USER:CONFIG",
-    "reset_module_event_status": ":CONF:EVENT CLEAR",
-    "clear_module_event_status_bits": ":CONF:EVENT",
-    "clear_all_event_status_registers": "*CLS",
-    "reset_to_save_values": "*RST",
-    "set_command_set": "*INSTR",
-    "local_lockout": "*LLO",
-    "goto_local": "*GTL",
-}
