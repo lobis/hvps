@@ -8,7 +8,7 @@ import logging
 
 # find a way to only run these tests if a serial port connection exists
 
-serial_port = "COM4"  # change this to the serial port you are using
+serial_port = ""  # change this to the serial port you are using
 serial_baud = 115200
 timeout = 5.0
 
@@ -23,7 +23,7 @@ def is_macos():
 
 
 serial_skip_decorator = pytest.mark.skipif(
-    serial_port_available() or not is_macos(), reason="No serial ports available"
+    serial_port == "", reason="No serial ports set"
 )
 
 
@@ -47,7 +47,7 @@ def test_caen_module_monitor():
         timeout=timeout,
         logging_level=logging.DEBUG,
     )
-    caen.connect()
+    caen.open()
 
     print(
         f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"
@@ -102,7 +102,7 @@ def test_caen_module_monitor():
     channels = module.channels
     print(f"Channels: {channels}")
 
-    caen.disconnect()
+    caen.close()
 
 
 @serial_skip_decorator
@@ -113,7 +113,7 @@ def test_caen_channel_serial():
         timeout=timeout,
         logging_level=logging.DEBUG,
     )
-    caen.connect()
+    caen.open()
 
     print(
         f"Serial port status: connected: {caen.connected}, port: {caen.port}, baudrate: {caen.baudrate}, timeout: {caen.timeout}"
@@ -217,4 +217,4 @@ def test_caen_channel_serial():
         stat = channel.stat
         print(f"stat: {stat}")
 
-    caen.disconnect()
+    caen.close()

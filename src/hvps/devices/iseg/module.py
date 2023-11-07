@@ -1,33 +1,52 @@
 from __future__ import annotations
 
+import inspect
 from typing import List
+
+from hvps.utils import check_command_input
 from serial import SerialException
 
-from ...commands.iseg.module import _get_mon_module_command, _get_set_module_command
-from ...utils.utils import string_number_to_bit_array
+from ...commands.iseg.module import (
+    _get_mon_module_command,
+    _get_set_module_command,
+    _MON_MODULE_COMMANDS,
+    _SET_MODULE_COMMANDS,
+)
+from ...utils.utils import string_number_to_bit_array, check_command_output_and_convert
+
 from ..module import Module as BaseModule
 from .channel import Channel
 
 
 class Module(BaseModule):
     def _write_command_read_response_module_mon(
-        self, command: str, expected_response_type: type | None
-    ) -> str | None:
-        return self._write_command_read_response(
+        self, method_name: str, expected_response_type: type | None
+    ) -> str | int | float | List | None:
+        command = _MON_MODULE_COMMANDS[method_name]["command"]
+        check_command_input(_MON_MODULE_COMMANDS, method_name)
+        response = self._write_command_read_response(
             command=_get_mon_module_command(command=command),
             expected_response_type=expected_response_type,
+        )
+        return check_command_output_and_convert(
+            method_name, None, response, _MON_MODULE_COMMANDS
         )
 
     def _write_command_read_response_module_set(
         self,
-        command: str,
+        method_name: str,
         value: str | int | float | None,
         expected_response_type: type | None,
     ) -> str | None:
-        return self._write_command_read_response(
+        command = _SET_MODULE_COMMANDS[method_name]["command"]
+        check_command_input(_SET_MODULE_COMMANDS, method_name, value)
+        response = self._write_command_read_response(
             command=_get_set_module_command(command=command, value=value),
             expected_response_type=expected_response_type,
         )
+        if response != "1":
+            raise ValueError("Last command haven't been processed.")
+        return response
 
     def channel(self, channel: int) -> Channel:
         return super().channel(channel)
@@ -42,14 +61,10 @@ class Module(BaseModule):
         self._logger.debug("Getting number of channels")
 
         try:
-            response = self._write_command_read_response_module_mon(
-                command=":READ:MODULE:CHANNELNUMBER", expected_response_type=int
+            return self._write_command_read_response_module_mon(
+                method_name=inspect.currentframe().f_code.co_name,
+                expected_response_type=int,
             )
-            if len(response) != 1:
-                raise ValueError(
-                    "Wrong number of values were received, one value expected"
-                )
-            return int(response[0])
 
         except SerialException:
             return 1
@@ -82,12 +97,10 @@ class Module(BaseModule):
         Returns:
             str: The firmware release.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:FIRMWARE:RELEASE", expected_response_type=str
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=str,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return response[0]
 
     @property
     def module_status(self) -> dict:
@@ -97,16 +110,16 @@ class Module(BaseModule):
         Returns:
             str: The board alarm status value.
         """
+        command_name = inspect.currentframe().f_code.co_name
         response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:STATUS", expected_response_type=dict
+            method_name=command_name, expected_response_type=str
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-
-        bit_array = string_number_to_bit_array(response[0])
+        register = check_command_output_and_convert(
+            command_name, None, response, _MON_MODULE_COMMANDS
+        )
+        bit_array = string_number_to_bit_array(register)
         bit_array = list(reversed(bit_array))
 
-        # TODO: review this
         return {
             "Is Voltage Ramp Speed Limited": bit_array[21],
             "Is Fast Ramp Down": bit_array[16],
@@ -131,12 +144,10 @@ class Module(BaseModule):
         Returns:
             int: The number of steps for filtering.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":CONF:AVER", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def kill_enable(self) -> int:
@@ -145,12 +156,10 @@ class Module(BaseModule):
         Returns:
             int: The current kill enable value. 1 for enable, 0 for disable.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":CONF:KILL", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def adjustment(self) -> int:
@@ -159,12 +168,10 @@ class Module(BaseModule):
         Returns:
             int: The current fine adjustment state. 1 for on, 0 for off.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":CONF:ADJUST", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def module_can_address(self) -> int:
@@ -173,12 +180,10 @@ class Module(BaseModule):
         Returns:
             int: The current CAN bus address of the module.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":CONF:CAN:ADDR", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def module_can_bitrate(self) -> int:
@@ -187,12 +192,10 @@ class Module(BaseModule):
         Returns:
             int: The current CAN bus bit rate of the module.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":CONF:CAN:BITRATE", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def serial_baud_rate(
@@ -205,12 +208,10 @@ class Module(BaseModule):
         Returns:
             int: The current serial baud rate of the device.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":CONF:SERIAL:BAUD", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def serial_echo_enable(self) -> int:
@@ -219,12 +220,10 @@ class Module(BaseModule):
         Returns:
             int: 1 if serial echo is enabled, 0 if disabled.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":CONF:SERIAL:ECHO", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def serial_echo_enabled(self) -> bool:
@@ -241,12 +240,10 @@ class Module(BaseModule):
         Returns:
             float: The current voltage limit of the module.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:VOLT:LIM", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0].rstrip("%"))
 
     @property
     def module_current_limit(self) -> float:
@@ -255,12 +252,10 @@ class Module(BaseModule):
         Returns:
             float: The current electrical current limit of the module.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:CURR:LIM", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0].rstrip("%"))
 
     @property
     def module_voltage_ramp_speed(self) -> float:
@@ -269,12 +264,10 @@ class Module(BaseModule):
         Returns:
             float: The current voltage ramp speed of the module.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:RAMP:VOLT", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:3])
 
     @property
     def module_current_ramp_speed(self) -> float:
@@ -283,12 +276,10 @@ class Module(BaseModule):
         Returns:
             float: The current electrical current ramp speed of the module.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:RAMP:CURR", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:3])
 
     @property
     def module_control_register(self) -> int:
@@ -297,12 +288,10 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Control register.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:CONTROL", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def module_status_register(self) -> int:
@@ -311,12 +300,10 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Status register.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:STATUS", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def module_event_status_register(self) -> int:
@@ -325,12 +312,10 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Status register.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:EVENT:STATUS", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def module_event_mask_register(self) -> int:
@@ -339,12 +324,10 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Mask register.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:EVENT:MASK", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def module_event_channel_status_register(self) -> int:
@@ -353,12 +336,10 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Status register.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:EVENT:CHANSTAT", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def module_event_channel_mask_register(self) -> int:
@@ -367,27 +348,28 @@ class Module(BaseModule):
         Returns:
             int: The value of the Module Event Channel Mask register.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:EVENT:CHANMASK", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def module_supply_voltage(self) -> List[float]:
         """Query the module supply voltages.
 
         Returns:
-            Tuple[str, str, str, str, str, str]: The module supply voltages.
+            List[float, float, float, float, float, float, float]: The module supply voltages.
         """
         response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:SUPPLY? (@0-6)", expected_response_type=List[float]
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=List[float],
         )
         if len(response) != 7:
-            raise ValueError("Wrong number of values were received, one value expected")
+            raise ValueError(
+                "Wrong number of values were received, seven values expected"
+            )
 
-        return [float(string[:-1]) for string in response]
+        return response
 
     @property
     def module_supply_voltage_p24v(self) -> float:
@@ -396,13 +378,10 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +24 Volt.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:SUPPLY:P24V", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
 
     @property
     def module_supply_voltage_n24v(self) -> float:
@@ -411,13 +390,10 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage -24 Volt.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:SUPPLY:N24V", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
 
     @property
     def module_supply_voltage_p5v(self) -> float:
@@ -426,13 +402,10 @@ class Module(BaseModule):
         Returns:
             float: The module supply voltage +5 Volt.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:SUPPLY:P5V", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
 
     @property
     def module_supply_voltage_p3v(self) -> float:
@@ -441,13 +414,10 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +3.3 Volt.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:SUPPLY:P3V", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
 
     @property
     def module_supply_voltage_p12v(self) -> float:
@@ -456,13 +426,10 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage +12 Volt.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:SUPPLY:P12V", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
 
     @property
     def module_supply_voltage_n12v(self) -> float:
@@ -471,13 +438,10 @@ class Module(BaseModule):
         Returns:
             float: The module internal supply voltage -12 Volt.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:SUPPLY:N12V", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        voltage = response[0][:-1]
-        return float(voltage)
 
     @property
     def module_temperature(self) -> float:
@@ -486,13 +450,10 @@ class Module(BaseModule):
         Returns:
             float: The module temperature in degree Celsius.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:TEMPERATURE", expected_response_type=float
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        temperature = response[0][:-1]
-        return float(temperature)
 
     @property
     def setvalue_changes_counter(self) -> int:
@@ -501,12 +462,10 @@ class Module(BaseModule):
         Returns:
             int: The setvalue changes counter.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:MODULE:SETVALUE", expected_response_type=int
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def firmware_name(self) -> str:
@@ -515,26 +474,34 @@ class Module(BaseModule):
         Returns:
             str: The firmware name.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":READ:FIRMWARE:NAME", expected_response_type=str
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=str,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return response[0]
 
     @property
-    def configuration_mode(self) -> bool:
-        """Check if the device is in configuration mode.
+    def id_string(self) -> str:
+        """Query the module's ID string.
 
         Returns:
-            bool: true if in configuration mode, otherwise false.
+            str: The ID string.
         """
-        response = self._write_command_read_response_module_mon(
-            command=":SYSTEM:USER:CONFIG", expected_response_type=bool
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=str,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0]) == 1
+
+    @property
+    def instruction_set(self) -> str:
+        """Query the module's instruction set.
+
+        Returns:
+            str: The instruction set.
+        """
+        return self._write_command_read_response_module_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=str,
+        )
 
     # Setters
 
@@ -545,11 +512,17 @@ class Module(BaseModule):
         Args:
             baud_rate (int): The serial baud rate to set.
         """
-        response = self._write_command_read_response_module_set(
-            command=":CONF:SERIAL:BAUD", value=baud_rate, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=baud_rate,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != baud_rate:
-            raise ValueError("Last command hasn't been processed.")
+        if self.serial_baud_rate != baud_rate:
+            raise ValueError("Last command haven't been processed.")
+
+    # Be careful when switching off the echo as there is no other possibilit to synchronize the HV device
+    # with the computer (no hardware/software handshake). This mode is only available
+    # for compatibility reasons and without support.
 
     @serial_echo_enable.setter
     def serial_echo_enable(self, enabled: int) -> None:
@@ -558,16 +531,13 @@ class Module(BaseModule):
         Args:
             enabled (int): 1 to enable serial echo, 0 to disable.
         """
-        if enabled not in [0, 1]:
-            raise ValueError(
-                "Invalid serial echo value. Please choose 1 for enabled or 0 for disabled."
-            )
-
-        response = self._write_command_read_response_module_set(
-            command=":CONF:SERIAL:ECHO", value=enabled, expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=enabled,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.serial_echo_enable != enabled:
+            raise ValueError("Last command haven't been processed.")
 
     @filter_averaging_steps.setter
     def filter_averaging_steps(self, steps: int) -> None:
@@ -579,17 +549,13 @@ class Module(BaseModule):
         Raises:
             ValueError: If an invalid number of steps is provided.
         """
-        valid_steps = [1, 16, 64, 256, 512, 1024]
-        if steps not in valid_steps:
-            raise ValueError(
-                f"Invalid number of steps. Please choose from {valid_steps}."
-            )
-
-        response = self._write_command_read_response_module_set(
-            command=":CONF:AVER", value=str(steps), expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=steps,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.filter_averaging_steps != steps:
+            raise ValueError("Last command haven't been processed.")
 
     @kill_enable.setter
     def kill_enable(self, enable: int) -> None:
@@ -598,16 +564,13 @@ class Module(BaseModule):
         Args:
             enable (int): The kill enable value to set. Accepts 1 for enable or 0 for disable.
         """
-        if enable not in [0, 1]:
-            raise ValueError(
-                "Invalid kill enable value. Please choose 1 for enable or 0 for disable."
-            )
-
-        response = self._write_command_read_response_module_set(
-            command=":CONF:KILL", value=str(enable), expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=enable,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.kill_enable != enable:
+            raise ValueError("Last command haven't been processed.")
 
     @adjustment.setter
     def adjustment(self, value: int) -> None:
@@ -616,16 +579,13 @@ class Module(BaseModule):
         Args:
             value (int): The adjustment value to set. Accepts 1 for on or 0 for off.
         """
-        if value not in [0, 1]:
-            raise ValueError(
-                "Invalid adjustment value. Please choose 1 for on or 0 for off."
-            )
-
-        response = self._write_command_read_response_module_set(
-            command=":CONF:ADJUST", value=str(value), expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=value,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.adjustment != value:
+            raise ValueError("Last command haven't been processed.")
 
     @module_event_mask_register.setter
     def module_event_mask_register(self, mask: int) -> None:
@@ -634,11 +594,12 @@ class Module(BaseModule):
         Args:
             mask (int): The value to set in the Module Event Mask register.
         """
-        response = self._write_command_read_response_module_set(
-            command=":CONF:EVENT:MASK", value=str(mask), expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=mask,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        # TODO: check if read value = mask, careful with reserved bits
 
     @module_event_channel_mask_register.setter
     def module_event_channel_mask_register(self, mask: int) -> None:
@@ -647,11 +608,12 @@ class Module(BaseModule):
         Args:
             mask (int): The value to set in the Module Event Channel Mask register.
         """
-        response = self._write_command_read_response_module_set(
-            command=":CONF:EVENT:CHANMASK", value=str(mask), expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=mask,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        # TODO: check if read value = mask, careful with reserved bits
 
     @module_can_address.setter
     def module_can_address(self, address: int) -> None:
@@ -660,16 +622,14 @@ class Module(BaseModule):
         Args:
             address (int): The CAN bus address to set (0-63).
         """
-        if not (0 <= address <= 63):
-            raise ValueError(
-                "Invalid CAN bus address. Please choose an address between 0 and 63."
-            )
 
-        response = self._write_command_read_response_module_set(
-            command=":CONF:CAN:ADDR", value=str(address), expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=address,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.module_can_address != address:
+            raise ValueError("Last command haven't been processed.")
 
     @module_can_bitrate.setter
     def module_can_bitrate(self, bitrate: int) -> None:
@@ -678,16 +638,14 @@ class Module(BaseModule):
         Args:
             bitrate (int): The CAN bus bit rate to set. Accepts 125000 or 250000.
         """
-        if bitrate not in [125000, 250000]:
-            raise ValueError(
-                "Invalid CAN bus bitrate. Please choose either 125000 or 250000."
-            )
 
-        response = self._write_command_read_response_module_set(
-            command=":CONF:CAN:BITRATE", value=str(bitrate), expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=bitrate,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.module_can_bitrate != bitrate:
+            raise ValueError("Last command haven't been processed.")
 
     def enter_configuration_mode(self, serial_number: int):
         """Set the device to configuration mode to change the CAN bitrate or address.
@@ -696,35 +654,41 @@ class Module(BaseModule):
             serial_number (int): The device serial number.
 
         """
-        command = _get_set_module_command(":SYSTEM:USER:CONFIG", str(serial_number))
-        self._write_command_read_response(
-            command=command,
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=serial_number,
             expected_response_type=None,
         )
 
     def exit_configuration_mode(self):
         """Set the device back to normal mode."""
-        command = _get_set_module_command(":SYSTEM:USER:CONFIG", "0")
-        self._write_command_read_response(
-            command=command,
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=0,
             expected_response_type=None,
         )
 
+    # Be careful when switching off the echo as there is no other possibilit to synchronize the HV device
+    # with the computer (no hardware/software handshake). This mode is only available
+    # for compatibility reasons and without support.
     def set_serial_echo_enabled(self) -> None:
         """Enable serial echo."""
         self.serial_echo_enable = 1
 
+    # Be careful when switching off the echo as there is no other possibilit to synchronize the HV device
+    # with the computer (no hardware/software handshake). This mode is only available
+    # for compatibility reasons and without support.
     def set_serial_echo_disabled(self) -> None:
         """Disable serial echo."""
         self.serial_echo_enable = 0
 
     def reset_module_event_status(self) -> None:
         """Reset the Module Event Status register."""
-        response = self._write_command_read_response_module_set(
-            command=":CONF:EVENT CLEAR", value="", expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
 
     def clear_module_event_status_bits(self, bits: int) -> None:
         """Clear single bits or bit combinations in the Module Event Status register.
@@ -732,8 +696,55 @@ class Module(BaseModule):
         Args:
             bits (int): The bits to clear in the Module Event Status register.
         """
-        response = self._write_command_read_response_module_set(
-            command=":CONF:EVENT", value=str(bits), expected_response_type=None
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=bits,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+
+    def clear_all_event_status_registers(self) -> None:
+        """Clear all event status registers (module and channels)."""
+
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
+        )
+
+    def reset_to_save_values(self) -> None:
+        """Reset the module to the saved values."""
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
+        )
+
+    def set_command_set(self, command_set: str) -> None:
+        """Set the command set to use for the module.
+
+        Args:
+            command_set (str): The command set to use for the module.
+        """
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=command_set,
+            expected_response_type=None,
+        )
+
+    def local_lockout(self) -> None:
+        """Lockout the module from the local interface."""
+
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
+        )
+
+    def goto_local(self) -> None:
+        """Go to local mode."""
+
+        self._write_command_read_response_module_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
+        )

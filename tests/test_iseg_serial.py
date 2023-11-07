@@ -1,10 +1,8 @@
-from hvps.devices.iseg.channel import Channel
 from hvps.utils import get_serial_ports
 from hvps import Iseg
 
 import pytest
 import sys
-import serial
 import logging
 
 serial_port = "COM4"  # change this to the serial port you are using
@@ -145,9 +143,6 @@ def test_iseg_module_monitor():
     firmware_name = module.firmware_name
     print(f"firmware_name: {firmware_name}")
 
-    configuration_mode = module.configuration_mode
-    print(f"configuration_mode: {configuration_mode}")
-
     # Setter methods
     module.serial_baud_rate = 9600
     module.serial_echo_enable = 1
@@ -189,9 +184,9 @@ def test_iseg_module_monitor():
 
 @serial_skip_decorator
 def test_iseg_channel_monitor():
-    ser = serial.Serial(serial_port, serial_baud, timeout=timeout)
-
-    channel = Channel(ser, 0)  # TODO: what is this 0?
+    # TODO: make this work
+    # TODO: validate the values (atleast check if they are not None)
+    # TODO: Do the same for CAEN
 
     trip_action = channel.trip_action
     print(f"trip_action: {trip_action}")

@@ -1,52 +1,372 @@
 from __future__ import annotations
 
+
 # Dictionary mapping monitor channel commands to their descriptions
-_mon_channel_commands = {
-    "VSET": "Read out VSET value (XXXX.X V)",
-    "VMIN": "Read out VSET minimum value (0 V)",
-    "VMAX": "Read out VSET maximum value (8000.0 V)",
-    "VDEC": "Read out VSET number of decimal digits",
-    "VMON": "Read out VMON value (XXXX.X V)",
-    "ISET": "Read out ISET value (XXXX.XX µA)",
-    "IMIN": "Read out ISET minimum value (0 µA)",
-    "IMAX": "Read out ISET maximum value (3000.00 µA)",
-    "ISDEC": "Read out ISET number of decimal digits",
-    "IMON": "Read out IMON value (XXXX.XX µA)",
-    "IMRANGE": "Read out IMON RANGE value (HIGH / LOW)",
-    "IMDEC": "Read out IMON number of decimal digits (2 HR, 3 LR)",
-    "MAXV": "Read out MAXVSET value (XXXX V)",
-    "MVMIN": "Read out MAXVSET minimum value (0 V)",
-    "MVMAX": "Read out MAXVSET maximum value (8100 V)",
-    "MVDEC": "Read out MAXVSET number of decimal digits",
-    "RUP": "Read out RAMP UP value (XXX V/S)",
-    "RUPMIN": "Read out RAMP UP minimum value (1 V/S)",
-    "RUPMAX": "Read out RAMP UP maximum value (500 V/S)",
-    "RUPDEC": "Read out RAMP UP number of decimal digits",
-    "RDW": "Read out RAMP DOWN value (XXX V/S)",
-    "RDWMIN": "Read out RAMP DOWN minimum value (1 V/S)",
-    "RDWMAX": "Read out RAMP DOWN maximum value (500 V/S)",
-    "RDWDEC": "Read out RAMP DOWN number of decimal digits",
-    "TRIP": "Read out TRIP time value (XXXX.X S)",
-    "TRIPMIN": "Read out TRIP time minimum value (0 S)",
-    "TRIPMAX": "Read out TRIP time maximum value (1000.0 S)",
-    "TRIPDEC": "Read out TRIP time number of decimal digits",
-    "PDWN": "Read out POWER DOWN value (RAMP / KILL)",
-    "POL": "Read out POLARITY value ('+' / '-')",
-    "STAT": "Read out Channel status value (XXXXX)",
+_MON_CHANNEL_COMMANDS = {
+    "vset": {
+        "command": "VSET",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out VSET value (XXXX.X V)",
+    },
+    "vmin": {
+        "command": "VMIN",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out VSET minimum value (0 V)",
+    },
+    "vmax": {
+        "command": "VMAX",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out VSET maximum value (8000.0 V)",
+    },
+    "vdec": {
+        "command": "VDEC",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Read out VSET number of decimal digits",
+    },
+    "vmon": {
+        "command": "VMON",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out VMON value (XXXX.X V)",
+    },
+    "iset": {
+        "command": "ISET",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out ISET value (XXXX.XX µA)",
+    },
+    "imin": {
+        "command": "IMIN",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out ISET minimum value (0 µA)",
+    },
+    "imax": {
+        "command": "IMAX",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out ISET maximum value (3000.00 µA)",
+    },
+    "isdec": {
+        "command": "ISDEC",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Read out ISET number of decimal digits",
+    },
+    "imon": {
+        "command": "IMON",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out IMON value (XXXX.XX µA)",
+    },
+    "imrange": {
+        "command": "IMRANGE",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": ["HIGH", "LOW"],
+        "description": "Read out IMON RANGE value (HIGH / LOW)",
+    },
+    "imrange_high": {
+        "command": "",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": bool,
+        "possible_output_values": [],
+        "description": "Check out if IMON RANGE value is HIGH)",
+    },
+    "imrange_low": {
+        "command": "",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": bool,
+        "possible_output_values": [],
+        "description": "Check out if IMON RANGE value is HIGH)",
+    },
+    "imdec": {
+        "command": "IMDEC",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Read out IMON number of decimal digits (2 HR, 3 LR)",
+    },
+    "maxv": {
+        "command": "MAXV",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out MAXVSET value (XXXX V)",
+    },
+    "mvmin": {
+        "command": "MVMIN",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out MAXVSET minimum value (0 V)",
+    },
+    "mvmax": {
+        "command": "MVMAX",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out MAXVSET maximum value (8100 V)",
+    },
+    "mvdec": {
+        "command": "MVDEC",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Read out MAXVSET number of decimal digits",
+    },
+    "rup": {
+        "command": "RUP",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out RAMP UP value (XXX V/S)",
+    },
+    "rupmin": {
+        "command": "RUPMIN",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out RAMP UP minimum value (0 V/S)",
+    },
+    "rupmax": {
+        "command": "RUPMAX",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out RAMP UP maximum value (1000 V/S)",
+    },
+    "rupdec": {
+        "command": "RUPDEC",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Read out RAMP UP number of decimal digits",
+    },
+    "rdw": {
+        "command": "RDW",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out RAMP DOWN value (XXX V/S)",
+    },
+    "rdwmin": {
+        "command": "RDWMIN",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out RAMP DOWN minimum value ( V/S )",
+    },
+    "rdwmax": {
+        "command": "RDWMAX",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out RAMP DOWN maximum value",
+    },
+    "rdwdec": {
+        "command": "RDWDEC",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out RAMP DOWN number of decimal digits",
+    },
+    "trip": {
+        "command": "TRIP",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out TRIP value (XXXXX)",
+    },
+    "tripmin": {
+        "command": "TRIPMIN",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "TRIP minimum value (S)",
+    },
+    "tripmax": {
+        "command": "TRIPMAX",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": float,
+        "possible_output_values": [],
+        "description": "Read out TRIP time minimum value ( S )",
+    },
+    "tripdec": {
+        "command": "TRIPDEC",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Read out TRIP time number of decimal digits",
+    },
+    "pdwn": {
+        "command": "PDWN",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": ["RAMP", "KILL"],
+        "description": "Read out POWER DOWN value (RAMP / KILL)",
+    },
+    "pol": {
+        "command": "POL",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": ["+", "-"],
+        "description": "Read out POLARITY value (+ / -)",
+    },
+    "polarity_positive": {
+        "command": "",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": bool,
+        "possible_output_values": [],
+        "description": "Check out POLARITY value is +",
+    },
+    "polarity_negative": {
+        "command": "",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": bool,
+        "possible_output_values": [],
+        "description": "Check out POLARITY value is -",
+    },
+    "stat": {
+        "command": "STAT",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Read out Channel status value (XXXXX)",
+    },
 }
 
 # Dictionary mapping set channel commands to their descriptions
-_set_channel_commands = {
-    "VSET": "VAL:XXXX.X Set VSET value",
-    "ISET": "VAL:XXXX.XX Set ISET value",
-    "MAXV": "VAL:XXXX Set MAXVSET value",
-    "RUP": "VAL:XXX Set RAMP UP value",
-    "RDW": "VAL:XXX Set RAMP DOWN value",
-    "TRIP": "VAL:XXXX.X Set TRIP time value",
-    "PDWN": "VAL:RAMP/KILL Set POWER DOWN mode value",
-    "IMRANGE": "VAL:HIGH/LOW Set IMON RANGE value",
-    "ON": "Set Ch ON",
-    "OFF": "Set Ch OFF",
+_SET_CHANNEL_COMMANDS = {
+    "vset": {
+        "command": "VSET",
+        "input_type": float,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set VSET value (XXXX.X V)",
+    },
+    "iset": {
+        "command": "ISET",
+        "input_type": float,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set ISET value (XXXX.XX µA)",
+    },
+    "maxv": {
+        "command": "MAXV",
+        "input_type": float,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set MAXVSET value (XXXX V)",
+    },
+    "rup": {
+        "command": "RUP",
+        "input_type": float,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set RAMP UP value (XXX V/S)",
+    },
+    "rdw": {
+        "command": "RDW",
+        "input_type": float,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set RAMP DOWN value (XXX V/S)",
+    },
+    "trip": {
+        "command": "TRIP",
+        "input_type": float,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set TRIP time value (XXXX.X s)",
+    },
+    "pdwn": {
+        "command": "PDWN",
+        "input_type": str,
+        "allowed_input_values": ["RAMP", "KILL"],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set POWER DOWN mode value (RAMP / KILL)",
+    },
+    "imrange": {
+        "command": "IMRANGE",
+        "input_type": str,
+        "allowed_input_values": ["HIGH", "LOW"],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set IMON RANGE value (HIGH / LOW)",
+    },
+    "turn_on": {
+        "command": "ON",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set Ch ON",
+    },
+    "turn_off": {
+        "command": "OFF",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set Ch OFF",
+    },
 }
 
 
@@ -92,8 +412,6 @@ def _get_mon_channel_command(bd: int, channel: int, command: str) -> bytes:
 
     command = command.upper()
 
-    validate_channel_command(command, _mon_channel_commands)
-
     return f"$BD:{bd:02d},CMD:MON,CH:{channel:01d},PAR:{command}\r\n".encode("utf-8")
 
 
@@ -121,20 +439,10 @@ def _get_set_channel_command(
 
     command = command.upper()
 
-    validate_channel_command(command, _set_channel_commands)
-
-    if command in ["ON", "OFF"]:
-        if value is not None:
-            raise ValueError(f"command '{command}' does not accept a value")
+    if value is None:
         return f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command}\r\n".encode(
             "utf-8"
         )
-    elif command == "IMRANGE":
-        if value not in ["HIGH", "LOW"]:
-            raise ValueError(f"command '{command}' only accepts 'HIGH' or 'LOW'")
-    elif command == "PDWN":
-        if value not in ["RAMP", "KILL"]:
-            raise ValueError(f"command '{command}' only accepts 'RAMP' or 'KILL'")
 
     return (
         f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command},VAL:{value}\r\n".encode(

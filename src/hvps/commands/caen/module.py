@@ -1,22 +1,116 @@
 from __future__ import annotations
 
+
 # Dictionary mapping monitor module commands to their descriptions
-_mon_module_commands = {
-    "BDNAME": "Read out module name (N1471)",
-    "BDNCH": "Read out number of Channels present (4)",
-    "BDFREL": "Read out Firmware Release (XX.X)",
-    "BDSNUM": "Read out value serial number (XXXXX)",
-    "BDILK": "Read out INTERLOCK status (YES/NO)",
-    "BDILKM": "Read out INTERLOCK mode (OPEN/CLOSED)",
-    "BDCTR": "Read out Control Mode (LOCAL/REMOTE)",
-    "BDTERM": "Read out LOCAL BUS Termination status (ON/OFF)",
-    "BDALARM": "Read out Board Alarm status value (XXXXX)",
+_MON_MODULE_COMMANDS = {
+    "name": {
+        "command": "BDNAME",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": [],
+        "description": "Read out module name (N1471)",
+    },
+    "number_of_channels": {
+        "command": "BDNCH",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Read out number of Channels present",
+    },
+    "firmware_release": {
+        "command": "BDFREL",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": [],
+        "description": "Read out Firmware Release (XX.X)",
+    },
+    "serial_number": {
+        "command": "BDSNUM",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": [],
+        "description": "Read out value serial number (XXXXX)",
+    },
+    "interlock_status": {
+        "command": "BDILK",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": ["YES", "NO"],
+        "description": "Read out INTERLOCK status (YES/NO)",
+    },
+    "interlock_mode": {
+        "command": "BDILKM",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": ["OPEN", "CLOSED"],
+        "description": "Read out INTERLOCK mode (OPEN/CLOSED)",
+    },
+    "control_mode": {
+        "command": "BDCTR",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": ["LOCAL", "REMOTE"],
+        "description": "Read out Control Mode (LOCAL/REMOTE)",
+    },
+    "local_bus_termination_status": {
+        "command": "BDTERM",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": str,
+        "possible_output_values": ["ON", "OFF"],
+        "description": "Read out LOCAL BUS Termination status (ON/OFF)",
+    },
+    "board_alarm_status": {
+        "command": "BDALARM",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": int,
+        "possible_output_values": [],
+        "description": "Read out Board Alarm status value (XXXXX)",
+    },
 }
 
 # Dictionary mapping set module commands to their descriptions
-_set_module_commands = {
-    "BDILKM": "VAL:OPEN/CLOSED Set Interlock Mode",
-    "BDCLR": "Clear alarm signal",
+_SET_MODULE_COMMANDS = {
+    "interlock_mode": {
+        "command": "BDILKM",
+        "input_type": str,
+        "allowed_input_values": ["OPEN", "CLOSED"],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set Interlock Mode",
+    },
+    "open_interlock": {
+        "command": "",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set INTERLOCK mode to OPEN)",
+    },
+    "close_interlock": {
+        "command": "",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Set INTERLOCK mode to CLOSE)",
+    },
+    "clear_alarm_signal": {
+        "command": "BDCLR",
+        "input_type": None,
+        "allowed_input_values": [],
+        "output_type": None,
+        "possible_output_values": [],
+        "description": "Clear alarm signal",
+    },
 }
 
 
@@ -38,10 +132,15 @@ def _get_mon_module_command(bd: int, command: str) -> bytes:
         raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
 
     command = command.upper()
-    if command not in _mon_module_commands:
-        valid_commands = ", ".join(_mon_module_commands.keys())
+    valid_commands = [
+        entry_value["command"]
+        for entry_key, entry_value in _MON_MODULE_COMMANDS.items()
+        if "command" in entry_value
+    ]
+    if command not in valid_commands:
+        valid_commands_string = ", ".join(valid_commands)
         raise ValueError(
-            f"Invalid command '{command}'. Valid commands are: {valid_commands}"
+            f"Invalid command '{command}'. Valid commands are: {valid_commands_string}"
         )
     return f"$BD:{bd:02d},CMD:MON,PAR:{command}\r\n".encode("utf-8")
 
@@ -67,9 +166,5 @@ def _get_set_module_command(
         raise ValueError(f"Invalid board number '{bd}'. Must be in the range 0..31.")
 
     command = command.upper()
-    if command not in _set_module_commands:
-        valid_commands = ", ".join(_set_module_commands.keys())
-        raise ValueError(
-            f"Invalid command '{command}'. Valid commands are: {valid_commands}"
-        )
+
     return f"$BD:{bd:02d},CMD:SET,PAR:{command},VAL:{value}\r\n".encode("utf-8")

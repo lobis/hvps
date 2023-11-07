@@ -36,7 +36,9 @@ def _write_command_read_response(
         return response
 
 
-def _parse_response(response: bytes, expected_response_type: type | None) -> List[str]:
+def _parse_response(
+    response: bytes, expected_response_type: type | None
+) -> str | List[str]:
     """Parse the response from a device.
 
     Args:
@@ -50,33 +52,37 @@ def _parse_response(response: bytes, expected_response_type: type | None) -> Lis
     """
 
     try:
-        response: str = response.decode("ascii").strip()
+        response = response.decode("ascii").strip()
     except UnicodeDecodeError:
         raise ValueError(f"Invalid response: {response}")
 
     if expected_response_type == float or expected_response_type == List[float]:
         # pattern for a float in scientific notation followed or not by units
         pattern = (
-            r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?(\s*[a-zA-Z]+(/+[a-zA-Z]+)?)?$"
+            r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?(\s*[a-zA-Z%]+(/+[a-zA-Z]+)?)?$"
         )
     elif expected_response_type == int or expected_response_type == List[int]:
-        pattern = r"^[-+]?\d+$"
+        pattern = r"^[-+]?\d+(\s*[a-zA-Z]+(/+[a-zA-Z]+)?)?$"
     elif expected_response_type == str or expected_response_type == List[str]:
         pattern = r"^[\x00-\x7F]+$"
     elif expected_response_type is None:
-        return response.split(",")
+        split_response = response.split(",")
+        if len(split_response) == 1:
+            return split_response[0]
+        return split_response
     else:
         raise ValueError(
             f"expected value type of {response}, {expected_response_type}, is not float, int or str"
         )
 
     split_response = response.split(",")
-
+    split_response = [s for s in split_response if not s == ""]
     for r in split_response:
         match = re.match(pattern, r)
         if not match:
             raise ValueError(
                 f"Invalid response: {response}, can't be identified as a {expected_response_type}, missmatch in RE"
             )
-
+    if len(split_response) == 1:
+        return split_response[0]
     return split_response

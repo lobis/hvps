@@ -1,3 +1,5 @@
+from serial import PortNotOpenError
+
 from hvps import Iseg
 import pytest
 
@@ -29,3 +31,6 @@ def test_iseg_channel(caplog):
     assert "Creating channel 0" in caplog.text
 
     print(f"channel: {channel.channel}")
+
+    with pytest.raises(PortNotOpenError):
+        _ = channel.voltage_set

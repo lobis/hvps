@@ -1,35 +1,52 @@
 from __future__ import annotations
+
+import inspect
 from typing import List
+
+from hvps.utils import check_command_input
 
 from ...commands.iseg.channel import (
     _get_set_channel_command,
     _get_mon_channel_command,
+    _MON_CHANNEL_COMMANDS,
+    _SET_CHANNEL_COMMANDS,
 )
 
 from ..channel import Channel as BaseChannel
+from ...utils.utils import check_command_output_and_convert
 
 
 class Channel(BaseChannel):
     def _write_command_read_response_channel_mon(
-        self, command: str, expected_response_type: type | None
-    ) -> str | None:
-        return self._write_command_read_response(
+        self, method_name: str, expected_response_type: type | None
+    ) -> str | int | float | List | None:
+        command = _MON_CHANNEL_COMMANDS[method_name]["command"]
+        check_command_input(_MON_CHANNEL_COMMANDS, method_name)
+        response = self._write_command_read_response(
             command=_get_mon_channel_command(channel=self.channel, command=command),
             expected_response_type=expected_response_type,
+        )
+        return check_command_output_and_convert(
+            method_name, None, response, _MON_CHANNEL_COMMANDS
         )
 
     def _write_command_read_response_channel_set(
         self,
-        command: str,
+        method_name: str,
         value: str | int | float | None,
         expected_response_type: type | None,
     ) -> str | None:
-        return self._write_command_read_response(
+        command = _SET_CHANNEL_COMMANDS[method_name]["command"]
+        check_command_input(_SET_CHANNEL_COMMANDS, method_name, value)
+        response = self._write_command_read_response(
             command=_get_set_channel_command(
                 channel=self.channel, command=command, value=value
             ),
             expected_response_type=expected_response_type,
         )
+        if response != "1":
+            raise ValueError("Last command haven't been processed.")
+        return response
 
     # Getters
     @property
@@ -42,16 +59,10 @@ class Channel(BaseChannel):
         Returns:
             The current action value.
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:TRIP:ACTION", expected_response_type=int
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Unexpected response. Multiple action values received.")
-        if not 0 <= int(response[0]) <= 4:
-            raise ValueError(
-                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
-            )
-        return int(response[0])
 
     @property
     def trip_timeout(
@@ -63,33 +74,25 @@ class Channel(BaseChannel):
         Returns:
             The current action value.
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:TRIP:TIME", expected_response_type=int
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Unexpected response. Multiple action values received.")
-        return int(response[0])
 
     @property
     def external_inhibit_action(
         self,
     ) -> int:  # Instruction for NHR or SHR only. Instruction for NHS
         """
-        Query the current action to be taken when a current trip occurs for the channel.
+        Query the action that should happen when an External Inhibit for the channel occurs.
 
         Returns:
             The current action value.
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:INHP:ACTION", expected_response_type=int
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Unexpected response. Multiple action values received.")
-        if not 0 <= int(response[0]) <= 4:
-            raise ValueError(
-                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
-            )
-        return int(response[0])
 
     @property
     def output_mode(self) -> int:  # Instruction for NHR or SHR only.
@@ -101,17 +104,10 @@ class Channel(BaseChannel):
 
         Output Mode allowed values: 1, 2, 3.
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:OUTPUT:MODE", expected_response_type=int
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-
-        allowed_modes = [1, 2, 3]
-        if int(response[0]) not in allowed_modes:
-            raise ValueError("Invalid output mode. Allowed modes are: 1, 2, 3.")
-        return int(response[0])
 
     @property
     def available_output_modes(self) -> List[int]:  # Instruction for NHR or SHR only
@@ -122,26 +118,10 @@ class Channel(BaseChannel):
             The list of available output mode values.
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:OUTPUT:MODE:LIST", expected_response_type=List[int]
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=List[int],
         )
-
-        if 0 >= len(response) > 3:
-            raise ValueError("Invalid number of output modes received.")
-
-        try:
-            output_values = [int(mode) for mode in response]
-        except ValueError:
-            raise ValueError("Invalid output mode value received.")
-
-        allowed_modes = [1, 2, 3]
-        for mode in output_values:
-            if mode not in allowed_modes:
-                raise ValueError(
-                    f"Invalid output mode. Allowed modes are: {allowed_modes}"
-                )
-
-        return output_values
 
     @property
     def output_polarity(self) -> str:  # Instruction for NHR or SHR only
@@ -155,15 +135,15 @@ class Channel(BaseChannel):
             polarity = channel.output_polarity
             print(polarity)  # Example output: "n"
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:OUTPUT:POL", expected_response_type=str
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=str,
         )
-        if len(response) != 1:
-            raise ValueError("Last command hasn't been processed.")
-        return response[0]
 
     @property
-    def available_output_polarities(self):  # Instruction for NHR or SHR only
+    def available_output_polarities(
+        self,
+    ) -> List[str]:  # Instruction for NHR or SHR only
         """
         Query the available channel output polarities as a list.
 
@@ -178,23 +158,13 @@ class Channel(BaseChannel):
             polarities = channel.available_output_polarities
             print(polarities)  # Example output: ["p", "n"]
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:OUTPUT:POL:LIST", expected_response_type=str
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=List[str],
         )
 
-        if len(response) != 2:
-            raise ValueError("Wrong number of values were sent, two values expected")
-
-        for polarity in response:
-            if polarity not in ["p", "n"]:
-                raise ValueError(
-                    "Invalid polarity value. Valid values are 'p' for positive and 'n' for negative."
-                )
-
-        return response
-
     @property
-    def voltage_set(self):
+    def voltage_set(self) -> float:
         """
         Query the voltage set Vset in Volt.
 
@@ -205,12 +175,10 @@ class Channel(BaseChannel):
             voltage = channel.voltage_set
             print(voltage)  # Example output: 1234.0
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:VOLT", expected_response_type=str
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-        return float(response[0][:-1])
 
     @property
     def voltage_limit(self) -> float:  # Instruction for SHR only
@@ -224,12 +192,10 @@ class Channel(BaseChannel):
             limit = channel.voltage_limit
             print(limit)  # Example output: 3000.0
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:VOLT:LIM", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-        return float(response[0][:-1])
 
     @property
     def voltage_nominal(self) -> float:
@@ -243,69 +209,61 @@ class Channel(BaseChannel):
             nominal = channel.voltage_nominal
             print(nominal)  # Example output: 6000.0
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:VOLT:NOM", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-        return float(response[0][:-1])
 
     @property
-    def voltage_mode(self) -> str:  # Instruction for NHR or SHR only
+    def voltage_mode(self) -> float:  # Instruction for NHR or SHR only
         """
         Query the configured channel voltage mode with polarity sign in Volt.
 
         Returns:
-            str: The configured channel voltage mode with polarity sign in Volt.
+            float: The configured channel voltage mode with polarity sign in Volt.
 
         Example:
             mode = channel.voltage_mode
-            print(mode)  # Example output: "6.0E3V"
+            print(mode)  # Example output: 6.0
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:VOLT:MODE", expected_response_type=str
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-        return response[0][:-1]
 
     @property
-    def voltage_mode_list(self) -> List[str]:  # Instruction for NHR or SHR only
+    def voltage_mode_list(self) -> List[float]:  # Instruction for NHR or SHR only
         """
         Query the available channel voltage modes as a list.
 
         Returns:
-            List[str]: The 3 available channel voltage modes as a list of strings.
+            List[float]: The 3 available channel voltage modes as a list of strings.
 
         Example:
             mode_list = channel.voltage_mode_list
-            print(mode_list)  # Example output: ["2.0E3V", "4.0E3V", "6.0E3V"]
+            print(mode_list)  # Example output: [2.0E3, 4.0E3, 6.0E3]
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:VOLT:MODE:LIST", expected_response_type=List[str]
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=List[float],
         )
-        if len(response) != 3:
-            raise ValueError("Wrong number of values were sent, three values expected")
-        return [mode[:-1] for mode in response]
 
     @property
-    def voltage_bounds(self) -> str:
+    def voltage_bounds(self) -> float:
         """
         Query the channel voltage bounds in Volt.
 
         Returns:
-            str: The channel voltage bounds in Volt.
+            float: The channel voltage bounds in Volt.
 
         Example:
             bounds = channel.voltage_bounds
-            print(bounds)  # Example output: "0.00000E3V"
+            print(bounds)  # Example output: 0.00000E3
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:VOLT:BOUNDS", expected_response_type=str
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were sent, one value expected")
-        return response[0][:-1]
 
     @property
     def set_on(self) -> bool:
@@ -319,12 +277,13 @@ class Channel(BaseChannel):
             is_on = channel.set_on
             print(is_on)  # Example output: True
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:VOLT:ON", expected_response_type=bool
+        return (
+            self._write_command_read_response_channel_mon(
+                method_name=inspect.currentframe().f_code.co_name,
+                expected_response_type=int,
+            )
+            == 1
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0][:-1]) == 1
 
     @property
     def emergency_off(self) -> bool:
@@ -338,12 +297,13 @@ class Channel(BaseChannel):
             is_emergency_off = channel.emergency_off
             print(is_emergency_off)  # Example output: False
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:VOLT:EMCY", expected_response_type=bool
+        return (
+            self._write_command_read_response_channel_mon(
+                method_name=inspect.currentframe().f_code.co_name,
+                expected_response_type=int,
+            )
+            == 1
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0][:-1]) == 1
 
     @property
     def current_set(self) -> float:
@@ -358,12 +318,10 @@ class Channel(BaseChannel):
             print(current)  # Example output: 50.000E-6
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:CURR", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])
 
     @property
     def current_limit(self) -> float:  # Instruction for SHR only
@@ -378,14 +336,10 @@ class Channel(BaseChannel):
             print(limit)  # Example output: 5.00000E-3
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:CURR:LIM", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-1]
-        )  # Remove the last character from the response (unit)
 
     @property
     def current_nominal(self) -> float:
@@ -400,14 +354,10 @@ class Channel(BaseChannel):
             print(nominal)  # Example output: 6.00000E-3
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:CURR:NOM", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-1]
-        )  # Remove the last character from the response (unit)
 
     @property
     def current_mode(self) -> float:  # Instruction for NHR or SHR only
@@ -422,14 +372,10 @@ class Channel(BaseChannel):
             print(mode)  # Example output: 2.00000E-3
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:CURR:MODE", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-1]
-        )  # Remove the last character from the response (unit)
 
     @property
     def current_mode_list(self) -> List[float]:  # Instruction for NHR or SHR only
@@ -444,15 +390,10 @@ class Channel(BaseChannel):
             print(modes)  # Example output: [6.0E-3, 4.0E-3, 2.0E-3]
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:CURR:MODE:LIST", expected_response_type=List[float]
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=List[float],
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        modes = [
-            float(mode[:-1]) for mode in response
-        ]  # Remove the last character from each mode (unit)
-        return modes
 
     @property
     def current_bounds(self) -> float:
@@ -467,12 +408,10 @@ class Channel(BaseChannel):
             print(bounds)  # Example output: 0.00000E-3
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:CURR:BOUNDS", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])
 
     @property
     def current_ramp_speed(self) -> float:  # Instruction for EHS, NHR or SHR only
@@ -487,12 +426,10 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 2.0000E-3
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:RAMP:CURR", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
 
     @property
     def voltage_ramp_speed(self) -> float:  # Instruction for EHS, NHR or SHR only
@@ -507,12 +444,10 @@ class Channel(BaseChannel):
             print(speed)  # Example output: 0.25000E3
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:RAMP:VOLT", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
 
     @property
     def voltage_ramp_speed_minimum(
@@ -529,12 +464,10 @@ class Channel(BaseChannel):
             print(speed_min)  # Example output: 0.00005E3
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:RAMP:VOLT:MIN", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
 
     @property
     def voltage_ramp_speed_maximum(
@@ -551,12 +484,10 @@ class Channel(BaseChannel):
             print(speed_max)  # Example output: 1.20000E3
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:RAMP:VOLT:MAX", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
 
     @property
     def current_ramp_speed_minimum(
@@ -573,12 +504,10 @@ class Channel(BaseChannel):
             print(speed_min)  # Example output: 1.0000E-3
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:RAMP:CURR:MIN", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
 
     @property
     def current_ramp_speed_maximum(
@@ -595,12 +524,10 @@ class Channel(BaseChannel):
             print(speed_max)  # Example output: 6.0000E-3
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:RAMP:CURR:MAX", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])
 
     @property
     def channel_control(self) -> int:
@@ -615,12 +542,10 @@ class Channel(BaseChannel):
             print(control)  # Example output: 8
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:CHAN:CONTROL", expected_response_type=int
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def channel_status(self) -> int:
@@ -635,12 +560,10 @@ class Channel(BaseChannel):
             print(status)  # Example output: 132
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":READ:CHAN:STATUS", expected_response_type=int
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def channel_event_mask(self) -> int:
@@ -654,12 +577,10 @@ class Channel(BaseChannel):
             mask = channel.channel_event_mask
             print(mask)  # Example output: 0
         """
-        response = self._write_command_read_response_channel_mon(
-            command="READ:CHAN:EVENT:MASK", expected_response_type=int
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=int,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return int(response[0])
 
     @property
     def measured_voltage(self) -> float:
@@ -673,12 +594,10 @@ class Channel(BaseChannel):
             voltage = channel.measured_voltage
             print(voltage)  # Example output: 1234.56
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":MEAS:VOLT", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])
 
     @property
     def measured_current(self) -> float:
@@ -692,12 +611,10 @@ class Channel(BaseChannel):
             current = channel.measured_current
             print(current)  # Example output: 0.00123456
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":MEAS:CURR", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-1])
 
     @property
     def channel_voltage_ramp_up_speed(
@@ -713,12 +630,10 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_up_speed
             print(speed)  # Example output: 0.250E3
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:RAMP:VOLT:UP", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(response[0][:-3])  # Remove the last 3 characters (unit)
 
     @property
     def channel_voltage_ramp_down_speed(
@@ -734,14 +649,10 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_down_speed
             print(speed)  # Example output: 0.12500E3
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:RAMP:VOLT:DOWN", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-3]
-        )  # Remove the last 3 characters (unit) and cast to float
 
     @property
     def channel_current_ramp_up_speed(self) -> float:
@@ -755,14 +666,10 @@ class Channel(BaseChannel):
             speed = channel.channel_voltage_ramp_down_speed
             print(speed)  # Example output: 0.12500E3
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:RAMP:CURR:UP", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-3]
-        )  # Remove the last 3 characters (unit) and cast to float
 
     @property
     def channel_current_ramp_down_speed(self) -> float:
@@ -773,14 +680,10 @@ class Channel(BaseChannel):
             float: The channel current ramp down speed in Ampere/second.
 
         """
-        response = self._write_command_read_response_channel_mon(
-            command=":CONF:RAMP:CURR:DOWN", expected_response_type=float
+        return self._write_command_read_response_channel_mon(
+            method_name=inspect.currentframe().f_code.co_name,
+            expected_response_type=float,
         )
-        if len(response) != 1:
-            raise ValueError("Wrong number of values were received, one value expected")
-        return float(
-            response[0][:-3]
-        )  # Remove the last 3 characters (unit) and cast to float
 
     # Setters
 
@@ -799,17 +702,12 @@ class Channel(BaseChannel):
                     - 3: Shut down the whole module without ramp
                     - 4: Disable the Delayed Trip function
         """
-        if not 0 <= action <= 4:
-            raise ValueError(
-                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
-            )
-        response = self._write_command_read_response(
-            command=_get_set_channel_command(
-                self._channel, ":CONF:TRIP:ACTION", action
-            ),
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=action,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if self.trip_action != action:
             raise ValueError("Last command haven't been processed.")
 
     @trip_timeout.setter
@@ -822,12 +720,12 @@ class Channel(BaseChannel):
         Args:
             timeout: The timeout value to set in milliseconds. Must be in the range 1 to 4095 ms.
         """
-        if not 1 <= timeout <= 4095:
-            raise ValueError("Timeout value must be in the range 1 to 4095 ms.")
-        response = self._write_command_read_response_channel_set(
-            command=":CONF:TRIP:TIME", value=timeout, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=timeout,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if self.trip_timeout != timeout:
             raise ValueError("Last command haven't been processed.")
 
     @external_inhibit_action.setter
@@ -845,18 +743,13 @@ class Channel(BaseChannel):
                     - 3: Shut down the whole module without ramp
                     - 4: Disable the External Inhibit function
         """
-        if not 0 <= action <= 4:
-            raise ValueError(
-                "Invalid action value. Expected values are 0, 1, 2, 3, or 4."
-            )
-        response = self._write_command_read_response(
-            command=_get_set_channel_command(
-                self._channel, ":CONF:INHP:ACTION", action
-            ),
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=action,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
+        # if self.external_inhibit_action != action:
+        #    raise ValueError("Last command haven't been processed.")
 
     @output_mode.setter
     def output_mode(self, mode: int) -> None:  # Instruction for NHR or SHR only.
@@ -871,13 +764,12 @@ class Channel(BaseChannel):
 
         Output Mode allowed values: 1, 2, 3.
         """
-        allowed_modes = [1, 2, 3]
-        if mode not in allowed_modes:
-            raise ValueError("Invalid output mode. Allowed modes are: 1, 2, 3.")
-        response = self._write_command_read_response_channel_set(
-            command=":CONF:OUTPUT:MODE", value=mode, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=mode,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if self.output_mode != mode:
             raise ValueError("Last command haven't been processed.")
 
     @output_polarity.setter
@@ -896,18 +788,13 @@ class Channel(BaseChannel):
         Example:
             channel.output_polarity("n")
         """
-        if polarity not in ["p", "n"]:
-            raise ValueError(
-                "Invalid polarity value. Valid values are 'p' for positive and 'n' for negative."
-            )
-        response = self._write_command_read_response(
-            command=_get_set_channel_command(
-                self._channel, ":CONF:OUTPUT:POL", polarity
-            ),
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=polarity,
             expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.output_polarity != polarity:
+            raise ValueError("Last command haven't been processed.")
 
     @voltage_set.setter
     def voltage_set(self, vset: float) -> None:
@@ -917,11 +804,15 @@ class Channel(BaseChannel):
         Args:
             vset (float): The voltage set value to set in Volt.
         """
-        response = self._write_command_read_response_channel_set(
-            command=":VOLT", value=vset, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=vset,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if not (
+            self.voltage_set == round(vset, 1) or self.voltage_set == -round(vset, 1)
+        ):
+            raise ValueError("Last command haven't been processed.")
 
     @voltage_bounds.setter
     def voltage_bounds(self, vbounds: float) -> None:
@@ -931,21 +822,13 @@ class Channel(BaseChannel):
         Args:
             vbounds (float): The voltage bounds value to set in Volt.
         """
-        response = self._write_command_read_response_channel_set(
-            command=":VOLT:BOUNDS", value=vbounds, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=vbounds,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
-
-    def clear_emergency_off(self) -> None:
-        """
-        Clear the channel from state emergency off. The channel goes to state off.
-        """
-        response = self._write_command_read_response_channel_set(
-            command=":VOLT EMCY", value="CLR", expected_response_type=None
-        )
-        if int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.voltage_bounds != vbounds:
+            raise ValueError("Last command haven't been processed.")
 
     @current_set.setter
     def current_set(self, iset: float) -> None:
@@ -955,10 +838,12 @@ class Channel(BaseChannel):
         Args:
             iset (float): The current set value to set in Ampere.
         """
-        response = self._write_command_read_response_channel_set(
-            command=":CURR", value=iset, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=iset,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if not (self.current_set == iset or self.current_set == -iset):
             raise ValueError("Last command haven't been processed.")
 
     @current_bounds.setter
@@ -969,10 +854,12 @@ class Channel(BaseChannel):
         Args:
             ibounds (float): The current bounds value to set in Ampere.
         """
-        response = self._write_command_read_response_channel_set(
-            command=":CURR:BOUNDS", value=ibounds, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=ibounds,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
+        if self.current_bounds != ibounds:
             raise ValueError("Last command haven't been processed.")
 
     def set_channel_voltage_ramp_up_down_speed(
@@ -987,11 +874,16 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_up_down_speed(250)
         """
-        response = self._write_command_read_response_channel_set(
-            command=":CONF:RAMP:VOLT", value=speed, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if (
+            self.channel_voltage_ramp_up_speed != speed
+            or self.channel_voltage_ramp_down_speed != speed
+        ):
+            raise ValueError("Last command haven't been processed.")
 
     @channel_voltage_ramp_up_speed.setter
     def channel_voltage_ramp_up_speed(
@@ -1006,14 +898,13 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_up_speed(250)
         """
-        response = self._write_command_read_response(
-            command=_get_set_channel_command(
-                self._channel, ":CONF:RAMP:VOLT:UP", speed
-            ),
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.channel_voltage_ramp_up_speed != speed:
+            raise ValueError("Last command haven't been processed.")
 
     @channel_voltage_ramp_down_speed.setter
     def channel_voltage_ramp_down_speed(
@@ -1028,14 +919,13 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_voltage_ramp_down_speed(125.0)
         """
-        response = self._write_command_read_response(
-            command=_get_set_channel_command(
-                self._channel, ":CONF:RAMP:VOLT:DOWN", speed
-            ),
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.channel_voltage_ramp_down_speed != speed:
+            raise ValueError("Last command haven't been processed.")
 
     def set_channel_current_ramp_up_down_speed(
         self, speed: float
@@ -1049,11 +939,16 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_up_down_speed(125.0)
         """
-        response = self._write_command_read_response_channel_set(
-            command=":CONF:RAMP:CURR", value=speed, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
+            expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if (
+            self.channel_current_ramp_up_speed != speed
+            or self.channel_current_ramp_down_speed != speed
+        ):
+            raise ValueError("Last command haven't been processed.")
 
     @channel_current_ramp_up_speed.setter
     def channel_current_ramp_up_speed(
@@ -1068,14 +963,13 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_up_speed(125.0)
         """
-        response = self._write_command_read_response(
-            command=_get_set_channel_command(
-                self._channel, ":CONF:RAMP:CURR:UP", speed
-            ),
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.channel_current_ramp_up_speed != speed:
+            raise ValueError("Last command haven't been processed.")
 
     @channel_current_ramp_down_speed.setter
     def channel_current_ramp_down_speed(
@@ -1090,64 +984,63 @@ class Channel(BaseChannel):
         Example:
             channel.set_channel_current_ramp_down_speed(125.0)
         """
-        response = self._write_command_read_response(
-            command=_get_set_channel_command(
-                self._channel, ":CONF:RAMP:CURR:DOWN", speed
-            ),
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=speed,
             expected_response_type=None,
         )
-        if len(response) != 1 or int(response[0]) != 1:
-            raise ValueError("Last command hasn't been processed.")
+        if self.channel_current_ramp_down_speed != speed:
+            raise ValueError("Last command haven't been processed.")
 
     def switch_on_high_voltage(self) -> None:
         """
         Switch on the high voltage with the configured ramp speed.
         """
-        response = self._write_command_read_response_channel_set(
-            command=":VOLT ON", value=None, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
 
     def switch_off_high_voltage(self) -> None:
         """
         Switch off the high voltage with the configured ramp speed.
         """
-        response = self._write_command_read_response_channel_set(
-            command=":VOLT OFF", value=None, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
 
     def shutdown_channel_high_voltage(self) -> None:
         """
         Shut down the channel high voltage (without ramp). The channel stays in Emergency Off until the command EMCY CLR is given.
         """
-        response = self._write_command_read_response_channel_set(
-            command=":VOLT EMCY OFF", value=None, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
 
     def clear_channel_emergency_off(self) -> None:
         """
         Clear the channel from state emergency off. The channel goes to state off.
         """
-        response = self._write_command_read_response_channel_set(
-            command=":VOLT EMCY CLR", value=None, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
 
     def clear_event_status(self) -> None:
         """
         Clear the Channel Event Status register.
         """
-        response = self._write_command_read_response_channel_set(
-            command=":EVENT CLEAR", value=None, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=None,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
 
     def clear_event_bits(self, bits: int) -> None:
         """
@@ -1157,11 +1050,11 @@ class Channel(BaseChannel):
         Args:
             bits: The bits or bit combinations to clear. Should be provided as an integer.
         """
-        response = self._write_command_read_response_channel_set(
-            command=":EVENT", value=bits, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=bits,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
 
     def set_event_mask(self, mask: int) -> None:
         """
@@ -1170,8 +1063,8 @@ class Channel(BaseChannel):
         Args:
             mask: new mask value
         """
-        response = self._write_command_read_response_channel_set(
-            command=":EVENT:MASK", value=mask, expected_response_type=None
+        self._write_command_read_response_channel_set(
+            method_name=inspect.currentframe().f_code.co_name,
+            value=mask,
+            expected_response_type=None,
         )
-        if int(response[0]) != 1:
-            raise ValueError("Last command haven't been processed.")
