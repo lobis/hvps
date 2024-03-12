@@ -12,7 +12,6 @@ from ...commands.caen.module import (
     _SET_MODULE_COMMANDS,
 )
 from ...utils.utils import string_number_to_bit_array, check_command_output_and_convert
-from ...utils.utils import string_number_to_bit_array
 from .channel import Channel
 from ..module import Module as BaseModule
 
