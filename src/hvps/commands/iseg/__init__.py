@@ -56,14 +56,14 @@ def _parse_response(
     except UnicodeDecodeError:
         raise ValueError(f"Invalid response: {response}")
 
-    if expected_response_type == float or expected_response_type == List[float]:
+    if expected_response_type is float or expected_response_type is List[float]:
         # pattern for a float in scientific notation followed or not by units
         pattern = (
             r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?(\s*[a-zA-Z%]+(/+[a-zA-Z]+)?)?$"
         )
-    elif expected_response_type == int or expected_response_type == List[int]:
+    elif expected_response_type is int or expected_response_type is List[int]:
         pattern = r"^[-+]?\d+(\s*[a-zA-Z]+(/+[a-zA-Z]+)?)?$"
-    elif expected_response_type == str or expected_response_type == List[str]:
+    elif expected_response_type is str or expected_response_type is List[str]:
         pattern = r"^[\x00-\x7F]+$"
     elif expected_response_type is None:
         split_response = response.split(",")

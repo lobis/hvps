@@ -22,13 +22,10 @@ repos:
       - id: pretty-format-json
         args: [ --autofix ]
 
-  - repo: https://github.com/psf/black
-    rev: 24.8.0
-    hooks:
-      - id: black
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.1
+    rev: v0.6.2
     hooks:
       - id: ruff
-        args: [ "--fix-only" , "--show-fixes" ]
+        args: [ "--fix" , "--show-fixes" ] # --fix-only
+
+      - id: ruff-format

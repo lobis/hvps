@@ -188,6 +188,21 @@ def test_iseg_channel_monitor():
     # TODO: validate the values (atleast check if they are not None)
     # TODO: Do the same for CAEN
 
+    iseg = Iseg(
+        port=serial_port,
+        baudrate=serial_baud,
+        connect=True,
+        timeout=timeout,
+        logging_level=logging.DEBUG,
+    )
+    iseg.connect()
+
+    print(
+        f"Serial port status: connected: {iseg.connected}, port: {iseg.port}, baudrate: {iseg.baudrate}, timeout: {iseg.timeout}"
+    )
+    module = iseg.module(0)
+    channel = module.channel(0)
+
     trip_action = channel.trip_action
     print(f"trip_action: {trip_action}")
 
