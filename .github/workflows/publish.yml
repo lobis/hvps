@@ -8,7 +8,7 @@ jobs:
   update-version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
@@ -38,7 +38,7 @@ jobs:
           git push origin HEAD:main
 
       - name: cache source code after modification
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}
           key: ${{ runner.os }}-src-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
@@ -52,13 +52,13 @@ jobs:
 
     steps:
       - name: restore source code from cache (contains update to version)
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}
           key: ${{ runner.os }}-src-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
 
@@ -82,7 +82,7 @@ jobs:
           python -c "import os,json;version=json.load(open('bindings/nodejs/hvps/package.json'))['version'];assert '${{ github.event.release.tag_name }}' == 'v' + version"
 
       - name: Cache dist directory
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: dist
           key: ${{ runner.os }}-dist-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Restore dist from cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: dist
           key: ${{ runner.os }}-dist-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
@@ -112,12 +112,12 @@ jobs:
 
     steps:
       - name: restore source code from cache (contains update to version)
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}
           key: ${{ runner.os }}-src-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
@@ -141,12 +141,12 @@ jobs:
 
     steps:
       - name: restore source code from cache (contains update to version)
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}
           key: ${{ runner.os }}-src-${{ github.sha }}-${{ github.run_id}}-${{ github.run_number }}
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
@@ -157,7 +157,7 @@ jobs:
         run: npm install
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
 
