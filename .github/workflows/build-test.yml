@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ ubuntu-latest, windows-latest, macos-latest ]
-        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
 
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 20
@@ -40,7 +40,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: "npm"
           cache-dependency-path: bindings/nodejs/hvps/package-lock.json
 
