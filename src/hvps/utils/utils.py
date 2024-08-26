@@ -84,12 +84,12 @@ def check_command_input(
             raise ValueError(f"Method {method} does not take an input value.")
         else:
             return
-    if input_type == str:
+    if input_type is str:
         if not isinstance(input_value, str):
             raise ValueError(
                 f"Value {input_value} must be a string. Got {type(input_value)} instead."
             )
-    if input_type == int or input_type == float:
+    if input_type is int or input_type is float:
         if not isinstance(input_value, (int, float)):
             raise ValueError(
                 f"Value {input_value} must be a number. Got {type(input_value)} instead."
@@ -137,14 +137,14 @@ def check_command_output_and_convert(
         else:
             return None
     else:
-        if output_type == float or output_type == int:
+        if output_type is float or output_type is int:
             try:
                 value = output_type(remove_units(response))
             except ValueError:
                 raise ValueError(
                     f"Invalid string '{response}'. Must be a {output_type}."
                 )
-        elif output_type == List[float]:
+        elif output_type is List[float]:
             response = response.split(",")
             try:
                 value = [float(remove_units(v)) for v in response]
@@ -152,7 +152,7 @@ def check_command_output_and_convert(
                 raise ValueError(
                     f"Invalid string '{response}'. Must be a list of float."
                 )
-        elif output_type == List[int]:
+        elif output_type is List[int]:
             try:
                 response = response.split(",")
                 value = [int(v) for v in response]
