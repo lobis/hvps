@@ -203,8 +203,8 @@ class CaenHVPSGUI:
                 fg="white",
                 borderwidth=0,
                 highlightthickness=0,
-                command=lambda i=i: self.issue_command(
-                    self.open_channel_property_window, i
+                command=lambda x=i: self.issue_command(
+                    self.open_channel_property_window, x
                 ),
             )
             channel_button.grid(row=i + 2, column=0, padx=10, pady=5)
