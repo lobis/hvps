@@ -44,6 +44,26 @@ class ToolTip:
 
 class CaenHVPSGUI:
     def __init__(self, module):
+        self.channel_vars = None
+        self.set_buttons = None
+        self.turn_buttons = None
+        self.state_tooltips = None
+        self.state_indicators = None
+        self.imon_entries = None
+        self.vmon_entries = None
+        self.vset_entries = None
+
+        self.clear_alarm_button = None
+        self.clear_alarm_turnoff_button = None
+        self.interlock_indicator = None
+        self.interlock_tooltip = None
+        self.alarm_tooltip = None
+        self.alarm_indicator = None
+        self.multichannel_frame = None
+        self.channel_frame = None
+        self.main_frame = None
+        self.root = None
+
         self.m = module  # Simulated module with 4 channels
         self.command_queue = queue.Queue()
         self.device_lock = threading.Lock()
@@ -58,9 +78,7 @@ class CaenHVPSGUI:
         self.alarm_frame = self.create_alarm_frame(self.main_frame)
         self.channel_frame = self.create_channels_frame(self.main_frame)
         if self.m.number_of_channels > 1:
-            self.multichhannel_frame = self.create_multichannel_frame(
-                self.channel_frame
-            )
+            self.multichannel_frame = self.create_multichannel_frame(self.channel_frame)
 
         self.start_background_threads()
 
@@ -304,9 +322,7 @@ class CaenHVPSGUI:
         entries = {}
         for prop, description in set_properties.items():
             p = prop.lower()
-            if p not in properties:
-                continue
-            if p == "vset":
+            if p not in properties or p == "vset":
                 continue
 
             label = tk.Label(
