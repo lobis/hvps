@@ -2,6 +2,7 @@ import tkinter as tk
 import threading
 import queue
 import time
+import argparse
 
 import hvps
 
@@ -519,17 +520,25 @@ class CaenHVPSGUI:
 
 
 if __name__ == "__main__":
-    # ========================= IN REAL USAGE =========================
-    caen = hvps.Caen(port="/dev/ttyUSB0")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test", action="store_true", help="Enable test mode")
+    parser.add_argument("--port", type=str, help="Select port", default="/dev/ttyUSB0")
+
+    args = parser.parse_args()
+
+    if args.test:
+        from caenSimulator import *  # noqa: F403
+
+        m = ModuleSimulator(4)  # noqa: F405
+
+        CaenHVPSGUI(module=m)
+        exit(0)
+
+    caen = hvps.Caen(port=args.port)
+
     print("port:", caen.port)
     print("baudrate:", caen.baudrate)
-    m = caen.module(0)
-    # =========================================================
 
-    """
-    # ========================= TESTING =========================
-    from caenSimulator import *
-    m = ModuleSimulator(4)
-    # =========================================================
-    """
+    m = caen.module(0)
+
     CaenHVPSGUI(module=m)
