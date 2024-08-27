@@ -224,7 +224,7 @@ class CaenHVPSGUI:
                 font=("Arial", 9),
                 bg="navy",
                 fg="white",
-                command=lambda i=i: self.issue_command(self.toggle_channel, i),
+                command=lambda x=i: self.issue_command(self.toggle_channel, x),
             )
             turn_button.grid(row=i + 2, column=2, padx=35, pady=5)
             self.turn_buttons.append(turn_button)
@@ -235,7 +235,7 @@ class CaenHVPSGUI:
                 font=("Arial", 9),
                 bg="navy",
                 fg="white",
-                command=lambda i=i: self.issue_command(self.set_vset, i),
+                command=lambda x=i: self.issue_command(self.set_vset, x),
             )
             set_button.grid(row=i + 2, column=3, sticky="NSW", padx=0, pady=5)
             self.set_buttons.append(set_button)
