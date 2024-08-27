@@ -17,7 +17,7 @@ class ToolTip:
         self.widget.bind("<Enter>", self.show_tooltip)
         self.widget.bind("<Leave>", self.hide_tooltip)
 
-    def show_tooltip(self, event=None):
+    def show_tooltip(self):
         x = self.widget.winfo_rootx() + 20
         y = self.widget.winfo_rooty() + 20
         self.tooltip = tk.Toplevel(self.widget)
@@ -33,7 +33,7 @@ class ToolTip:
         )
         label.pack()
 
-    def hide_tooltip(self, event=None):
+    def hide_tooltip(self):
         if self.tooltip:
             self.tooltip.destroy()
         self.tooltip = None
