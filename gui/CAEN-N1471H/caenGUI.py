@@ -5,12 +5,8 @@ import time
 
 import hvps
 
-CHANNEL_NAMES = {
-    0: 'mesh right',
-    1: 'mesh left',
-    2: 'gem top',
-    3: 'gem bottom'
-}
+CHANNEL_NAMES = {0: "mesh right", 1: "mesh left", 2: "gem top", 3: "gem bottom"}
+
 
 class ToolTip:
     def __init__(self, widget, text):
@@ -27,7 +23,14 @@ class ToolTip:
         self.tooltip = tk.Toplevel(self.widget)
         self.tooltip.wm_overrideredirect(True)
         self.tooltip.wm_geometry(f"+{x}+{y}")
-        label = tk.Label(self.tooltip, text=self.text, background="light goldenrod", relief="solid", borderwidth=1, font=("Arial", 10))
+        label = tk.Label(
+            self.tooltip,
+            text=self.text,
+            background="light goldenrod",
+            relief="solid",
+            borderwidth=1,
+            font=("Arial", 10),
+        )
         label.pack()
 
     def hide_tooltip(self, event=None):
@@ -37,6 +40,7 @@ class ToolTip:
 
     def change_text(self, text):
         self.text = text
+
 
 class CaenHVPSGUI:
     def __init__(self, module):
@@ -54,7 +58,9 @@ class CaenHVPSGUI:
         self.alarm_frame = self.create_alarm_frame(self.main_frame)
         self.channel_frame = self.create_channels_frame(self.main_frame)
         if self.m.number_of_channels > 1:
-            self.multichhannel_frame = self.create_multichannel_frame(self.channel_frame)
+            self.multichhannel_frame = self.create_multichannel_frame(
+                self.channel_frame
+            )
 
         self.start_background_threads()
 
@@ -63,41 +69,105 @@ class CaenHVPSGUI:
     def create_main_frame(self):
         main_frame = tk.Frame(self.root, bg="lightgray", padx=10, pady=10)
         main_frame.pack(fill="both", expand=True)
-        tk.Label(main_frame, text=f"Module {self.m.name}", font=("Arial", 16), bg="lightgray").grid(row=0, column=0, columnspan=2, sticky="w", pady=10)
+        tk.Label(
+            main_frame, text=f"Module {self.m.name}", font=("Arial", 16), bg="lightgray"
+        ).grid(row=0, column=0, columnspan=2, sticky="w", pady=10)
         return main_frame
 
     def create_alarm_frame(self, frame):
         alarm_frame = tk.Frame(frame, bg="gray", padx=20, pady=20)
         alarm_frame.grid(row=1, column=0, padx=10, pady=10)
 
-        tk.Label(alarm_frame, text="Alarm", font=("Arial", 12, "bold"), bg="gray", fg="black").grid(row=0, column=0)
-        tk.Label(alarm_frame, text=f"Interlock\n({self.m.interlock_mode})", font=("Arial", 12, "bold"), bg="gray", fg="black").grid(row=0, column=1)
+        tk.Label(
+            alarm_frame, text="Alarm", font=("Arial", 12, "bold"), bg="gray", fg="black"
+        ).grid(row=0, column=0)
+        tk.Label(
+            alarm_frame,
+            text=f"Interlock\n({self.m.interlock_mode})",
+            font=("Arial", 12, "bold"),
+            bg="gray",
+            fg="black",
+        ).grid(row=0, column=1)
 
-        self.alarm_indicator = tk.Canvas(alarm_frame, width=30, height=30, bg="red", highlightthickness=0)
+        self.alarm_indicator = tk.Canvas(
+            alarm_frame, width=30, height=30, bg="red", highlightthickness=0
+        )
         self.alarm_indicator.grid(row=1, column=0, padx=10, pady=10)
         self.alarm_tooltip = ToolTip(self.alarm_indicator, "Alarm signal")
 
-        self.interlock_indicator = tk.Canvas(alarm_frame, width=30, height=30, bg="green", highlightthickness=0)
+        self.interlock_indicator = tk.Canvas(
+            alarm_frame, width=30, height=30, bg="green", highlightthickness=0
+        )
         self.interlock_indicator.grid(row=1, column=1, padx=10, pady=10)
         self.interlock_tooltip = ToolTip(self.interlock_indicator, "Interlock signal")
 
-        self.clear_alarm_button = tk.Button(alarm_frame, text="Clear alarm signal", font=("Arial", 10), bg="navy", fg="white", command=lambda: self.issue_command(self.clear_alarm))
+        self.clear_alarm_button = tk.Button(
+            alarm_frame,
+            text="Clear alarm signal",
+            font=("Arial", 10),
+            bg="navy",
+            fg="white",
+            command=lambda: self.issue_command(self.clear_alarm),
+        )
         self.clear_alarm_button.grid(row=2, column=0, columnspan=2, pady=20)
-        self.clear_alarm_turnoff_button = tk.Button(alarm_frame, text="Clear & turn off all", font=("Arial", 10), bg="navy", fg="white", command=lambda: self.issue_command(self.clear_and_turn_off))
+        self.clear_alarm_turnoff_button = tk.Button(
+            alarm_frame,
+            text="Clear & turn off all",
+            font=("Arial", 10),
+            bg="navy",
+            fg="white",
+            command=lambda: self.issue_command(self.clear_and_turn_off),
+        )
         self.clear_alarm_turnoff_button.grid(row=3, column=0, columnspan=2, pady=10)
-        
+
         return alarm_frame
 
     def create_channels_frame(self, frame):
         channels_frame = tk.Frame(frame, bg="darkblue", padx=10, pady=10)
         channels_frame.grid(row=1, column=1, padx=10, pady=10)
 
-        tk.Label(channels_frame, text="Channels", font=("Arial", 14, "bold"), bg="darkblue", fg="white").grid(row=0, column=0, columnspan=7, pady=10)
-        tk.Label(channels_frame, text="state", font=("Arial", 10, "bold"), bg="darkblue", fg="white").grid(row=1, column=1)
-        tk.Label(channels_frame, text="Turn on/off", font=("Arial", 10, "bold"), bg="darkblue", fg="white").grid(row=1, column=2)
-        tk.Label(channels_frame, text="vset (V)", font=("Arial", 10, "bold"), bg="darkblue", fg="white").grid(row=1, column=3, columnspan=2)
-        tk.Label(channels_frame, text="vmon (V)", font=("Arial", 10, "bold"), bg="darkblue", fg="white").grid(row=1, column=5)
-        tk.Label(channels_frame, text="imon (uA)", font=("Arial", 10, "bold"), bg="darkblue", fg="white").grid(row=1, column=6)
+        tk.Label(
+            channels_frame,
+            text="Channels",
+            font=("Arial", 14, "bold"),
+            bg="darkblue",
+            fg="white",
+        ).grid(row=0, column=0, columnspan=7, pady=10)
+        tk.Label(
+            channels_frame,
+            text="state",
+            font=("Arial", 10, "bold"),
+            bg="darkblue",
+            fg="white",
+        ).grid(row=1, column=1)
+        tk.Label(
+            channels_frame,
+            text="Turn on/off",
+            font=("Arial", 10, "bold"),
+            bg="darkblue",
+            fg="white",
+        ).grid(row=1, column=2)
+        tk.Label(
+            channels_frame,
+            text="vset (V)",
+            font=("Arial", 10, "bold"),
+            bg="darkblue",
+            fg="white",
+        ).grid(row=1, column=3, columnspan=2)
+        tk.Label(
+            channels_frame,
+            text="vmon (V)",
+            font=("Arial", 10, "bold"),
+            bg="darkblue",
+            fg="white",
+        ).grid(row=1, column=5)
+        tk.Label(
+            channels_frame,
+            text="imon (uA)",
+            font=("Arial", 10, "bold"),
+            bg="darkblue",
+            fg="white",
+        ).grid(row=1, column=6)
 
         self.vset_entries = []
         self.vmon_entries = []
@@ -107,54 +177,106 @@ class CaenHVPSGUI:
         self.turn_buttons = []
         self.set_buttons = []
         for i in range(self.m.number_of_channels):
-            channel_button = tk.Button(channels_frame, text=f"{CHANNEL_NAMES[i]}", font=("Arial", 12, "bold"), bg="darkblue", fg="white",  borderwidth=0, highlightthickness=0, command=lambda i=i: self.issue_command(self.open_channel_property_window, i))
-            channel_button.grid(row=i+2, column=0, padx=10, pady=5)
+            channel_button = tk.Button(
+                channels_frame,
+                text=f"{CHANNEL_NAMES[i]}",
+                font=("Arial", 12, "bold"),
+                bg="darkblue",
+                fg="white",
+                borderwidth=0,
+                highlightthickness=0,
+                command=lambda i=i: self.issue_command(
+                    self.open_channel_property_window, i
+                ),
+            )
+            channel_button.grid(row=i + 2, column=0, padx=10, pady=5)
             ToolTip(channel_button, f"Channel {i}: click for more setting options.")
 
-            state_indicator = tk.Canvas(channels_frame, width=20, height=20, bg="black", highlightthickness=0)
-            state_indicator.grid(row=i+2, column=1, sticky="NSEW", padx=5, pady=5)
+            state_indicator = tk.Canvas(
+                channels_frame, width=20, height=20, bg="black", highlightthickness=0
+            )
+            state_indicator.grid(row=i + 2, column=1, sticky="NSEW", padx=5, pady=5)
             self.state_indicators.append(state_indicator)
-            self.state_tooltips.append(ToolTip(state_indicator, f"State:"))
+            self.state_tooltips.append(ToolTip(state_indicator, "State:"))
 
-            turn_button = tk.Button(channels_frame, text="--------", font=("Arial", 9), bg="navy", fg="white", command=lambda i=i: self.issue_command(self.toggle_channel, i))
-            turn_button.grid(row=i+2, column=2, padx=35, pady=5)
+            turn_button = tk.Button(
+                channels_frame,
+                text="--------",
+                font=("Arial", 9),
+                bg="navy",
+                fg="white",
+                command=lambda i=i: self.issue_command(self.toggle_channel, i),
+            )
+            turn_button.grid(row=i + 2, column=2, padx=35, pady=5)
             self.turn_buttons.append(turn_button)
 
-            set_button = tk.Button(channels_frame, text="Set", font=("Arial", 9), bg="navy", fg="white", command=lambda i=i: self.issue_command(self.set_vset, i))
-            set_button.grid(row=i+2, column=3, sticky="NSW", padx=0, pady=5)
+            set_button = tk.Button(
+                channels_frame,
+                text="Set",
+                font=("Arial", 9),
+                bg="navy",
+                fg="white",
+                command=lambda i=i: self.issue_command(self.set_vset, i),
+            )
+            set_button.grid(row=i + 2, column=3, sticky="NSW", padx=0, pady=5)
             self.set_buttons.append(set_button)
 
-            vset_entry = tk.Entry(channels_frame, width=7, justify='center')
+            vset_entry = tk.Entry(channels_frame, width=7, justify="center")
             vset_entry.insert(0, str(self.m.channels[i].vset))
-            vset_entry.grid(row=i+2, column=4, sticky="NSE", padx=0, pady=5)
+            vset_entry.grid(row=i + 2, column=4, sticky="NSE", padx=0, pady=5)
             self.vset_entries.append(vset_entry)
 
-            vmon_entry = tk.Entry(channels_frame, width=7, justify='center')
+            vmon_entry = tk.Entry(channels_frame, width=7, justify="center")
             vmon_entry.insert(0, "-1")
-            vmon_entry.grid(row=i+2, column=5, sticky="NS", padx=10, pady=5)
+            vmon_entry.grid(row=i + 2, column=5, sticky="NS", padx=10, pady=5)
             self.vmon_entries.append(vmon_entry)
 
-            imon_entry = tk.Entry(channels_frame, width=7, justify='center')
+            imon_entry = tk.Entry(channels_frame, width=7, justify="center")
             imon_entry.insert(0, "-1")
-            imon_entry.grid(row=i+2, column=6, sticky="NS", padx=10, pady=5)
+            imon_entry.grid(row=i + 2, column=6, sticky="NS", padx=10, pady=5)
             self.imon_entries.append(imon_entry)
-        
+
         return channels_frame
 
     def create_multichannel_frame(self, frame):
         checkbox_frame = tk.Frame(frame, bg="darkblue")
-        checkbox_frame.grid(row=self.m.number_of_channels + 2, column=1, columnspan=6, pady=10)
+        checkbox_frame.grid(
+            row=self.m.number_of_channels + 2, column=1, columnspan=6, pady=10
+        )
 
-        tk.Label(checkbox_frame, text="Multichannel control", font=("Arial", 12, "bold"), bg="darkblue", fg="white").grid(row=0, column=0, columnspan=2, pady=10)
+        tk.Label(
+            checkbox_frame,
+            text="Multichannel control",
+            font=("Arial", 12, "bold"),
+            bg="darkblue",
+            fg="white",
+        ).grid(row=0, column=0, columnspan=2, pady=10)
 
         self.channel_vars = []
         for i in range(self.m.number_of_channels):
             var = tk.IntVar()
             self.channel_vars.append(var)
-            tk.Checkbutton(checkbox_frame, text=f" {CHANNEL_NAMES[i]}", variable=var, font=("Arial", 10), bg="darkblue", fg="white", selectcolor="gray", borderwidth=0, highlightthickness=0).grid(row=i+1, column=0, sticky="w", padx=20)
+            tk.Checkbutton(
+                checkbox_frame,
+                text=f" {CHANNEL_NAMES[i]}",
+                variable=var,
+                font=("Arial", 10),
+                bg="darkblue",
+                fg="white",
+                selectcolor="gray",
+                borderwidth=0,
+                highlightthickness=0,
+            ).grid(row=i + 1, column=0, sticky="w", padx=20)
             var.set(1)
 
-        self.set_multichannel_button = tk.Button(checkbox_frame, text="Set multichannel", font=("Arial", 10), bg="navy", fg="white", command=lambda: self.issue_command(self.set_multichannel_vset_and_turn_on))
+        self.set_multichannel_button = tk.Button(
+            checkbox_frame,
+            text="Set multichannel",
+            font=("Arial", 10),
+            bg="navy",
+            fg="white",
+            command=lambda: self.issue_command(self.set_multichannel_vset_and_turn_on),
+        )
         self.set_multichannel_button.grid(row=1, column=1, rowspan=4, padx=20, pady=5)
         return frame
 
@@ -162,13 +284,14 @@ class CaenHVPSGUI:
         def descrete_values(description):
             # e.g.  'VAL:XXXX.X Set VSET value' -> [] ; 'VAL:RAMP/KILL Set POWER DOWN mode value' -> ['RAMP', 'KILL']
             # these should be updated to the new dictionary mapping of the commands
-            valid_values = description.split('VAL:')
+            valid_values = description.split("VAL:")
             if len(valid_values) == 1:
                 return []
-            valid_values = valid_values[1].split(' ')[0]
-            if '/' not in valid_values:
+            valid_values = valid_values[1].split(" ")[0]
+            if "/" not in valid_values:
                 return []
-            return valid_values.split('/')
+            return valid_values.split("/")
+
         # Crear la nueva ventana
         new_window = tk.Toplevel(self.root)
         new_window.title(f"{CHANNEL_NAMES[channel_number]}")
@@ -186,14 +309,16 @@ class CaenHVPSGUI:
             if p == "vset":
                 continue
 
-            label = tk.Label(new_window, text=p, font=("Arial", 12), bg="blue", fg="white")
+            label = tk.Label(
+                new_window, text=p, font=("Arial", 12), bg="blue", fg="white"
+            )
             label.grid(row=len(entries), column=0, padx=10, pady=5, sticky="e")
             ToolTip(label, description)
 
             values = descrete_values(description)
             if values:
                 selected_option = tk.StringVar(new_window)
-                selected_option.set(getattr(ch,p))
+                selected_option.set(getattr(ch, p))
 
                 option_menu = tk.OptionMenu(new_window, selected_option, *values)
                 option_menu.config(font=("Arial", 12))
@@ -201,14 +326,22 @@ class CaenHVPSGUI:
                 entries[p] = option_menu
 
             else:
-                entry = tk.Entry(new_window, font=("Arial", 12), width=10, justify='center')
+                entry = tk.Entry(
+                    new_window, font=("Arial", 12), width=10, justify="center"
+                )
                 entry.grid(row=len(entries), column=1, padx=10, pady=5)
-                entry.insert(0, str(getattr(ch,p)))
+                entry.insert(0, str(getattr(ch, p)))
                 entries[p] = entry
 
-
         # Botones "Cancel" y "Apply"
-        cancel_button = tk.Button(new_window, text="Cancel", font=("Arial", 10), bg="navy", fg="white", command=new_window.destroy)
+        cancel_button = tk.Button(
+            new_window,
+            text="Cancel",
+            font=("Arial", 10),
+            bg="navy",
+            fg="white",
+            command=new_window.destroy,
+        )
         cancel_button.grid(row=len(properties), column=0, padx=10, pady=10, sticky="e")
 
         def apply_changes():
@@ -225,7 +358,14 @@ class CaenHVPSGUI:
                 setattr(ch, p, value)
             new_window.destroy()
 
-        apply_button = tk.Button(new_window, text="Apply", font=("Arial", 10), bg="darkblue", fg="white", command=lambda: self.issue_command(apply_changes))
+        apply_button = tk.Button(
+            new_window,
+            text="Apply",
+            font=("Arial", 10),
+            bg="darkblue",
+            fg="white",
+            command=lambda: self.issue_command(apply_changes),
+        )
         apply_button.grid(row=len(properties), column=1, padx=10, pady=10, sticky="w")
 
     def start_background_threads(self):
@@ -243,11 +383,16 @@ class CaenHVPSGUI:
 
     def issue_command(self, func, *args, **kwargs):
         # do not stack read_values commands (critical if reading values is slow)
-        if func.__name__ == "read_values" and (func, args, kwargs) in self.command_queue.queue:
+        if (
+            func.__name__ == "read_values"
+            and (func, args, kwargs) in self.command_queue.queue
+        ):
             return
         # print('\n'), [print(i) for i in self.command_queue.queue] # debug
         self.command_queue.put((func, args, kwargs))
-        if func.__name__ != "read_values": # because it is constantly reading values in the background
+        if (
+            func.__name__ != "read_values"
+        ):  # because it is constantly reading values in the background
             self.root.config(cursor="watch")
             self.root.update()
 
@@ -256,7 +401,9 @@ class CaenHVPSGUI:
             vset_value = float(self.vset_entries[channel_number].get())
         except ValueError:
             self.vset_entries[channel_number].delete(0, tk.END)
-            self.vset_entries[channel_number].insert(0, str(self.m.channels[channel_number].vset))
+            self.vset_entries[channel_number].insert(
+                0, str(self.m.channels[channel_number].vset)
+            )
             print("ValueError: Set voltage value must be a number")
             return
         self.m.channels[channel_number].vset = vset_value
@@ -334,28 +481,39 @@ class CaenHVPSGUI:
         self.state_indicators[channel_number].configure(bg=state_indicator_color)
         self.state_tooltips[channel_number].change_text(f"State: {state_tooltip_text}")
 
-        self.turn_buttons[channel_number].configure(text="TURN OFF" if channel.stat["ON"] else "TURN  ON")
+        self.turn_buttons[channel_number].configure(
+            text="TURN OFF" if channel.stat["ON"] else "TURN  ON"
+        )
 
     def update_alarm_indicators(self):
-        self.alarm_indicator.config(bg="red" if any([v for k,v in self.m.board_alarm_status.items()]) else "green")
-        self.alarm_tooltip.change_text(f"Alarm signal: {[k for k,v in self.m.board_alarm_status.items() if v]}")
-        self.interlock_indicator.config(bg="red" if self.m.interlock_status else "green")
-        self.interlock_tooltip.change_text(f"Interlock signal: {self.m.interlock_status}")
+        self.alarm_indicator.config(
+            bg="red"
+            if any([v for k, v in self.m.board_alarm_status.items()])
+            else "green"
+        )
+        self.alarm_tooltip.change_text(
+            f"Alarm signal: {[k for k,v in self.m.board_alarm_status.items() if v]}"
+        )
+        self.interlock_indicator.config(
+            bg="red" if self.m.interlock_status else "green"
+        )
+        self.interlock_tooltip.change_text(
+            f"Interlock signal: {self.m.interlock_status}"
+        )
 
 
 if __name__ == "__main__":
-
     # ========================= IN REAL USAGE =========================
-    caen = hvps.Caen(port='/dev/ttyUSB0')
+    caen = hvps.Caen(port="/dev/ttyUSB0")
     print("port:", caen.port)
     print("baudrate:", caen.baudrate)
     m = caen.module(0)
     # =========================================================
 
-    '''
+    """
     # ========================= TESTING =========================
     from caenSimulator import *
     m = ModuleSimulator(4)
     # =========================================================
-    '''
+    """
     CaenHVPSGUI(module=m)
