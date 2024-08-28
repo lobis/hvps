@@ -16,7 +16,7 @@ class ToolTip:
         self.tooltip = None
 
         self.widget.bind("<Enter>", lambda _: self.show_tooltip())
-        self.widget.bind("<Leave>", lambda _: self.show_tooltip())
+        self.widget.bind("<Leave>", lambda _: self.hide_tooltip())
 
     def show_tooltip(self):
         x = self.widget.winfo_rootx() + 20
