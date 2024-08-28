@@ -305,15 +305,22 @@ class CaenHVPSGUI:
 
     def open_channel_property_window(self, channel_number):
         def descrete_values(description):
-            # e.g.  'VAL:XXXX.X Set VSET value' -> [] ; 'VAL:RAMP/KILL Set POWER DOWN mode value' -> ['RAMP', 'KILL']
-            # these should be updated to the new dictionary mapping of the commands
-            valid_values = description.split("VAL:")
-            if len(valid_values) == 1:
-                return []
-            valid_values = valid_values[1].split(" ")[0]
-            if "/" not in valid_values:
-                return []
-            return valid_values.split("/")
+            if type(description) is str:
+                # e.g.  'VAL:XXXX.X Set VSET value' -> [] ; 'VAL:RAMP/KILL Set POWER DOWN mode value' -> ['RAMP', 'KILL']
+                # for hvps version <= 0.1.0
+                valid_values = description.split("VAL:")
+                if len(valid_values) == 1:
+                    return []
+                valid_values = valid_values[1].split(" ")[0]
+                if "/" not in valid_values:
+                    return []
+                return valid_values.split("/")
+            elif type(description) is dict:
+                # e.g. {'command' : 'PDWN', 'input_type': str, 'allowed_input_values': ['RAMP', 'KILL'], 'output_type': None, 'possible_output_values': []}
+                # e.g. {'command' : 'RUP', 'input_type': float, 'allowed_input_values': [], 'output_type': None, 'possible_output_values': []}
+                # for hvps version >= 0.1.1
+                return description["allowed_input_values"]
+            return []
 
         # Crear la nueva ventana
         new_window = tk.Toplevel(self.root)
@@ -321,20 +328,30 @@ class CaenHVPSGUI:
         new_window.configure(bg="darkblue")
 
         ch = self.m.channels[channel_number]
-        set_properties = hvps.commands.caen.channel._set_channel_commands
+        try:
+            set_properties = (
+                hvps.commands.caen.channel._SET_CHANNEL_COMMANDS
+            )  # version >= 0.1.1
+        except AttributeError:
+            set_properties = (
+                hvps.commands.caen.channel._set_channel_commands
+            )  # version <= 0.1.0
         properties = ch.__dir__()
 
         entries = {}
         for prop, description in set_properties.items():
             p = prop.lower()
-            if p not in properties or p == "vset":
+            if p not in properties or callable(getattr(ch, p)) or p == "vset":
                 continue
 
             label = tk.Label(
                 new_window, text=p, font=("Arial", 12), bg="blue", fg="white"
             )
             label.grid(row=len(entries), column=0, padx=10, pady=5, sticky="e")
-            ToolTip(label, description)
+            ToolTip(
+                label,
+                description if type(description) is str else description["description"],
+            )  # hvps version < 0.1.1 is str, >= 0.1.1 is dict
 
             values = descrete_values(description)
             if values:
