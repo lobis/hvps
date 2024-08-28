@@ -55,7 +55,6 @@ class CaenHVPSGUI:
         self.vset_entries = None
 
         self.clear_alarm_button = None
-        self.clear_alarm_turnoff_button = None
         self.interlock_indicator = None
         self.interlock_tooltip = None
         self.alarm_tooltip = None
@@ -133,15 +132,6 @@ class CaenHVPSGUI:
             command=lambda: self.issue_command(self.clear_alarm),
         )
         self.clear_alarm_button.grid(row=2, column=0, columnspan=2, pady=20)
-        self.clear_alarm_turnoff_button = tk.Button(
-            alarm_frame,
-            text="Clear & turn off all",
-            font=("Arial", 10),
-            bg="navy",
-            fg="white",
-            command=lambda: self.issue_command(self.clear_and_turn_off),
-        )
-        self.clear_alarm_turnoff_button.grid(row=3, column=0, columnspan=2, pady=10)
 
         return alarm_frame
 
@@ -456,11 +446,6 @@ class CaenHVPSGUI:
 
     def clear_alarm(self):
         self.m.clear_alarm_signal()
-
-    def clear_and_turn_off(self):
-        self.m.clear_alarm_signal()
-        for ch in self.m.channels:
-            ch.turn_off()
 
     def toggle_channel(self, channel_number):
         ch = self.m.channels[channel_number]
