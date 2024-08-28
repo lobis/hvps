@@ -32,7 +32,10 @@ def run_main_with_arguments(arguments: list) -> tuple:
     )
     main_file_path = str(os.path.abspath(main_file_path))
 
-    print(f"__main__.py file path: {main_file_path}", [sys.executable, main_file_path] + arguments)
+    print(
+        f"__main__.py file path: {main_file_path}",
+        [sys.executable, main_file_path] + arguments,
+    )
     commands = [sys.executable, main_file_path] + arguments
     commands = [str(command) for command in commands]
 
