@@ -405,14 +405,14 @@ class CaenHVPSGUI:
     def issue_command(self, func, *args, **kwargs):
         # do not stack read_values commands (critical if reading values is slow)
         if (
-                func.__name__ == "read_values"
-                and (func, args, kwargs) in self.command_queue.queue
+            func.__name__ == "read_values"
+            and (func, args, kwargs) in self.command_queue.queue
         ):
             return
         # print('\n'), [print(i) for i in self.command_queue.queue] # debug
         self.command_queue.put((func, args, kwargs))
         if (
-                func.__name__ != "read_values"
+            func.__name__ != "read_values"
         ):  # because it is constantly reading values in the background
             self.root.config(cursor="watch")
             self.root.update()
