@@ -103,9 +103,6 @@ class ChannelSimulator:
         self.stat["ILK"] = False  # not sure
 
 
-# =========================================================
-
-
 class ModuleSimulator:
     def __init__(self, nChannels, trip_probability=0.05):
         self.name = "N1471H SIMULATOR"
@@ -130,7 +127,7 @@ class ModuleSimulator:
 
         # Start the device reading thread
         self.randomize_thread = threading.Thread(
-            target=self.__continous_randomize, daemon=True
+            target=self.__continuous_randomize, daemon=True
         ).start()
 
     def clear_alarm_signal(self):
@@ -157,7 +154,7 @@ class ModuleSimulator:
         for ch in self.channels:
             ch._randomize()
 
-    def __continous_randomize(self, wait_seconds=1):
+    def __continuous_randomize(self, wait_seconds=1):
         while True:
             self._randomize()
             time.sleep(wait_seconds)
