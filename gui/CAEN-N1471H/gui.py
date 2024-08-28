@@ -44,7 +44,10 @@ class ToolTip:
 
 
 class CaenHVPSGUI:
-    def __init__(self, module, channel_names={}):
+    def __init__(self, module, channel_names=None):
+        if channel_names is None:
+            channel_names = {}
+
         self.channel_vars = None
         self.set_buttons = None
         self.turn_buttons = None
