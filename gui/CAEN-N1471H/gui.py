@@ -530,19 +530,17 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.test:
-        from caen_simulator import *
+    if not args.test:
+        caen = hvps.Caen(port=args.port)
 
-        m = ModuleSimulator(4)
+        print("port:", caen.port)
+        print("baudrate:", caen.baudrate)
 
-        CaenHVPSGUI(module=m, channel_names=CHANNEL_NAMES)
-        exit(0)
+        m = caen.module(0)
 
-    caen = hvps.Caen(port=args.port)
+    else:
+        from caen_simulator import *  # noqa: F403
 
-    print("port:", caen.port)
-    print("baudrate:", caen.baudrate)
-
-    m = caen.module(0)
+        m = ModuleSimulator(4)  # noqa: F405
 
     CaenHVPSGUI(module=m, channel_names=CHANNEL_NAMES)

@@ -3,7 +3,7 @@ import time
 import random
 
 
-# class that simulates the channel of the caen by giving a random value to its attriutes vmon, imon and
+# class that simulates the channel of the caen by giving a random value to its attributes vmon, imon and
 class ChannelSimulator:
     def __init__(self, trip_probability=0.02):
         # private attributes (they do not exist in the real device)
@@ -104,9 +104,9 @@ class ChannelSimulator:
 
 
 class ModuleSimulator:
-    def __init__(self, nChannels, trip_probability=0.05):
+    def __init__(self, n_channels, trip_probability=0.05):
         self.name = "N1471H SIMULATOR"
-        self.number_of_channels = nChannels
+        self.number_of_channels = n_channels
         self.channels = [
             ChannelSimulator(
                 1 - (1 - trip_probability) ** (1.0 / self.number_of_channels)
