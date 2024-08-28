@@ -30,15 +30,18 @@ def run_main_with_arguments(arguments: list) -> tuple:
         "src/hvps",
         "__main__.py",
     )
-    main_file_path = os.path.abspath(main_file_path)
+    main_file_path = str(os.path.abspath(main_file_path))
 
-    print(f"__main__.py file path: {main_file_path}")
+    print(f"__main__.py file path: {main_file_path}", [sys.executable, main_file_path] + arguments)
+    commands = [sys.executable, main_file_path] + arguments
+    commands = [str(command) for command in commands]
 
     process = subprocess.Popen(
-        [sys.executable, main_file_path] + arguments,
+        commands,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
+
     stdout, stderr = process.communicate()
     exit_code = process.returncode
 
