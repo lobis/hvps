@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import tkinter as tk
 import threading
 import queue
@@ -303,22 +305,22 @@ class CaenHVPSGUI:
         return frame
 
     def open_channel_property_window(self, channel_number):
-        def descrete_values(description):
-            if type(description) is str:
+        def values_from_description(description_: str | dict) -> list[str]:
+            if isinstance(description_, str):
                 # e.g.  'VAL:XXXX.X Set VSET value' -> [] ; 'VAL:RAMP/KILL Set POWER DOWN mode value' -> ['RAMP', 'KILL']
                 # for hvps version <= 0.1.0
-                valid_values = description.split("VAL:")
+                valid_values = description_.split("VAL:")
                 if len(valid_values) == 1:
                     return []
                 valid_values = valid_values[1].split(" ")[0]
                 if "/" not in valid_values:
                     return []
                 return valid_values.split("/")
-            elif type(description) is dict:
+            elif isinstance(description_, dict):
                 # e.g. {'command' : 'PDWN', 'input_type': str, 'allowed_input_values': ['RAMP', 'KILL'], 'output_type': None, 'possible_output_values': []}
                 # e.g. {'command' : 'RUP', 'input_type': float, 'allowed_input_values': [], 'output_type': None, 'possible_output_values': []}
                 # for hvps version >= 0.1.1
-                return description["allowed_input_values"]
+                return description_["allowed_input_values"]
             return []
 
         # Crear la nueva ventana
@@ -352,7 +354,7 @@ class CaenHVPSGUI:
                 description if type(description) is str else description["description"],
             )  # hvps version < 0.1.1 is str, >= 0.1.1 is dict
 
-            values = descrete_values(description)
+            values = values_from_description(description)
             if values:
                 selected_option = tk.StringVar(new_window)
                 selected_option.set(getattr(ch, p))
