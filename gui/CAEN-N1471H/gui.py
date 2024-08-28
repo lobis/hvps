@@ -379,6 +379,7 @@ class CaenHVPSGUI:
         cancel_button.grid(row=len(properties), column=0, padx=10, pady=10, sticky="e")
 
         def apply_changes():
+            print("Setting:")
             for p, entry in entries.items():
                 if entry.winfo_class() == "Menubutton":
                     value = entry.cget("text")
@@ -388,9 +389,10 @@ class CaenHVPSGUI:
                     value = float(value)
                 except ValueError:
                     pass
-                print(f"Setting {p} to {value}, {entry.winfo_class()}")
                 setattr(ch, p, value)
+                print(f"  {p}\t-> {value}")
             new_window.destroy()
+            print()
 
         apply_button = tk.Button(
             new_window,
