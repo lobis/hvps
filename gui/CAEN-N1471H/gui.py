@@ -98,29 +98,35 @@ class CaenHVPSGUI:
 
     def create_alarm_frame(self, frame):
         alarm_frame = tk.Frame(frame, bg="gray", padx=20, pady=20)
-        alarm_frame.grid(row=1, column=0, padx=10, pady=10)
+        alarm_frame.grid(row=1, column=0, padx=10, pady=10, sticky="N")
+
+        tk.Label(
+            alarm_frame, text="Module", font=("Arial", 14, "bold"), bg="gray"
+        ).grid(row=0, column=0, columnspan=2)
 
         tk.Label(
             alarm_frame, text="Alarm", font=("Arial", 12, "bold"), bg="gray", fg="black"
-        ).grid(row=0, column=0)
-        tk.Label(
+        ).grid(row=1, column=0)
+        intlck_label = tk.Label(
             alarm_frame,
-            text=f"Interlock\n({self.m.interlock_mode})",
+            text="Interlock",
             font=("Arial", 12, "bold"),
             bg="gray",
             fg="black",
-        ).grid(row=0, column=1)
+        )
+        intlck_label.grid(row=1, column=1)
+        ToolTip(intlck_label, f"Interlock mode: {self.m.interlock_mode}")
 
         self.alarm_indicator = tk.Canvas(
             alarm_frame, width=30, height=30, bg="red", highlightthickness=0
         )
-        self.alarm_indicator.grid(row=1, column=0, padx=10, pady=10)
+        self.alarm_indicator.grid(row=2, column=0, padx=10, pady=10)
         self.alarm_tooltip = ToolTip(self.alarm_indicator, "Alarm signal")
 
         self.interlock_indicator = tk.Canvas(
             alarm_frame, width=30, height=30, bg="green", highlightthickness=0
         )
-        self.interlock_indicator.grid(row=1, column=1, padx=10, pady=10)
+        self.interlock_indicator.grid(row=2, column=1, padx=10, pady=10)
         self.interlock_tooltip = ToolTip(self.interlock_indicator, "Interlock signal")
 
         self.clear_alarm_button = tk.Button(
@@ -131,7 +137,7 @@ class CaenHVPSGUI:
             fg="white",
             command=lambda: self.issue_command(self.clear_alarm),
         )
-        self.clear_alarm_button.grid(row=2, column=0, columnspan=2, pady=20)
+        self.clear_alarm_button.grid(row=3, column=0, columnspan=2, pady=20)
 
         return alarm_frame
 
