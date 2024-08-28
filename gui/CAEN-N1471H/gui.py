@@ -405,14 +405,14 @@ class CaenHVPSGUI:
     def issue_command(self, func, *args, **kwargs):
         # do not stack read_values commands (critical if reading values is slow)
         if (
-            func.__name__ == "read_values"
-            and (func, args, kwargs) in self.command_queue.queue
+                func.__name__ == "read_values"
+                and (func, args, kwargs) in self.command_queue.queue
         ):
             return
         # print('\n'), [print(i) for i in self.command_queue.queue] # debug
         self.command_queue.put((func, args, kwargs))
         if (
-            func.__name__ != "read_values"
+                func.__name__ != "read_values"
         ):  # because it is constantly reading values in the background
             self.root.config(cursor="watch")
             self.root.update()
@@ -513,7 +513,7 @@ class CaenHVPSGUI:
             else "green"
         )
         self.alarm_tooltip.change_text(
-            f"Alarm signal: {[k for k,v in self.m.board_alarm_status.items() if v]}"
+            f"Alarm signal: {[k for k, v in self.m.board_alarm_status.items() if v]}"
         )
         self.interlock_indicator.config(
             bg="red" if self.m.interlock_status else "green"
@@ -531,9 +531,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.test:
-        from caenSimulator import *  # noqa: F403
+        from caen_simulator import *
 
-        m = ModuleSimulator(4)  # noqa: F405
+        m = ModuleSimulator(4)
 
         CaenHVPSGUI(module=m, channel_names=CHANNEL_NAMES)
         exit(0)
