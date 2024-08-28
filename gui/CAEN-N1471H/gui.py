@@ -59,6 +59,8 @@ class CaenHVPSGUI:
         self.vmon_entries = None
         self.vset_entries = None
 
+        self.alarm_frame = None
+        self.set_multichannel_button = None
         self.clear_alarm_button = None
         self.interlock_indicator = None
         self.interlock_tooltip = None
