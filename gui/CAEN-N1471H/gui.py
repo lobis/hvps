@@ -44,7 +44,7 @@ class ToolTip:
 
 
 class CaenHVPSGUI:
-    def __init__(self, module):
+    def __init__(self, module, channel_names = {}):
         self.channel_vars = None
         self.set_buttons = None
         self.turn_buttons = None
@@ -66,6 +66,10 @@ class CaenHVPSGUI:
         self.root = None
 
         self.m = module  # Simulated module with 4 channels
+        self.channel_names = channel_names
+        for i in range(self.m.number_of_channels):
+            if i not in self.channel_names:
+                self.channel_names[i] = f"Channel {i}" # default name for the channel
         self.command_queue = queue.Queue()
         self.device_lock = threading.Lock()
 
@@ -198,7 +202,7 @@ class CaenHVPSGUI:
         for i in range(self.m.number_of_channels):
             channel_button = tk.Button(
                 channels_frame,
-                text=f"{CHANNEL_NAMES[i]}",
+                text=f"{self.channel_names[i]}",
                 font=("Arial", 12, "bold"),
                 bg="darkblue",
                 fg="white",
@@ -277,7 +281,7 @@ class CaenHVPSGUI:
             self.channel_vars.append(var)
             tk.Checkbutton(
                 checkbox_frame,
-                text=f" {CHANNEL_NAMES[i]}",
+                text=f" {self.channel_names[i]}",
                 variable=var,
                 font=("Arial", 10),
                 bg="darkblue",
@@ -313,7 +317,7 @@ class CaenHVPSGUI:
 
         # Crear la nueva ventana
         new_window = tk.Toplevel(self.root)
-        new_window.title(f"{CHANNEL_NAMES[channel_number]}")
+        new_window.title(f"{self.channel_names[channel_number]}")
         new_window.configure(bg="darkblue")
 
         ch = self.m.channels[channel_number]
@@ -531,7 +535,7 @@ if __name__ == "__main__":
 
         m = ModuleSimulator(4)  # noqa: F405
 
-        CaenHVPSGUI(module=m)
+        CaenHVPSGUI(module=m, channel_names=CHANNEL_NAMES)
         exit(0)
 
     caen = hvps.Caen(port=args.port)
@@ -541,4 +545,4 @@ if __name__ == "__main__":
 
     m = caen.module(0)
 
-    CaenHVPSGUI(module=m)
+    CaenHVPSGUI(module=m, channel_names=CHANNEL_NAMES)
