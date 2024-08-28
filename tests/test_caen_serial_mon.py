@@ -8,8 +8,8 @@ import logging
 
 # find a way to only run these tests if a serial port connection exists
 
-serial_port = ""  # change this to the serial port you are using
-serial_baud = 115200
+caen_serial_port = ""
+caen_baudrate = 115200
 timeout = 5.0
 
 
@@ -23,7 +23,7 @@ def is_macos():
 
 
 serial_skip_decorator = pytest.mark.skipif(
-    serial_port == "", reason="No serial ports set"
+    caen_serial_port == "", reason="No serial ports set"
 )
 
 
@@ -31,7 +31,7 @@ serial_skip_decorator = pytest.mark.skipif(
 def test_caen_init(caplog):
     caplog.set_level("DEBUG")
 
-    with Caen(logging_level="DEBUG") as caen:
+    with Caen(port=caen_serial_port, logging_level="DEBUG") as caen:
         assert caen.baudrate == 115200
         assert "Using baud rate 115200" in caplog.text
         assert "Using port " in caplog.text
@@ -42,8 +42,8 @@ def test_caen_init(caplog):
 def test_caen_module_monitor():
     # no ports available
     caen = Caen(
-        port=serial_port,
-        baudrate=serial_baud,
+        port=caen_serial_port,
+        baudrate=caen_baudrate,
         timeout=timeout,
         logging_level=logging.DEBUG,
     )
@@ -108,8 +108,8 @@ def test_caen_module_monitor():
 @serial_skip_decorator
 def test_caen_channel_serial():
     caen = Caen(
-        port=serial_port,
-        baudrate=serial_baud,
+        port=caen_serial_port,
+        baudrate=caen_baudrate,
         timeout=timeout,
         logging_level=logging.DEBUG,
     )
