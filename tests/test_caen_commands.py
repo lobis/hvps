@@ -72,6 +72,16 @@ def test_caen_parse_response():
     assert bd == 1
     assert value == "42"
 
+    response = b"#BD:01,CMD:OK,VAL:0001.10\r\n"
+    bd, value = _parse_response(response)
+    assert bd == 1
+    assert value == "0001.10"
+
+    response = b"#BD:01,CMD:OK,VAL:0001.10;\r\n"
+    bd, value = _parse_response(response)
+    assert bd == 1
+    assert value == "0001.10"
+
     response = b"#BD:99,CMD:OK,VAL:Hello World\r\n"
     bd, value = _parse_response(response)
     assert bd == 99

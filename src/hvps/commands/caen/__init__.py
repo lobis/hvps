@@ -73,4 +73,7 @@ def _parse_response(response: bytes) -> (int, str):
     bd = int(match.group("bd")) if match.group("bd") else 0
     value: str | None = match.group("val") if match.group("val") else None
 
+    if value is not None and value.endswith(";"):
+        value = value[:-1]
+
     return bd, value
