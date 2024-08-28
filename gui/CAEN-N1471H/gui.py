@@ -44,7 +44,7 @@ class ToolTip:
 
 
 class CaenHVPSGUI:
-    def __init__(self, module, channel_names = {}):
+    def __init__(self, module, channel_names={}):
         self.channel_vars = None
         self.set_buttons = None
         self.turn_buttons = None
@@ -69,7 +69,7 @@ class CaenHVPSGUI:
         self.channel_names = channel_names
         for i in range(self.m.number_of_channels):
             if i not in self.channel_names:
-                self.channel_names[i] = f"Channel {i}" # default name for the channel
+                self.channel_names[i] = f"Channel {i}"  # default name for the channel
         self.command_queue = queue.Queue()
         self.device_lock = threading.Lock()
 
