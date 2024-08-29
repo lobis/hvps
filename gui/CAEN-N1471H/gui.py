@@ -487,9 +487,9 @@ class CaenHVPSGUI:
     def read_values(self):
         for i, ch in enumerate(self.m.channels):
             self.vmon_entries[i].delete(0, tk.END)
-            self.vmon_entries[i].insert(0, f"{ch.vmon:.2f}")
+            self.vmon_entries[i].insert(0, f"{ch.vmon:.1f}")
             self.imon_entries[i].delete(0, tk.END)
-            self.imon_entries[i].insert(0, f"{ch.imon:.2f}")
+            self.imon_entries[i].insert(0, f"{ch.imon:.3f}")
             self.update_state_indicator(i, ch)
         self.update_alarm_indicators()
 
