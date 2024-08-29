@@ -353,7 +353,9 @@ class CaenHVPSGUI:
             label.grid(row=len(entries), column=0, padx=10, pady=5, sticky="e")
             ToolTip(
                 label,
-                description if type(description) is str else description["description"],
+                description["description"]
+                if isinstance(description, dict)
+                else description,
             )  # hvps version < 0.1.1 is str, >= 0.1.1 is dict
 
             values = values_from_description(description)
