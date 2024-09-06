@@ -55,8 +55,8 @@ class CaenHVPSGUI:
         self.turn_buttons = None
         self.state_tooltips = None
         self.state_indicators = None
-        self.imon_entries = None
-        self.vmon_entries = None
+        self.imon_labels = None
+        self.vmon_labels = None
         self.vset_entries = None
 
         self.alarm_frame = None
@@ -196,8 +196,8 @@ class CaenHVPSGUI:
         ).grid(row=1, column=6)
 
         self.vset_entries = []
-        self.vmon_entries = []
-        self.imon_entries = []
+        self.vmon_labels = []
+        self.imon_labels = []
         self.state_indicators = []
         self.state_tooltips = []
         self.turn_buttons = []
@@ -252,15 +252,13 @@ class CaenHVPSGUI:
             vset_entry.grid(row=i + 2, column=4, sticky="NSE", padx=0, pady=5)
             self.vset_entries.append(vset_entry)
 
-            vmon_entry = tk.Entry(channels_frame, width=7, justify="center")
-            vmon_entry.insert(0, "-1")
-            vmon_entry.grid(row=i + 2, column=5, sticky="NS", padx=10, pady=5)
-            self.vmon_entries.append(vmon_entry)
+            vmon_label = tk.Label(channels_frame, width=7, justify="center", text="-1")
+            vmon_label.grid(row=i + 2, column=5, sticky="NS", padx=10, pady=5)
+            self.vmon_labels.append(vmon_label)
 
-            imon_entry = tk.Entry(channels_frame, width=7, justify="center")
-            imon_entry.insert(0, "-1")
-            imon_entry.grid(row=i + 2, column=6, sticky="NS", padx=10, pady=5)
-            self.imon_entries.append(imon_entry)
+            imon_label = tk.Label(channels_frame, width=7, justify="center", text="-1")
+            imon_label.grid(row=i + 2, column=6, sticky="NS", padx=10, pady=5)
+            self.imon_labels.append(imon_label)
 
         return channels_frame
 
@@ -486,10 +484,8 @@ class CaenHVPSGUI:
 
     def read_values(self):
         for i, ch in enumerate(self.m.channels):
-            self.vmon_entries[i].delete(0, tk.END)
-            self.vmon_entries[i].insert(0, f"{ch.vmon:.1f}")
-            self.imon_entries[i].delete(0, tk.END)
-            self.imon_entries[i].insert(0, f"{ch.imon:.3f}")
+            self.vmon_labels[i].config(text=f"{ch.vmon:.1f}")
+            self.imon_labels[i].config(text=f"{ch.imon:.3f}")
             self.update_state_indicator(i, ch)
         self.update_alarm_indicators()
 
