@@ -496,51 +496,48 @@ class CaenHVPSGUI:
 
     def update_state_indicator(self, channel_number, channel):
         # Update the state indicator
-        if channel.stat["TRIP"]:
+        stat = channel.stat.copy()
+        if stat["TRIP"]:
             state_indicator_color = "red"
             state_tooltip_text = "TRIP"
-        elif channel.stat["DIS"]:
+        elif stat["DIS"]:
             state_indicator_color = "black"
             state_tooltip_text = "DISABLED"
-        elif channel.stat["KILL"]:
+        elif stat["KILL"]:
             state_indicator_color = "orange"
             state_tooltip_text = "KILL"
-        elif channel.stat["ILK"]:
+        elif stat["ILK"]:
             state_indicator_color = "yellow"
             state_tooltip_text = "INTERLOCK"
         else:
-            if channel.stat["ON"]:
+            if stat["ON"]:
                 state_indicator_color = "green2"
                 state_tooltip_text = "ON"
             else:
                 state_indicator_color = "dark green"
                 state_tooltip_text = "OFF"
-            if channel.stat["RUP"]:
+            if stat["RUP"]:
                 state_tooltip_text += " (RAMP UP)"
-            if channel.stat["RDW"]:
+            if stat["RDW"]:
                 state_tooltip_text += " (RAMP DOWN)"
         self.state_indicators[channel_number].configure(bg=state_indicator_color)
         self.state_tooltips[channel_number].change_text(f"State: {state_tooltip_text}")
 
         self.turn_buttons[channel_number].configure(
-            text="TURN OFF" if channel.stat["ON"] else "TURN  ON"
+            text="TURN OFF" if stat["ON"] else "TURN  ON"
         )
 
     def update_alarm_indicators(self):
+        bas = self.m.board_alarm_status.copy()
+        ilk = self.m.interlock_status
         self.alarm_indicator.config(
-            bg="red"
-            if any([v for k, v in self.m.board_alarm_status.items()])
-            else "green"
+            bg="red" if any([v for k, v in bas.items()]) else "green"
         )
         self.alarm_tooltip.change_text(
-            f"Alarm signal: {[k for k, v in self.m.board_alarm_status.items() if v]}"
+            f"Alarm signal: {[k for k, v in bas.items() if v]}"
         )
-        self.interlock_indicator.config(
-            bg="red" if self.m.interlock_status else "green"
-        )
-        self.interlock_tooltip.change_text(
-            f"Interlock signal: {self.m.interlock_status}"
-        )
+        self.interlock_indicator.config(bg="red" if ilk else "green")
+        self.interlock_tooltip.change_text(f"Interlock signal: {ilk}")
 
 
 if __name__ == "__main__":
