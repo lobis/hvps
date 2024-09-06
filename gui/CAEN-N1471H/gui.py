@@ -96,11 +96,16 @@ class CaenHVPSGUI:
         self.root.mainloop()
 
     def create_main_frame(self):
-        main_frame = tk.Frame(self.root, bg="lightgray", padx=10, pady=10)
+        main_frame = tk.LabelFrame(
+            self.root,
+            text=f"Module {self.m.name}",
+            font=("", 16),
+            bg="lightgray",
+            labelanchor="n",
+            padx=10,
+            pady=10,
+        )
         main_frame.pack(fill="both", expand=True)
-        tk.Label(
-            main_frame, text=f"Module {self.m.name}", font=("Arial", 16), bg="lightgray"
-        ).grid(row=0, column=0, columnspan=2, sticky="w", pady=10)
         return main_frame
 
     def create_alarm_frame(self, frame):
