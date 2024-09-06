@@ -54,7 +54,7 @@ class ToolTip:
 
 
 class CaenHVPSGUI:
-    def __init__(self, module, channel_names=None):
+    def __init__(self, module, channel_names=None, parent_frame=None):
         if channel_names is None:
             channel_names = {}
 
@@ -77,7 +77,7 @@ class CaenHVPSGUI:
         self.multichannel_frame = None
         self.channel_frame = None
         self.main_frame = None
-        self.root = None
+        self.root = parent_frame
 
         self.m = module  # Simulated module with 4 channels
         self.channel_names = channel_names
@@ -90,8 +90,11 @@ class CaenHVPSGUI:
         self.create_gui()
 
     def create_gui(self):
-        self.root = tk.Tk()
-        self.root.title("Caen HVPS GUI")
+        start_mainloop = False
+        if self.root is None:
+            self.root = tk.Tk()
+            self.root.title("Caen HVPS GUI")
+            start_mainloop = True
 
         self.main_frame = self.create_main_frame()
         self.alarm_frame = self.create_alarm_frame(self.main_frame)
@@ -101,7 +104,8 @@ class CaenHVPSGUI:
 
         self.start_background_threads()
 
-        self.root.mainloop()
+        if start_mainloop:
+            self.root.mainloop()
 
     def create_main_frame(self):
         main_frame = tk.LabelFrame(
