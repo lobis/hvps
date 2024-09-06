@@ -224,7 +224,9 @@ class Module(BaseModule):
             bd=self.bd,
             command=_get_mon_module_command(bd=self.bd, command=command),
         )
-        check_command_output_and_convert("board_alarm_status", None, response, _MON_MODULE_COMMANDS)
+        check_command_output_and_convert(
+            "board_alarm_status", None, response, _MON_MODULE_COMMANDS
+        )
         bit_array = string_number_to_bit_array(response)
 
         return {

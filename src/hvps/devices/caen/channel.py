@@ -287,7 +287,9 @@ class Channel(BaseChannel):
             ),
         )
         # TODO: check_command_output_and_convert returns an int so make string_number_to_bit_array take an int
-        check_command_output_and_convert(command.lower(), None, response, _MON_CHANNEL_COMMANDS)
+        check_command_output_and_convert(
+            command.lower(), None, response, _MON_CHANNEL_COMMANDS
+        )
         bit_array = string_number_to_bit_array(response)
 
         return {
