@@ -307,7 +307,9 @@ class CaenHVPSGUI:
         ).grid(row=0, column=0, columnspan=2, pady=10)
 
         self.channel_vars = []
+        nRows = 0
         for i in range(self.m.number_of_channels):
+            nRows += 1
             var = tk.IntVar()
             self.channel_vars.append(var)
             tk.Checkbutton(
@@ -331,7 +333,20 @@ class CaenHVPSGUI:
             fg="white",
             command=lambda: self.issue_command(self.set_multichannel_vset_and_turn_on),
         )
-        self.set_multichannel_button.grid(row=1, column=1, rowspan=4, padx=20, pady=5)
+        self.set_multichannel_button.grid(
+            row=1, column=1, rowspan=int(nRows / 2), padx=20, pady=5
+        )
+        self.turn_off_multichannel_button = tk.Button(
+            checkbox_frame,
+            text="Turn off multichannel",
+            font=("Arial", 10),
+            bg="navy",
+            fg="white",
+            command=lambda: self.issue_command(self.turn_off_multichannel),
+        )
+        self.turn_off_multichannel_button.grid(
+            row=int(nRows / 2) + 1, column=1, rowspan=int(nRows / 2), padx=20, pady=5
+        )
         return frame
 
     def open_channel_property_window(self, channel_number):
@@ -488,6 +503,11 @@ class CaenHVPSGUI:
                 self.m.channels[i].turn_on()
                 entry.delete(0, tk.END)
                 entry.insert(0, str(self.m.channels[i].vset))
+
+    def turn_off_multichannel(self):
+        for i, chvar in enumerate(self.channel_vars):
+            if chvar.get():
+                self.m.channels[i].turn_off()
 
     def clear_alarm(self):
         self.m.clear_alarm_signal()
