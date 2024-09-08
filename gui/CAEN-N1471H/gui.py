@@ -66,6 +66,7 @@ class CaenHVPSGUI:
         self.imon_labels = None
         self.vmon_labels = None
         self.vset_entries = None
+        self.vset_labels = None
 
         self.alarm_frame = None
         self.set_multichannel_button = None
@@ -192,27 +193,35 @@ class CaenHVPSGUI:
         ).grid(row=1, column=2)
         tk.Label(
             channels_frame,
-            text="vset (V)",
+            text="Set vset (V)",
             font=("Arial", 10, "bold"),
             bg="darkblue",
             fg="white",
         ).grid(row=1, column=3, columnspan=2)
         tk.Label(
             channels_frame,
-            text="vmon (V)",
+            text="vset (V)",
             font=("Arial", 10, "bold"),
             bg="darkblue",
             fg="white",
         ).grid(row=1, column=5)
         tk.Label(
             channels_frame,
-            text="imon (uA)",
+            text="vmon (V)",
             font=("Arial", 10, "bold"),
             bg="darkblue",
             fg="white",
         ).grid(row=1, column=6)
+        tk.Label(
+            channels_frame,
+            text="imon (uA)",
+            font=("Arial", 10, "bold"),
+            bg="darkblue",
+            fg="white",
+        ).grid(row=1, column=7)
 
         self.vset_entries = []
+        self.vset_labels = []
         self.vmon_labels = []
         self.imon_labels = []
         self.state_indicators = []
@@ -269,12 +278,16 @@ class CaenHVPSGUI:
             vset_entry.grid(row=i + 2, column=4, sticky="NSE", padx=0, pady=5)
             self.vset_entries.append(vset_entry)
 
+            vset_label = tk.Label(channels_frame, width=7, justify="center", text="-1")
+            vset_label.grid(row=i + 2, column=5, sticky="NS", padx=10, pady=5)
+            self.vset_labels.append(vset_label)
+
             vmon_label = tk.Label(channels_frame, width=7, justify="center", text="-1")
-            vmon_label.grid(row=i + 2, column=5, sticky="NS", padx=10, pady=5)
+            vmon_label.grid(row=i + 2, column=6, sticky="NS", padx=10, pady=5)
             self.vmon_labels.append(vmon_label)
 
             imon_label = tk.Label(channels_frame, width=7, justify="center", text="-1")
-            imon_label.grid(row=i + 2, column=6, sticky="NS", padx=10, pady=5)
+            imon_label.grid(row=i + 2, column=7, sticky="NS", padx=10, pady=5)
             self.imon_labels.append(imon_label)
 
         return channels_frame
@@ -501,6 +514,7 @@ class CaenHVPSGUI:
 
     def read_values(self):
         for i, ch in enumerate(self.m.channels):
+            self.vset_labels[i].config(text=f"{ch.vset:.1f}")
             self.vmon_labels[i].config(text=f"{ch.vmon:.1f}")
             self.imon_labels[i].config(text=f"{ch.imon:.3f}")
             self.update_state_indicator(i, ch)
