@@ -276,6 +276,9 @@ class CaenHVPSGUI:
             vset_entry = tk.Entry(channels_frame, width=7, justify="center")
             vset_entry.insert(0, str(self.m.channels[i].vset))
             vset_entry.grid(row=i + 2, column=4, sticky="NSE", padx=0, pady=5)
+            vset_entry.bind(
+                "<Return>", lambda event, x=i: self.issue_command(self.set_vset, x)
+            )
             self.vset_entries.append(vset_entry)
 
             vset_label = tk.Label(channels_frame, width=7, justify="center", text="-1")
