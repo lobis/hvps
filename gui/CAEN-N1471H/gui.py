@@ -143,15 +143,17 @@ class CaenHVPSGUI:
         ToolTip(intlck_label, f"Interlock mode: {self.m.interlock_mode}")
 
         self.alarm_indicator = tk.Canvas(
-            alarm_frame, width=30, height=30, bg="red", highlightthickness=0
+            alarm_frame, width=30, height=30, bg="gray", highlightthickness=0
         )
         self.alarm_indicator.grid(row=2, column=0, padx=10, pady=10)
+        self.alarm_indicator.create_oval(2, 2, 28, 28, fill="gray")
         self.alarm_tooltip = ToolTip(self.alarm_indicator, "Alarm signal")
 
         self.interlock_indicator = tk.Canvas(
-            alarm_frame, width=30, height=30, bg="green", highlightthickness=0
+            alarm_frame, width=30, height=30, bg="gray", highlightthickness=0
         )
         self.interlock_indicator.grid(row=2, column=1, padx=10, pady=10)
+        self.interlock_indicator.create_oval(2, 2, 28, 28, fill="gray")
         self.interlock_tooltip = ToolTip(self.interlock_indicator, "Interlock signal")
 
         self.clear_alarm_button = tk.Button(
@@ -245,9 +247,10 @@ class CaenHVPSGUI:
             ToolTip(channel_button, f"Channel {i}: click for more setting options.")
 
             state_indicator = tk.Canvas(
-                channels_frame, width=20, height=20, bg="black", highlightthickness=0
+                channels_frame, width=30, height=30, bg="darkblue", highlightthickness=0
             )
             state_indicator.grid(row=i + 2, column=1, sticky="NSEW", padx=5, pady=5)
+            state_indicator.create_oval(2, 2, 28, 28, fill="black")
             self.state_indicators.append(state_indicator)
             self.state_tooltips.append(ToolTip(state_indicator, "State:"))
 
@@ -569,7 +572,7 @@ class CaenHVPSGUI:
                 state_tooltip_text += " (RAMP UP)"
             if stat["RDW"]:
                 state_tooltip_text += " (RAMP DOWN)"
-        self.state_indicators[channel_number].configure(bg=state_indicator_color)
+        self.state_indicators[channel_number].itemconfig(1, fill=state_indicator_color)
         self.state_tooltips[channel_number].change_text(f"State: {state_tooltip_text}")
 
         self.turn_buttons[channel_number].configure(
@@ -579,13 +582,13 @@ class CaenHVPSGUI:
     def update_alarm_indicators(self):
         bas = self.m.board_alarm_status.copy()
         ilk = self.m.interlock_status
-        self.alarm_indicator.config(
-            bg="red" if any([v for k, v in bas.items()]) else "green"
+        self.alarm_indicator.itemconfig(
+            1, fill="red" if any([v for k, v in bas.items()]) else "green"
         )
         self.alarm_tooltip.change_text(
             f"Alarm signal: {[k for k, v in bas.items() if v]}"
         )
-        self.interlock_indicator.config(bg="red" if ilk else "green")
+        self.interlock_indicator.itemconfig(1, fill="red" if ilk else "green")
         self.interlock_tooltip.change_text(f"Interlock signal: {ilk}")
 
 
