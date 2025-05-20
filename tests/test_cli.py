@@ -82,9 +82,9 @@ def test_cli_caen_channel_mon():
         print(f"exit_code: {exit_code}")
 
         exit_code_expected = 0 if parameter not in ["INVALID_PARAMETER"] else 1
-        assert (
-            exit_code == exit_code_expected
-        ), f"exit_code: {exit_code} for arguments: {arguments}"
+        assert exit_code == exit_code_expected, (
+            f"exit_code: {exit_code} for arguments: {arguments}"
+        )
 
 
 def test_cli_caen_channel_set():
@@ -155,9 +155,9 @@ def test_cli_caen_module_mon():
         print(f"exit_code: {exit_code}")
 
         exit_code_expected = 0 if parameter not in ["INVALID_PARAMETER"] else 1
-        assert (
-            exit_code == exit_code_expected
-        ), f"exit_code: {exit_code} for arguments: {arguments}"
+        assert exit_code == exit_code_expected, (
+            f"exit_code: {exit_code} for arguments: {arguments}"
+        )
 
 
 def test_cli_caen_module_set():
@@ -246,9 +246,9 @@ def test_cli_iseg_channel_mon():
         print(f"exit_code: {exit_code}")
 
         exit_code_expected = 0 if parameter not in ["INVALID_PARAMETER"] else 1
-        assert (
-            exit_code == exit_code_expected
-        ), f"exit_code: {exit_code} for arguments: {arguments}"
+        assert exit_code == exit_code_expected, (
+            f"exit_code: {exit_code} for arguments: {arguments}"
+        )
 
 
 def test_cli_iseg_channel_set():
@@ -351,9 +351,9 @@ def test_cli_iseg_module_mon():
         print(f"exit_code: {exit_code}")
 
         exit_code_expected = 0 if parameter not in ["INVALID_PARAMETER"] else 1
-        assert (
-            exit_code == exit_code_expected
-        ), f"exit_code: {exit_code} for arguments: {arguments}"
+        assert exit_code == exit_code_expected, (
+            f"exit_code: {exit_code} for arguments: {arguments}"
+        )
 
 
 def test_cli_iseg_module_set():
