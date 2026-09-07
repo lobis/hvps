@@ -1,9 +1,10 @@
 from __future__ import annotations
-import re
 
 import logging
-import serial
+import re
 import threading
+
+import serial
 
 
 def _write_command_read_response(

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import tkinter as tk
-import threading
-import queue
-import time
 import argparse
+import queue
+import threading
+import time
+import tkinter as tk
 
 import hvps
 
@@ -607,7 +607,7 @@ if __name__ == "__main__":
             CaenHVPSGUI(module=m, channel_names=CHANNEL_NAMES)
 
     else:
-        from caen_simulator import *  # noqa: F403
+        from caen_simulator import *
 
-        m = ModuleSimulator(4)  # noqa: F405
+        m = ModuleSimulator(4)
         CaenHVPSGUI(module=m, channel_names=CHANNEL_NAMES)

@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import logging
+import threading
+import uuid
+from abc import ABC, abstractmethod
+from typing import Dict
+
 import serial
 from serial.tools import list_ports
-from typing import Dict
-import logging
-import uuid
-import threading
-from abc import ABC, abstractmethod
 
 from .module import Module
 
@@ -256,4 +257,3 @@ class Hvps(ABC):
         Raises:
             KeyError: If the module number is invalid.
         """
-        pass
