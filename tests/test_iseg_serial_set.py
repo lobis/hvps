@@ -1,9 +1,10 @@
-from hvps.utils import get_serial_ports
-from hvps import Iseg
+import logging
+import sys
 
 import pytest
-import sys
-import logging
+
+from hvps import Iseg
+from hvps.utils import get_serial_ports
 
 serial_port = ""  # change this to the serial port you are using
 serial_baud = 9600
@@ -125,7 +126,7 @@ def test_iseg_channel_monitor():
     module = iseg.module(0)
 
     for channel in module.channels:
-        print("")
+        print()
         print(f"Channel: {channel.channel}")
 
         # Set the action to be taken when a current trip occurs for the channel

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from ...commands.iseg import _write_command_read_response
 from ..hvps import Hvps
 from .module import Module
-from ...commands.iseg import _write_command_read_response
 
 
 class Iseg(Hvps):

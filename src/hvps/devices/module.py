@@ -1,8 +1,6 @@
-from typing import List
-
 import logging
 from abc import ABC, abstractmethod
-from typing import Callable
+from typing import Callable, List
 
 from .channel import Channel
 
@@ -52,7 +50,6 @@ class Module(ABC):
             NotImplementedError: If the subclass does not implement this property.
 
         """
-        pass
 
     @property
     @abstractmethod
@@ -68,7 +65,6 @@ class Module(ABC):
             NotImplementedError: If the subclass does not implement this property.
 
         """
-        pass
 
     def channel(self, channel: int) -> Channel:
         """Get the specified channel in the module.

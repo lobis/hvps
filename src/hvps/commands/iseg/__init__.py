@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import List
 
 import logging
-import serial
 import re
 import threading
+from typing import List
+
+import serial
 
 
 def _write_command_read_response(
