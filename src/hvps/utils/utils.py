@@ -1,7 +1,9 @@
 from __future__ import annotations
-from serial.tools import list_ports
-from typing import List, Dict
+
 import re
+from typing import Dict, List
+
+from serial.tools import list_ports
 
 
 def string_number_to_bit_array(string) -> List[bool]:
@@ -50,7 +52,7 @@ def remove_units(value: str) -> str:
 
 
 def check_command_input(
-    command_dict: Dict, method: str, input_value: int | float | str | None = None
+    command_dict: Dict, method: str, input_value: float | str | None = None
 ) -> None:
     """
     Check the input type and value of a command.
@@ -70,7 +72,7 @@ def check_command_input(
         ValueError: If the input value is not of the correct type, is not in the allowed values list or
                     if the command is not in the command dictionary.
     """
-    if method not in command_dict.keys():
+    if method not in command_dict:
         valid_methods_string = ", ".join(command_dict.keys())
         raise ValueError(
             f"Invalid method '{method}'. Valid methods are: {valid_methods_string}"
@@ -103,7 +105,7 @@ def check_command_input(
 
 def check_command_output_and_convert(
     method: str,
-    input_value: int | float | str | None | List[int] | List[float] | List[str],
+    input_value: float | str | None | List[int] | List[float] | List[str],
     response: str | List[str] | None,
     command_dict: Dict,
 ) -> int | float | str | None | List[int] | List[float] | List[str]:

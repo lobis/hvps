@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 # TODO: change values for dictionary with possible values and description
 _MON_MODULE_COMMANDS = {
     "number_of_channels": {
@@ -451,7 +450,7 @@ def _get_mon_module_command(command: str) -> bytes:
     return f"{command.strip()}?\r\n".encode("ascii")
 
 
-def _get_set_module_command(command: str, value: str | int | float | None) -> bytes:
+def _get_set_module_command(command: str, value: str | float | None) -> bytes:
     """
     Generates an order command as a bytes object to set a value for a specific module.
 
