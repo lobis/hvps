@@ -1,5 +1,6 @@
-from hvps import Caen
 import pytest
+
+from hvps import Caen
 
 
 def test_caen_module(caplog):
@@ -8,7 +9,7 @@ def test_caen_module(caplog):
     caen = Caen(logging_level="DEBUG")
 
     # for CAEN, modules are dynamically created
-    [caen.module(i) for i in range(0, 32)]
+    [caen.module(i) for i in range(32)]
 
     assert "Getting module 0" in caplog.text
 
