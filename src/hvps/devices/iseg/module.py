@@ -3,17 +3,17 @@ from __future__ import annotations
 import inspect
 from typing import List
 
-from hvps.utils import check_command_input
 from serial import SerialException
 
+from hvps.utils import check_command_input
+
 from ...commands.iseg.module import (
-    _get_mon_module_command,
-    _get_set_module_command,
     _MON_MODULE_COMMANDS,
     _SET_MODULE_COMMANDS,
+    _get_mon_module_command,
+    _get_set_module_command,
 )
-from ...utils.utils import string_number_to_bit_array, check_command_output_and_convert
-
+from ...utils.utils import check_command_output_and_convert, string_number_to_bit_array
 from ..module import Module as BaseModule
 from .channel import Channel
 
@@ -35,7 +35,7 @@ class Module(BaseModule):
     def _write_command_read_response_module_set(
         self,
         method_name: str,
-        value: str | int | float | None,
+        value: str | float | None,
         expected_response_type: type | None,
     ) -> str | None:
         command = _SET_MODULE_COMMANDS[method_name]["command"]

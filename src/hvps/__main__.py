@@ -1,30 +1,38 @@
 from __future__ import annotations
-from typing import List, Dict
+
+import argparse
+import logging
+from typing import Dict, List
 
 import serial
 from serial.tools import list_ports
-import argparse
-import logging
 
-from hvps import __version__ as hvps_version
 from hvps import Caen, Iseg
-from hvps.commands.caen.module import (
-    _MON_MODULE_COMMANDS as CAEN_MON_MODULE_COMMANDS,
-    _SET_MODULE_COMMANDS as CAEN_SET_MODULE_COMMANDS,
-)
+from hvps import __version__ as hvps_version
 from hvps.commands.caen.channel import (
     _MON_CHANNEL_COMMANDS as CAEN_MON_CHANNEL_COMMANDS,
+)
+from hvps.commands.caen.channel import (
     _SET_CHANNEL_COMMANDS as CAEN_SET_CHANNEL_COMMANDS,
 )
-from hvps.commands.iseg.module import (
-    _MON_MODULE_COMMANDS as ISEG_MON_MODULE_COMMANDS,
-    _SET_MODULE_COMMANDS as ISEG_SET_MODULE_COMMANDS,
+from hvps.commands.caen.module import (
+    _MON_MODULE_COMMANDS as CAEN_MON_MODULE_COMMANDS,
+)
+from hvps.commands.caen.module import (
+    _SET_MODULE_COMMANDS as CAEN_SET_MODULE_COMMANDS,
 )
 from hvps.commands.iseg.channel import (
     _MON_CHANNEL_COMMANDS as ISEG_MON_CHANNEL_COMMANDS,
+)
+from hvps.commands.iseg.channel import (
     _SET_CHANNEL_COMMANDS as ISEG_SET_CHANNEL_COMMANDS,
 )
-
+from hvps.commands.iseg.module import (
+    _MON_MODULE_COMMANDS as ISEG_MON_MODULE_COMMANDS,
+)
+from hvps.commands.iseg.module import (
+    _SET_MODULE_COMMANDS as ISEG_SET_MODULE_COMMANDS,
+)
 
 # TODO: command help in cli
 # TODO: name of parameter in function calls

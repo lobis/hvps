@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from ...commands.caen import _write_command_read_response
+from ...commands.caen.channel import validate_board_number
 from ..hvps import Hvps
 from .module import Module
-from ...commands.caen.channel import validate_board_number
-from ...commands.caen import _write_command_read_response
 
 
 class Caen(Hvps):

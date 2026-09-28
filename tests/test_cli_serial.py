@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+
 import pytest
 
 from hvps.utils import get_serial_ports
