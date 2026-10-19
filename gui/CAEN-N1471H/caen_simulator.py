@@ -1,6 +1,6 @@
+import random
 import threading
 import time
-import random
 
 
 # class that simulates the channel of the caen by giving a random value to its attributes vmon, imon and
@@ -77,15 +77,13 @@ class ChannelSimulator:
             self.stat["RDW"] = False
             self._vset += self.rup
             self.imon = self.imon * 10
-            if self._vset > self.vset:
-                self._vset = self.vset
+            self._vset = min(self._vset, self.vset)
         elif self._vset > self.vset:
             self.stat["RDW"] = True
             self.stat["RUP"] = False
             self._vset -= self.rdw
             self.imon = -self.imon * 10
-            if self._vset < self.vset:
-                self._vset = self.vset
+            self._vset = max(self._vset, self.vset)
         else:
             self.stat["RUP"] = False
             self.stat["RDW"] = False
