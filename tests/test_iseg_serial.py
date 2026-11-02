@@ -1,9 +1,10 @@
-from hvps.utils import get_serial_ports
-from hvps import Iseg
+import logging
+import sys
 
 import pytest
-import sys
-import logging
+
+from hvps import Iseg
+from hvps.utils import get_serial_ports
 
 serial_port = "COM4"  # change this to the serial port you are using
 serial_baud = 9600

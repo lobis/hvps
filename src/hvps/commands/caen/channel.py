@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 # Dictionary mapping monitor channel commands to their descriptions
 _MON_CHANNEL_COMMANDS = {
     "vset": {
@@ -412,11 +411,11 @@ def _get_mon_channel_command(bd: int, channel: int, command: str) -> bytes:
 
     command = command.upper()
 
-    return f"$BD:{bd:02d},CMD:MON,CH:{channel:01d},PAR:{command}\r\n".encode("utf-8")
+    return f"$BD:{bd:02d},CMD:MON,CH:{channel:01d},PAR:{command}\r\n".encode()
 
 
 def _get_set_channel_command(
-    bd: int, channel: int, command: str, value: str | int | float | None
+    bd: int, channel: int, command: str, value: str | float | None
 ) -> bytes:
     """
     Generate a command string to set a specific channel command to a given value.
@@ -440,12 +439,8 @@ def _get_set_channel_command(
     command = command.upper()
 
     if value is None:
-        return f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command}\r\n".encode(
-            "utf-8"
-        )
+        return f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command}\r\n".encode()
 
     return (
-        f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command},VAL:{value}\r\n".encode(
-            "utf-8"
-        )
+        f"$BD:{bd:02d},CMD:SET,CH:{channel:01d},PAR:{command},VAL:{value}\r\n".encode()
     )
