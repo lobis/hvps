@@ -1,10 +1,10 @@
+import logging
 import sys
+
 import pytest
 
 from hvps import Caen
 from hvps.utils import get_serial_ports
-
-import logging
 
 # find a way to only run these tests if a serial port connection exists
 
@@ -121,7 +121,7 @@ def test_caen_channel_serial():
     module = caen.module(0)
 
     for channel in module.channels:
-        print("")
+        print()
         print(f"Channel: {channel.channel}")
 
         vmon = channel.vmon
