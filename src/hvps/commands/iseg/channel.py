@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import List
 
-
 _MON_CHANNEL_COMMANDS = {
     "trip_action": {
         "command": ":CONF:TRIP:ACTION",
@@ -306,7 +305,7 @@ _SET_CHANNEL_COMMANDS = {
     "trip_timeout": {
         "command": ":CONF:TRIP:TIME",
         "input_type": int,
-        "allowed_input_values": [*range(0, 4096)],
+        "allowed_input_values": [*range(4096)],
         "output_type": None,
         "possible_output_values": [],
         "description": "Set the trip timeout with one millisecond resolution.",
@@ -506,7 +505,7 @@ def _get_mon_channel_command(channel: int, command: str) -> bytes:
 
 
 def _get_set_channel_command(
-    channel: int, command: str, value: str | int | float | None
+    channel: int, command: str, value: str | float | None
 ) -> bytes:
     """
     Generates an order command as a bytes object to set a value for a specific channel.
