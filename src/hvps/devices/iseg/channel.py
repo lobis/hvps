@@ -6,14 +6,13 @@ from typing import List
 from hvps.utils import check_command_input
 
 from ...commands.iseg.channel import (
-    _get_set_channel_command,
-    _get_mon_channel_command,
     _MON_CHANNEL_COMMANDS,
     _SET_CHANNEL_COMMANDS,
+    _get_mon_channel_command,
+    _get_set_channel_command,
 )
-
-from ..channel import Channel as BaseChannel
 from ...utils.utils import check_command_output_and_convert
+from ..channel import Channel as BaseChannel
 
 
 class Channel(BaseChannel):
@@ -33,7 +32,7 @@ class Channel(BaseChannel):
     def _write_command_read_response_channel_set(
         self,
         method_name: str,
-        value: str | int | float | None,
+        value: str | float | None,
         expected_response_type: type | None,
     ) -> str | None:
         command = _SET_CHANNEL_COMMANDS[method_name]["command"]

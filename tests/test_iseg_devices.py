@@ -1,7 +1,7 @@
+import pytest
 from serial import PortNotOpenError
 
 from hvps import Iseg
-import pytest
 
 
 def test_iseg_module(caplog):

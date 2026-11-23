@@ -4,9 +4,9 @@ import pytest
 
 from hvps.utils import (
     check_command_input,
-    string_number_to_bit_array,
     check_command_output_and_convert,
     remove_units,
+    string_number_to_bit_array,
 )
 
 

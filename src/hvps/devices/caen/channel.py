@@ -1,19 +1,18 @@
 from __future__ import annotations
+
 import inspect
+from time import sleep
 
 from hvps.utils import check_command_input
 
 from ...commands.caen.channel import (
-    _get_set_channel_command,
-    _get_mon_channel_command,
     _MON_CHANNEL_COMMANDS,
     _SET_CHANNEL_COMMANDS,
+    _get_mon_channel_command,
+    _get_set_channel_command,
 )
-
-from ...utils import string_number_to_bit_array, check_command_output_and_convert
+from ...utils import check_command_output_and_convert, string_number_to_bit_array
 from ..channel import Channel as BaseChannel
-
-from time import sleep
 
 
 class Channel(BaseChannel):
@@ -37,7 +36,7 @@ class Channel(BaseChannel):
         )
 
     def _write_command_read_response_channel_set(
-        self, method_name: str, value: str | int | float | None
+        self, method_name: str, value: str | float | None
     ) -> str | None:
         command = _SET_CHANNEL_COMMANDS[method_name]["command"]
         check_command_input(_SET_CHANNEL_COMMANDS, method_name, value)
