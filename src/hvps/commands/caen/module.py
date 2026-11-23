@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 # Dictionary mapping monitor module commands to their descriptions
 _MON_MODULE_COMMANDS = {
     "name": {
@@ -142,12 +141,10 @@ def _get_mon_module_command(bd: int, command: str) -> bytes:
         raise ValueError(
             f"Invalid command '{command}'. Valid commands are: {valid_commands_string}"
         )
-    return f"$BD:{bd:02d},CMD:MON,PAR:{command}\r\n".encode("utf-8")
+    return f"$BD:{bd:02d},CMD:MON,PAR:{command}\r\n".encode()
 
 
-def _get_set_module_command(
-    bd: int, command: str, value: str | int | float | None
-) -> bytes:
+def _get_set_module_command(bd: int, command: str, value: str | float | None) -> bytes:
     """
     Generate a command string to set a specific module command to a given value.
 
@@ -167,4 +164,4 @@ def _get_set_module_command(
 
     command = command.upper()
 
-    return f"$BD:{bd:02d},CMD:SET,PAR:{command},VAL:{value}\r\n".encode("utf-8")
+    return f"$BD:{bd:02d},CMD:SET,PAR:{command},VAL:{value}\r\n".encode()

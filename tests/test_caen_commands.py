@@ -2,13 +2,12 @@ import pytest
 
 from hvps.commands.caen import _parse_response
 from hvps.commands.caen.channel import (
-    _get_set_channel_command,
     _get_mon_channel_command,
+    _get_set_channel_command,
 )
-
 from hvps.commands.caen.module import (
-    _get_set_module_command,
     _get_mon_module_command,
+    _get_set_module_command,
 )
 
 
